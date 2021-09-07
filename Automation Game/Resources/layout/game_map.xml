@@ -18,10 +18,17 @@ android:layout_height="match_parent"
     android:background="@drawable/inventory_icon"
     android:layout_alignParentBottom="true"
     android:layout_alignParentRight="true"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/craftingMenu"
+        android:background="@drawable/craft"/>
     <FrameLayout 
         android:id="@+id/frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"           
                  >
-            </FrameLayout>
+    </FrameLayout>
     </RelativeLayout>

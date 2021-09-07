@@ -41,7 +41,10 @@ namespace Automation_Game
 
         public const int spriteSheetColoumnCount = 6;
 
+        public bool editMode;
+
         public Item[,] groundItems { get; set; }
+        //public Structure[,] structures { get; set; }
 
         List<ItemType> itemTypeList;
         public MapDraw(Context context) : base(context)
@@ -53,6 +56,7 @@ namespace Automation_Game
             camera.X = player.GetX();
             camera.Y = player.GetY();
             tap = false;
+            editMode = false;
             Drawn = false;
             itemTypeList = new List<ItemType>();
             itemTypeList.Add(new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt"}));
@@ -97,17 +101,26 @@ namespace Automation_Game
             {
                 if (player.GetY() >= camera.Y - renderDistance.Y / 2 && player.GetY() <= camera.Y + renderDistance.Y / 2)
                 {
-                    int posX = (int)((player.GetX() - (int)(camera.X - renderDistance.X / 2)) * Terrain.size + (Terrain.size - player.texture.Width) / 2);
-                    int posY = (int)((player.GetY() - (int)(camera.Y - renderDistance.Y / 2)) * Terrain.size + (Terrain.size - player.texture.Height)/ 2);
-                    canvas.DrawBitmap(player.texture, posX, posY, null);
+                    int spriteSheetSignleWidth = spritesheet.GetScaledWidth(canvas) / spriteSheetColoumnCount;
+                    int playerDrawY = player.GetY() - (int)(camera.Y - renderDistance.Y / 2);
+                    int playerDrawX = player.GetX() - (int)(camera.X - renderDistance.X / 2);
+                    Rect src = new Rect(spriteSheetSignleWidth * (player.id % spriteSheetColoumnCount), spriteSheetSignleWidth * (player.id / spriteSheetColoumnCount), spriteSheetSignleWidth * (player.id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (player.id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
+                    Rect dst = new Rect(playerDrawX * (int)(Terrain.size), playerDrawY * (int)(Terrain.size), (playerDrawX + 1) * (int)(Terrain.size), (playerDrawY + 1) * (int)(Terrain.size));
+                    
+                    canvas.DrawBitmap(spritesheet, src, dst, null);
 
                 }
             }
+
             Drawn = true;
         }
 
         public override bool OnTouchEvent(MotionEvent e)
         {
+            if (editMode)
+            {
+                return false;
+            }
             if (e.Action == MotionEventActions.Down)
             {
                 tap = true;
@@ -168,10 +181,10 @@ namespace Automation_Game
             return true;
         }
 
-        public void DisplayMap(Canvas canvas)
+        public Bitmap DisplayMap(int width, int height)
         {
-            float scale = Math.Min(canvas.Width / generator.GetWidth(), canvas.Height / generator.GetHeight());
-            canvas.DrawBitmap(generator.generateMap(scale), (canvas.Width - generator.GetWidth() * scale) / 2, (canvas.Height - generator.GetHeight() * scale) / 2, null);
+            float scale = Math.Min(width / generator.GetWidth(), height / generator.GetHeight());
+            return Bitmap.CreateScaledBitmap(generator.generateMap(scale), (int)((width - generator.GetWidth() * scale) / 2), (int)((height - generator.GetHeight() * scale) / 2), false);
         }
 
         public bool IsDrawn()

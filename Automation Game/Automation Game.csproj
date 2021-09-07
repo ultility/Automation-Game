@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameActivity.cs" />
+    <Compile Include="GestureDialog.cs" />
     <Compile Include="Inventory.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="ItemType.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StartUpMenu.cs" />
+    <Compile Include="Structure.cs" />
     <Compile Include="Terrain.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -110,9 +112,6 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher_round.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\player_asleep.png" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Android.Support.Core.Utils" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="28.0.0.3" />
@@ -130,13 +129,6 @@
   <ItemGroup>
     <AndroidResource Include="Resources\layout\game_map.xml" />
     <AndroidResource Include="Resources\layout\startup_menu.xml" />
-    <AndroidResource Include="Resources\drawable\dirt.png" />
-    <AndroidResource Include="Resources\drawable\grass.png" />
-    <AndroidResource Include="Resources\drawable\sand.png" />
-    <AndroidResource Include="Resources\drawable\water.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\drawable\player_awake.png" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\inventory_icon.png" />
@@ -150,13 +142,10 @@
     <AndroidResource Include="Resources\drawable\map_icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\stone.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\drawable\stick.png" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\drawable\sprite_sheet.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\craft.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -15,18 +15,18 @@ namespace Automation_Game
 {
     public class Player : Moveable
     {
-        public Bitmap texture { get; }
-        string mode;
+        //string mode;
         Inventory inv;
         public const int INVENTORY_SIZE = 8;
+        public int id { get; }
 
         public Player(int x, int y, Context context, MapDraw parent)
         {
             this.x = x;
             this.y = y;
-            mode = "awake";
+            //mode = "awake";
             inv = new Inventory(INVENTORY_SIZE);
-            texture = BitmapFactory.DecodeResource(context.Resources, context.Resources.GetIdentifier("player" + "_" + mode, "drawable", context.PackageName));
+            id = 4;
             this.parent = parent;
         }
 
@@ -108,6 +108,7 @@ namespace Automation_Game
                 {
                     inv.AddItem(parent.groundItems[x, y]);
                     parent.groundItems[x, y] = null;
+                    parent.Invalidate();
                     return true;
                 }
             }

@@ -15,6 +15,7 @@ namespace Automation_Game
     class Inventory
     {
         Item[] items;
+        Item equipped;
         int size;
         int itemsStored;
 
@@ -22,6 +23,7 @@ namespace Automation_Game
         {
             size = inventorySize;
             items = new Item[size];
+            equipped = null;
             itemsStored = 0;
         }
 
@@ -61,6 +63,35 @@ namespace Automation_Game
         public Item GetItem(int n)
         {
             return items[n];
+        }
+
+        public bool equip(int n)
+        {
+            if (items[n] != null && items[n].isEquipable)
+            {
+                if (equipped == null)
+                {
+                    equipped = items[n];
+                    items[n] = null;
+                }
+                else
+                {
+                    Item removed = equipped;
+                    equipped = items[n];
+                    items[n] = equipped;
+                }
+                return true;
+            }
+            return false;
+        }
+        public bool deequip()
+        {
+            if (AddItem(equipped))
+            {
+                equipped = null;
+                return true;
+            }
+            return false;
         }
     }
 }

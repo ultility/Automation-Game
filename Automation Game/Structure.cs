@@ -1,32 +1,38 @@
-﻿using Android.App;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Android.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Automation_Game
 {
-    public class Item
+    public class Structure
     {
         public string name { get; }
         public int id { get; }
 
         public double sizePercentage { get; }
 
-        public bool isEquipable { get; }
+        Item useableTool;
 
-        public Item(string name, int id, double sizePercentage, bool isEquipable = false)
+        public Structure(string name, int id, double sizePercentage, Item useableTool)
         {
             this.name = name;
             this.id = id;
             this.sizePercentage = sizePercentage;
-            this.isEquipable = isEquipable;
+            this.useableTool = useableTool;
+        }
+
+        public bool destory(Player p)
+        {
+            
+            return false;
         }
     }
 }

@@ -29,16 +29,21 @@ namespace Automation_Game.Map
         Bitmap map;
 
         Context context;
+
+        const float DEFAULT_SCALE = 0.4f;
+        const int DEFAULT_OCTAVES = 5;
+        const float DEFAULT_PERSISTENCE = 0.9f;
+        const float DEFAULT_LACUNARITY = 1.5f;
         public MapGenerator(int mapWidth, int mapHeight, Context context)
         {
             Random rng = new Random();
             this.mapWidth = mapWidth;
             this.mapHeight = mapHeight;
-            scale = .4f;
+            scale = DEFAULT_SCALE;
             seed = rng.Next(1000000);
-            octaves = 5;
-            persistence = .9f;
-            lacunarity = 1.5f;
+            octaves = DEFAULT_OCTAVES;
+            persistence = DEFAULT_PERSISTENCE;
+            lacunarity = DEFAULT_LACUNARITY;
             offset = new Vector2(153.2f, 12);
             terrainMap = new Terrain[mapWidth, mapHeight];
             this.context = context;
@@ -68,8 +73,9 @@ namespace Automation_Game.Map
 
         public Bitmap generateMap(float scale)
         {
-            mapWidth = (int)(mapWidth * scale);
-            mapHeight = (int)(mapHeight * scale);
+            
+            int mapWidth = (int)(this.mapWidth * scale);
+            int mapHeight = (int)(this.mapHeight * scale);
             scale = scale * this.scale;
             mapNoise = NoiseMaker.GenerateNoiseMap(mapWidth, mapHeight, scale, octaves, persistence, lacunarity, seed, offset);
             Bitmap map = Bitmap.CreateBitmap(mapWidth, mapHeight, Bitmap.Config.Argb8888);
@@ -81,22 +87,34 @@ namespace Automation_Game.Map
                     if (mapNoise[x, y] < .30)
                     {
                         c = Color.Blue;
-                        terrainMap[x, y] = new Terrain("water", 2);
+                        if (scale == DEFAULT_SCALE)
+                        {
+                            terrainMap[x, y] = new Terrain("water", 2);
+                        }
                     }
                     else if (mapNoise[x, y] < .50)
                     {
                         c = Color.SandyBrown;
-                        terrainMap[x, y] = new Terrain("sand", 3);
+                        if (scale == DEFAULT_SCALE)
+                        {
+                            terrainMap[x, y] = new Terrain("sand", 3);
+                        }
                     }
                     else if (mapNoise[x, y] < .70)
                     {
                         c = Color.SaddleBrown;
-                        terrainMap[x, y] = new Terrain("dirt", 0);
+                        if (scale == DEFAULT_SCALE)
+                        {
+                            terrainMap[x, y] = new Terrain("dirt", 0);
+                        }
                     }
                     else
                     {
                         c = Color.ForestGreen;
-                        terrainMap[x, y] = new Terrain("grass", 1);
+                        if (scale == DEFAULT_SCALE)
+                        {
+                            terrainMap[x, y] = new Terrain("grass", 1);
+                        }
                     }
                     map.SetPixel(x, y, c);
                 }
