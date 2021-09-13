@@ -23,7 +23,6 @@ namespace Automation_Game.Map
         float scale;
         float persistence;
         float lacunarity;
-        float[,] mapNoise;
         Vector2 offset;
         public Terrain[,] terrainMap { get; }
         Bitmap map;
@@ -77,7 +76,7 @@ namespace Automation_Game.Map
             int mapWidth = (int)(this.mapWidth * scale);
             int mapHeight = (int)(this.mapHeight * scale);
             scale = scale * this.scale;
-            mapNoise = NoiseMaker.GenerateNoiseMap(mapWidth, mapHeight, scale, octaves, persistence, lacunarity, seed, offset);
+            float[,] mapNoise = NoiseMaker.GenerateNoiseMap(mapWidth, mapHeight, scale, octaves, persistence, lacunarity, seed, offset);
             Bitmap map = Bitmap.CreateBitmap(mapWidth, mapHeight, Bitmap.Config.Argb8888);
             Color c;
             for (int x = 0; x < mapWidth; x++)
@@ -145,6 +144,45 @@ namespace Automation_Game.Map
         public float GetScale()
         {
             return scale;
+        }
+
+        public Byte[] GetBytes()
+        {
+            List<Byte> bytes = new List<byte>();
+            addBytes(bytes, BitConverter.GetBytes(mapWidth));
+            addBytes(bytes, BitConverter.GetBytes(mapHeight));
+            addBytes(bytes, BitConverter.GetBytes(seed));
+            addBytes(bytes, BitConverter.GetBytes(octaves));
+            addBytes(bytes, BitConverter.GetBytes(scale));
+            addBytes(bytes, BitConverter.GetBytes(persistence));
+            addBytes(bytes, BitConverter.GetBytes(lacunarity));
+            addBytes(bytes, BitConverter.GetBytes(offset.X));
+            addBytes(bytes, BitConverter.GetBytes(offset.Y));
+            return bytes.ToArray();
+        }
+
+        public MapGenerator(Context context, Byte[] bytes)
+        {
+            mapWidth = BitConverter.ToInt32(bytes, 0);
+            mapHeight = BitConverter.ToInt32(bytes, 4);
+            seed = BitConverter.ToInt32(bytes, 8);
+            octaves = BitConverter.ToInt32(bytes, 12);
+            scale = BitConverter.ToSingle(bytes, 16);
+            persistence = BitConverter.ToSingle(bytes, 20);
+            lacunarity = BitConverter.ToSingle(bytes, 24);
+            offset = new Vector2(BitConverter.ToSingle(bytes, 28), BitConverter.ToSingle(bytes, 32));
+            terrainMap = new Terrain[mapWidth, mapHeight];
+            this.context = context;
+            generateMap();
+
+        }
+
+        private void addBytes(List<Byte> bytes, Byte[] values)
+        {
+            for (int i = 0; i < values.Length; i++)
+            {
+                bytes.Add(values[i]);
+            }
         }
     }
 }

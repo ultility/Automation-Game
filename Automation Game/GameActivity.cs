@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 using Android.App;
 using Android.Content;
@@ -15,7 +16,7 @@ using Android.Widget;
 
 namespace Automation_Game
 {
-    [Activity(Label = "GameActivity", ScreenOrientation = Android.Content.PM.ScreenOrientation.Landscape, MainLauncher = true)]
+    [Activity(Label = "GameActivity", ScreenOrientation = Android.Content.PM.ScreenOrientation.Landscape)]
     public class GameActivity : Activity
     {
         FrameLayout frame;
@@ -40,10 +41,39 @@ namespace Automation_Game
             displayInventory = (Button)FindViewById(Resource.Id.openInventory);
             displayMap = (Button)FindViewById(Resource.Id.openMap);
             DisplayCraftingUI = (Button)FindViewById(Resource.Id.craftingMenu);
+            if (!Intent.GetBooleanExtra("new", true))
+            {
+                map = new MapDraw(this);
+            }
+            else
+            {
+                try
+                {
+                    int offset = 0;
+                    using (Stream stream = OpenFileInput("mapinfo.txt"))
+                    {
+                        try
+                        {
+                            Byte[] readSize = new Byte[4];
+                            stream.Read(readSize, offset, 4);
+                            offset += 4;
+                            Byte[] buffer = new Byte[BitConverter.ToInt32(readSize)];
+                            stream.Read(buffer, offset, buffer.Length);
+                            offset += buffer.Length;
 
-            map = new MapDraw(this);
+                        }
+                        catch (Java.IO.IOException e)
+                        {
+                            e.PrintStackTrace();
+                        }
+                    }
+                }
+                catch(Java.IO.FileNotFoundException e)
+                {
+                    e.PrintStackTrace();
+                }  
+            }
             frame.AddView(map);
-
             displayInventory.Click += DisplayInventory_Click;
             displayMap.Click += DisplayMap_Click;
             DisplayCraftingUI.Click += DisplayCraftingUI_Click;

@@ -68,6 +68,7 @@
     <Compile Include="Inventory.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="ItemType.cs" />
+    <Compile Include="MainMenu.cs" />
     <Compile Include="MapDraw.cs" />
     <Compile Include="map\FastNoiseLite.cs" />
     <Compile Include="map\MapGenerator.cs" />

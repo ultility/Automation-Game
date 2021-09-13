@@ -63,6 +63,22 @@ namespace Automation_Game
             itemTypeList.Add(new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }));
             generateItems();
         }
+        public MapDraw(Context context, MapGenerator gen, Item[,] GroundItems, Player p) : base(context)
+        {
+            this.context = context;
+            generator = gen;
+            renderDistance = new Vector2();
+            player = p;
+            camera.X = player.GetX();
+            camera.Y = player.GetY();
+            tap = false;
+            editMode = false;
+            Drawn = false;
+            itemTypeList = new List<ItemType>();
+            itemTypeList.Add(new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt" }));
+            itemTypeList.Add(new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }));
+            groundItems = GroundItems;
+        }
 
         protected override void OnDraw(Canvas canvas)
         {
