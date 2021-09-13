@@ -10,6 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
+
 namespace Automation_Game
 {
     public class Structure
