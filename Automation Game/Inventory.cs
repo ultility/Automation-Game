@@ -93,5 +93,10 @@ namespace Automation_Game
             }
             return false;
         }
+
+        public Byte[] ToByte()
+        {
+
+        }
     }
 }
