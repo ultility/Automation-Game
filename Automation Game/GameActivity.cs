@@ -31,6 +31,12 @@ namespace Automation_Game
         Dialog inventory;
 
         Bitmap spriteSheet;
+
+        protected override void OnStop()
+        {
+            map.save();
+            base.OnStop();
+        }
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -50,7 +56,7 @@ namespace Automation_Game
                 try
                 {
                     int offset = 0;
-                    using (Stream stream = OpenFileInput("mapinfo.txt"))
+                    using (Stream stream = OpenFileInput("world.txt"))
                     {
                         try
                         {
@@ -58,19 +64,21 @@ namespace Automation_Game
                             stream.Read(readSize, offset, 4);
                             offset += 4;
                             Byte[] buffer = new Byte[BitConverter.ToInt32(readSize)];
-                            stream.Read(buffer, offset, buffer.Length);
+                            stream.Read(buffer, 0, buffer.Length);
                             offset += buffer.Length;
-
+                            map = new MapDraw(this, new Map.MapGenerator(buffer));
                         }
                         catch (Java.IO.IOException e)
                         {
                             e.PrintStackTrace();
+                            map = new MapDraw(this);
                         }
                     }
                 }
                 catch(Java.IO.FileNotFoundException e)
                 {
                     e.PrintStackTrace();
+                    map = new MapDraw(this);
                 }  
             }
             frame.AddView(map);

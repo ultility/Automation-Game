@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Threading.Tasks;
+using System.IO;
 
 using Android.App;
 using Android.Content;
@@ -12,6 +13,7 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Java.IO;
 
 using Automation_Game.Map;
 using Android.Graphics;
@@ -50,7 +52,7 @@ namespace Automation_Game
         public MapDraw(Context context) : base(context)
         {
             this.context = context;
-            generator = new MapGenerator(100, 100, context);
+            generator = new MapGenerator(100, 100);
             renderDistance = new Vector2();
             player = new Player(generator.GetWidth() / 2, generator.GetHeight() / 2, context, this);
             camera.X = player.GetX();
@@ -63,12 +65,13 @@ namespace Automation_Game
             itemTypeList.Add(new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }));
             generateItems();
         }
-        public MapDraw(Context context, MapGenerator gen, Item[,] GroundItems, Player p) : base(context)
+        public MapDraw(Context context, MapGenerator gen/*, Item[,] GroundItems, Player p*/) : base(context)
         {
             this.context = context;
             generator = gen;
             renderDistance = new Vector2();
-            player = p;
+            //player = p;
+            player = new Player(generator.GetWidth() / 2, generator.GetHeight() / 2, context, this);
             camera.X = player.GetX();
             camera.Y = player.GetY();
             tap = false;
@@ -77,7 +80,8 @@ namespace Automation_Game
             itemTypeList = new List<ItemType>();
             itemTypeList.Add(new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt" }));
             itemTypeList.Add(new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }));
-            groundItems = GroundItems;
+            //groundItems = GroundItems;
+            generateItems();
         }
 
         protected override void OnDraw(Canvas canvas)
@@ -253,6 +257,31 @@ namespace Automation_Game
                 return true;
             }
             return false;
+        }
+
+        public void save()
+        {
+            try
+            {
+                using (Stream stream = context.OpenFileOutput("world.txt", Android.Content.FileCreationMode.Private))
+                {
+                    try
+                    {
+                        Byte[] generation = generator.GetBytes();
+                        stream.Write(BitConverter.GetBytes(generation.Length));
+                        stream.Write(generation);
+                        stream.Close();
+                    }
+                    catch (Java.IO.IOException e)
+                    {
+                        e.PrintStackTrace();
+                    }
+                }
+            }
+            catch(Java.IO.FileNotFoundException e)
+                    {
+                e.PrintStackTrace();
+            }
         }
     }
 }

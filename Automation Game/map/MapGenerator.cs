@@ -27,13 +27,13 @@ namespace Automation_Game.Map
         public Terrain[,] terrainMap { get; }
         Bitmap map;
 
-        Context context;
+
 
         const float DEFAULT_SCALE = 0.4f;
         const int DEFAULT_OCTAVES = 5;
         const float DEFAULT_PERSISTENCE = 0.9f;
         const float DEFAULT_LACUNARITY = 1.5f;
-        public MapGenerator(int mapWidth, int mapHeight, Context context)
+        public MapGenerator(int mapWidth, int mapHeight)
         {
             Random rng = new Random();
             this.mapWidth = mapWidth;
@@ -45,7 +45,7 @@ namespace Automation_Game.Map
             lacunarity = DEFAULT_LACUNARITY;
             offset = new Vector2(153.2f, 12);
             terrainMap = new Terrain[mapWidth, mapHeight];
-            this.context = context;
+            
             generateMap();
 
         }
@@ -161,7 +161,7 @@ namespace Automation_Game.Map
             return bytes.ToArray();
         }
 
-        public MapGenerator(Context context, Byte[] bytes)
+        public MapGenerator( Byte[] bytes)
         {
             mapWidth = BitConverter.ToInt32(bytes, 0);
             mapHeight = BitConverter.ToInt32(bytes, 4);
@@ -172,7 +172,7 @@ namespace Automation_Game.Map
             lacunarity = BitConverter.ToSingle(bytes, 24);
             offset = new Vector2(BitConverter.ToSingle(bytes, 28), BitConverter.ToSingle(bytes, 32));
             terrainMap = new Terrain[mapWidth, mapHeight];
-            this.context = context;
+            
             generateMap();
 
         }
