@@ -23,7 +23,7 @@ namespace Automation_Game
             // Create your application here
             SetContentView(Resource.Layout.startup_menu);
             load = (Button)FindViewById(Resource.Id.last);
-            start = (Button)FindViewById(Resource.Id.@new);
+            start = (Button)FindViewById(Resource.Id.start);
             load.Click += Load_Click;
             start.Click += Start_Click;
         }
@@ -31,14 +31,14 @@ namespace Automation_Game
         private void Start_Click(object sender, EventArgs e)
         {
             Intent t = new Intent(this, typeof(GameActivity));
-            t.PutExtra("new", true);
+            t.PutExtra("create", true);
             StartActivity(t);
         }
 
         private void Load_Click(object sender, EventArgs e)
         {
             Intent t = new Intent(this, typeof(GameActivity));
-            t.PutExtra("new", false);
+            t.PutExtra("create", false);
             StartActivity(t);
         }
     }

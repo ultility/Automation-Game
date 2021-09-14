@@ -41,7 +41,7 @@ namespace Automation_Game
             displayInventory = (Button)FindViewById(Resource.Id.openInventory);
             displayMap = (Button)FindViewById(Resource.Id.openMap);
             DisplayCraftingUI = (Button)FindViewById(Resource.Id.craftingMenu);
-            if (!Intent.GetBooleanExtra("new", true))
+            if (Intent.GetBooleanExtra("create", true))
             {
                 map = new MapDraw(this);
             }

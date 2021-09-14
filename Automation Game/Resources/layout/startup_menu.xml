@@ -6,7 +6,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/new"
+        android:id="@+id/start"
         android:text="start"/>
     <Button
         android:layout_width="wrap_content"
