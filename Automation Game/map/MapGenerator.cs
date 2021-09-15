@@ -149,15 +149,15 @@ namespace Automation_Game.Map
         public Byte[] GetBytes()
         {
             List<Byte> bytes = new List<byte>();
-            addBytes(bytes, BitConverter.GetBytes(mapWidth));
-            addBytes(bytes, BitConverter.GetBytes(mapHeight));
-            addBytes(bytes, BitConverter.GetBytes(seed));
-            addBytes(bytes, BitConverter.GetBytes(octaves));
-            addBytes(bytes, BitConverter.GetBytes(scale));
-            addBytes(bytes, BitConverter.GetBytes(persistence));
-            addBytes(bytes, BitConverter.GetBytes(lacunarity));
-            addBytes(bytes, BitConverter.GetBytes(offset.X));
-            addBytes(bytes, BitConverter.GetBytes(offset.Y));
+            bytes.AddRange(BitConverter.GetBytes(mapWidth));
+            bytes.AddRange(BitConverter.GetBytes(mapHeight));
+            bytes.AddRange(BitConverter.GetBytes(seed));
+            bytes.AddRange(BitConverter.GetBytes(octaves));
+            bytes.AddRange(BitConverter.GetBytes(scale));
+            bytes.AddRange(BitConverter.GetBytes(persistence));
+            bytes.AddRange(BitConverter.GetBytes(lacunarity));
+            bytes.AddRange(BitConverter.GetBytes(offset.X));
+            bytes.AddRange(BitConverter.GetBytes(offset.Y));
             return bytes.ToArray();
         }
 
@@ -175,14 +175,6 @@ namespace Automation_Game.Map
             
             generateMap();
 
-        }
-
-        private void addBytes(List<Byte> bytes, Byte[] values)
-        {
-            for (int i = 0; i < values.Length; i++)
-            {
-                bytes.Add(values[i]);
-            }
         }
     }
 }

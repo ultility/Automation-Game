@@ -30,6 +30,11 @@ namespace Automation_Game
             this.parent = parent;
         }
 
+        public void SetParent(MapDraw p)
+        {
+            this.parent = p;
+        }
+
         public override void MoveTo(int targetX, int targetY)
         {
             MovementPacket packet = new MovementPacket(this, targetX, targetY);
@@ -128,6 +133,32 @@ namespace Automation_Game
         public Item dropItem(int index)
         {
             return inv.RemoveItem(index);
+        }
+
+        public Player(Byte[] bytes, int x, int y)
+        {
+            int offset = 0;
+            int length = BitConverter.ToInt32(bytes, offset);
+            offset += 4;
+            Byte[] inventory = new Byte[length];
+            Array.Copy(bytes, 4, inventory, 0, length);
+            offset += length;
+            inv = new Inventory(inventory);
+            this.x = BitConverter.ToInt32(bytes, offset);
+            offset += 4;
+            this.y = BitConverter.ToInt32(bytes, offset);
+            id = 4;
+        }
+
+        public Byte[] ToByte()
+        {
+            List<Byte> bytes = new List<byte>();
+            Byte[] inv = this.inv.ToByte();
+            bytes.AddRange(BitConverter.GetBytes(inv.Length));
+            bytes.AddRange(inv);
+            bytes.AddRange(BitConverter.GetBytes(x));
+            bytes.AddRange(BitConverter.GetBytes(y));
+            return bytes.ToArray();
         }
     }
 }

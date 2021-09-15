@@ -66,7 +66,13 @@ namespace Automation_Game
                             Byte[] buffer = new Byte[BitConverter.ToInt32(readSize)];
                             stream.Read(buffer, 0, buffer.Length);
                             offset += buffer.Length;
-                            map = new MapDraw(this, new Map.MapGenerator(buffer));
+                            Map.MapGenerator gen = new Map.MapGenerator(buffer);
+                            stream.Read(readSize, 0,4);
+                            offset += 4;
+                            buffer = new Byte[BitConverter.ToInt32(readSize)];
+                            stream.Read(buffer, 0, buffer.Length);
+                            Player p = new Player(buffer, gen.GetWidth() / 2, gen.GetHeight() / 2);
+                            map = new MapDraw(this, gen, p);
                         }
                         catch (Java.IO.IOException e)
                         {
@@ -75,11 +81,11 @@ namespace Automation_Game
                         }
                     }
                 }
-                catch(Java.IO.FileNotFoundException e)
+                catch (Java.IO.FileNotFoundException e)
                 {
                     e.PrintStackTrace();
                     map = new MapDraw(this);
-                }  
+                }
             }
             frame.AddView(map);
             displayInventory.Click += DisplayInventory_Click;
@@ -92,7 +98,8 @@ namespace Automation_Game
 
         private void DisplayCraftingUI_Click(object sender, EventArgs e)
         {
-            if (craftingUI == null) {
+            if (craftingUI == null)
+            {
                 int width = Window.DecorView.Width;
                 int height = (int)(displayInventory.Height);
                 craftingUI = new LinearLayout(this);
@@ -113,7 +120,7 @@ namespace Automation_Game
                 Canvas c = new Canvas(bs);
                 c.DrawColor(Color.CadetBlue);
                 Rect src = new Rect((9 / 6) * spriteSheet.Width, (9 % 6) * spriteSheet.Height, (9 / 6 + 1) * spriteSheet.Width, (9 % 6 + 1) * spriteSheet.Height);
-                Rect dst = new Rect(0,0, c.Width, c.Height);
+                Rect dst = new Rect(0, 0, c.Width, c.Height);
                 c.DrawBitmap(spriteSheet, src, dst, null);
                 craftingStation.Background = new BitmapDrawable(Resources, bs);
                 craftingUI.AddView(close);
@@ -162,8 +169,6 @@ namespace Automation_Game
             LinearLayout slotsLayout2 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout2);
             int size = 0;
             int iconSize = spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
-            int windowWidth = inventory.Window.DecorView.Width;
-            int windowHeight = inventory.Window.DecorView.Height; 
             for (int i = 0; i < itemSlots.Length; i++)
             {
                 if (inv[i] != null)
@@ -175,9 +180,6 @@ namespace Automation_Game
                     itemSlots[i].SetWidth(background.Bitmap.Width);
                     itemSlots[i].SetHeight(background.Bitmap.Height);
                     itemSlots[i].Background = background;
-                    int leftoverWidth = inventory.Window.DecorView.Width - (itemSlots[i].Width * 4);
-                    int leftoverHeight = inventory.Window.DecorView.Height - (itemSlots[i].Height * 2);
-                    itemSlots[i].FocusableInTouchMode = true;
                     if (slotsLayout1.ChildCount < 4)
                     {
                         slotsLayout1.AddView(itemSlots[i]);
@@ -196,10 +198,30 @@ namespace Automation_Game
         private void GameActivity_Click(object sender, EventArgs e)
         {
             Button clicked = (Button)sender;
-            if(map.dropItem((int)clicked.Tag))
+            int tag = (int)clicked.Tag;
+            LinearLayout ll1 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout1);
+            LinearLayout ll2 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout2);
+            if (map.dropItem(tag))
             {
-                clicked.SetBackgroundColor(Android.Graphics.Color.White);
+                ((LinearLayout)clicked.Parent).RemoveView(clicked);
+                if (ll2.ChildCount > 0)
+                {
+                    Button btn = (Button)ll2.GetChildAt(0);
+                    ll2.RemoveViewAt(0);
+                    ll1.AddView(btn);
+                }
             }
-        }
+            for (int i = 0; i < ll1.ChildCount; i++)
+            {
+                Button btn = (Button)ll1.GetChildAt(i);
+                btn.Tag = i;
+            }
+            for (int i = 0; i < ll2.ChildCount; i++)
+            {
+                Button btn = (Button)ll2.GetChildAt(i);
+
+                btn.Tag = i + 4;
+            }
+        }        
     }
 }

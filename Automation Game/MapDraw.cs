@@ -65,15 +65,16 @@ namespace Automation_Game
             itemTypeList.Add(new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }));
             generateItems();
         }
-        public MapDraw(Context context, MapGenerator gen/*, Item[,] GroundItems, Player p*/) : base(context)
+        public MapDraw(Context context, MapGenerator gen/*, Item[,] GroundItems*/, Player p) : base(context)
         {
             this.context = context;
             generator = gen;
             renderDistance = new Vector2();
-            //player = p;
-            player = new Player(generator.GetWidth() / 2, generator.GetHeight() / 2, context, this);
+            player = p;
+            p.SetParent(this);
             camera.X = player.GetX();
             camera.Y = player.GetY();
+            correctCamera();
             tap = false;
             editMode = false;
             Drawn = false;
@@ -162,43 +163,48 @@ namespace Automation_Game
             {
 
                 tap = false;
-                int x = (int)camera.X;
-                int y = (int)camera.Y;
                 if (e.HistorySize != 0)
                 {
                     camera.X += (e.GetHistoricalX(0) - e.GetX()) / Terrain.size;
                     camera.Y += (e.GetHistoricalY(0) - e.GetY()) / Terrain.size;
                 }
-                if (camera.X < renderDistance.X / 2)
-                {
-                    camera.X = renderDistance.X / 2;
-                }
-                else if (camera.X + renderDistance.X / 2 >= generator.GetTerrain().GetLength(0))
-                {
-                    camera.X = generator.GetTerrain().GetLength(0) - renderDistance.X - 1;
-                }
-                if (camera.Y < renderDistance.Y / 2)
-                {
-                    camera.Y = renderDistance.Y / 2;
-                }
-                else if (camera.Y + renderDistance.Y / 2 >= generator.GetTerrain().GetLength(1))
-                {
-                    camera.Y = generator.GetTerrain().GetLength(1) - renderDistance.Y - 1;
-                }
-                if ((int)camera.X != (int)check.X)
-                {
-                    check.X = camera.X;
-                }
-                if ((int)camera.Y != (int)check.Y)
-                {
-                    check.Y = camera.Y;
-                }
-                if (!((int)camera.X == x && (int)camera.Y == y))
-                {
-                    Invalidate();
-                }
+                correctCamera();
             }
             return true;
+        }
+
+        private void correctCamera()
+        {
+            int x = (int)camera.X;
+            int y = (int)camera.Y;
+            if (camera.X < renderDistance.X / 2)
+            {
+                camera.X = renderDistance.X / 2;
+            }
+            else if (camera.X + renderDistance.X / 2 >= generator.GetTerrain().GetLength(0))
+            {
+                camera.X = generator.GetTerrain().GetLength(0) - renderDistance.X - 1;
+            }
+            if (camera.Y < renderDistance.Y / 2)
+            {
+                camera.Y = renderDistance.Y / 2;
+            }
+            else if (camera.Y + renderDistance.Y / 2 >= generator.GetTerrain().GetLength(1))
+            {
+                camera.Y = generator.GetTerrain().GetLength(1) - renderDistance.Y - 1;
+            }
+            if ((int)camera.X != (int)check.X)
+            {
+                check.X = camera.X;
+            }
+            if ((int)camera.Y != (int)check.Y)
+            {
+                check.Y = camera.Y;
+            }
+            if (!((int)camera.X == x && (int)camera.Y == y))
+            {
+                Invalidate();
+            }
         }
 
         public Bitmap DisplayMap(int width, int height)
@@ -241,13 +247,6 @@ namespace Automation_Game
             }
         }
 
-        private void drawItem(Object obj)
-        {
-            PaintInfo info = (PaintInfo)obj;
-            info.canvas.DrawBitmap(info.bitmap, info.posX * Terrain.size, info.posY * Terrain.size, null);
-            Thread.CurrentThread.Abort();
-        }
-
         public bool dropItem(int index)
         {
             if (groundItems[player.GetX(), player.GetY()] == null)
@@ -270,6 +269,9 @@ namespace Automation_Game
                         Byte[] generation = generator.GetBytes();
                         stream.Write(BitConverter.GetBytes(generation.Length));
                         stream.Write(generation);
+                        Byte[] player = this.player.ToByte();
+                        stream.Write(BitConverter.GetBytes(player.Length));
+                        stream.Write(player);
                         stream.Close();
                     }
                     catch (Java.IO.IOException e)

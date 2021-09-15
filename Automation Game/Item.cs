@@ -46,20 +46,13 @@ namespace Automation_Game
         public Byte[] ToByte()
         {
             List<Byte> bytes = new List<byte>();
-            addBytes(bytes, BitConverter.GetBytes(Encoding.ASCII.GetBytes(name).Length));
-            addBytes(bytes, Encoding.ASCII.GetBytes(name));
-            addBytes(bytes, BitConverter.GetBytes(id));
-            addBytes(bytes, BitConverter.GetBytes(sizePercentage));
-            addBytes(bytes, BitConverter.GetBytes(isEquipable));
-            return bytes.ToArray();
-        }
 
-        private void addBytes(List<Byte> bytes, Byte[] values)
-        {
-            for (int i = 0; i < values.Length; i++)
-            {
-                bytes.Add(values[i]);
-            }
+            bytes.AddRange(BitConverter.GetBytes(Encoding.ASCII.GetBytes(name).Length));
+            bytes.AddRange(Encoding.ASCII.GetBytes(name));
+            bytes.AddRange(BitConverter.GetBytes(id));
+            bytes.AddRange(BitConverter.GetBytes(sizePercentage));
+            bytes.AddRange(BitConverter.GetBytes(isEquipable));
+            return bytes.ToArray();
         }
     }
 }
