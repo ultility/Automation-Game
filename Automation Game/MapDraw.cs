@@ -44,9 +44,7 @@ namespace Automation_Game
         public const int spriteSheetColoumnCount = 6;
 
         public bool editMode;
-
         public Item[,] groundItems { get; set; }
-        //public Structure[,] structures { get; set; }
 
         List<ItemType> itemTypeList;
         public MapDraw(Context context) : base(context)
@@ -65,7 +63,7 @@ namespace Automation_Game
             itemTypeList.Add(new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }));
             generateItems();
         }
-        public MapDraw(Context context, MapGenerator gen/*, Item[,] GroundItems*/, Player p) : base(context)
+        public MapDraw(Context context, MapGenerator gen, Item[,] GroundItems, Player p) : base(context)
         {
             this.context = context;
             generator = gen;
@@ -81,8 +79,7 @@ namespace Automation_Game
             itemTypeList = new List<ItemType>();
             itemTypeList.Add(new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt" }));
             itemTypeList.Add(new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }));
-            //groundItems = GroundItems;
-            generateItems();
+            groundItems = GroundItems;
         }
 
         protected override void OnDraw(Canvas canvas)
@@ -272,6 +269,9 @@ namespace Automation_Game
                         Byte[] player = this.player.ToByte();
                         stream.Write(BitConverter.GetBytes(player.Length));
                         stream.Write(player);
+                        Byte[] items = GroundItemsToByte();
+                        stream.Write(BitConverter.GetBytes(items.Length));
+                        stream.Write(items);
                         stream.Close();
                     }
                     catch (Java.IO.IOException e)
@@ -284,6 +284,41 @@ namespace Automation_Game
                     {
                 e.PrintStackTrace();
             }
+        }
+
+        private Byte[] GroundItemsToByte()
+        {
+            List<Byte> bytes = new List<byte>();
+            bool coordinates = true;
+            int length1 = groundItems.GetLength(0);
+            int length2 = groundItems.GetLength(1);
+            for (int x = 0; x < groundItems.GetLength(0); x++)
+            {
+                for (int y = 0; y < groundItems.GetLength(1); y++)
+                {
+                    if (groundItems[x,y] != null)
+                    {
+                        if (coordinates)
+                        {
+                            bytes.AddRange(BitConverter.GetBytes(x));
+                            bytes.AddRange(BitConverter.GetBytes(y));
+                            
+                        }
+                        Byte[] item = groundItems[x, y].ToByte();
+                        bytes.AddRange(BitConverter.GetBytes(item.Length));
+                        bytes.AddRange(item);
+                        coordinates = false;
+                    }
+                    else
+                    {
+                        if (bytes.Count != 0 && BitConverter.ToInt32(bytes.GetRange(bytes.Count - 5, 4).ToArray()) != 0) {
+                            coordinates = true;
+                            bytes.AddRange(BitConverter.GetBytes(0));
+                        }
+                    }
+                }
+            }
+            return bytes.ToArray();
         }
     }
 }
