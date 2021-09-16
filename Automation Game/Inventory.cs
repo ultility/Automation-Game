@@ -44,18 +44,32 @@ namespace Automation_Game
             return false;
         }
 
-        public Item RemoveItem(int index)
+        public void sort()
+        {
+            for (int k = 0; k < items.Length; k++)
+            {
+                if (items[k] == null)
+                {
+                    for (int i = k; i < items.Length - 1; i++)
+                    {
+                        items[i] = items[i + 1];
+                    }
+                    items[items.Length - 1] = null;
+                }
+            }
+        }
+
+        public Item RemoveItem(int index, bool sort)
         {
             Item item = items[index];
             items[index] = null;
             if (item != null)
             {
                 itemsStored--;
-                for (int i = index; i < items.Length - 1; i++)
+                if (sort)
                 {
-                    items[i] = items[i + 1];
+                    this.sort();
                 }
-                items[items.Length - 1] = null;
             }
             return item;
         }
@@ -67,6 +81,10 @@ namespace Automation_Game
 
         public Item GetItem(int n)
         {
+            if (n < 0)
+            {
+                return equipped;
+            }
             return items[n];
         }
 

@@ -54,5 +54,19 @@ namespace Automation_Game
             bytes.AddRange(BitConverter.GetBytes(isEquipable));
             return bytes.ToArray();
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Item item)
+            {
+                return name.Equals(item.name);
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(name);
+        }
     }
 }

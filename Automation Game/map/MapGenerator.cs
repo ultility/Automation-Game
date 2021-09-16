@@ -88,7 +88,7 @@ namespace Automation_Game.Map
                         c = Color.Blue;
                         if (scale == DEFAULT_SCALE)
                         {
-                            terrainMap[x, y] = new Terrain("water", 2);
+                            terrainMap[x, y] = new Terrain("water", 2, x,y);
                         }
                     }
                     else if (mapNoise[x, y] < .50)
@@ -96,7 +96,7 @@ namespace Automation_Game.Map
                         c = Color.SandyBrown;
                         if (scale == DEFAULT_SCALE)
                         {
-                            terrainMap[x, y] = new Terrain("sand", 3);
+                            terrainMap[x, y] = new Terrain("sand", 3, x, y);
                         }
                     }
                     else if (mapNoise[x, y] < .70)
@@ -104,7 +104,7 @@ namespace Automation_Game.Map
                         c = Color.SaddleBrown;
                         if (scale == DEFAULT_SCALE)
                         {
-                            terrainMap[x, y] = new Terrain("dirt", 0);
+                            terrainMap[x, y] = new Terrain("dirt", 0, x, y);
                         }
                     }
                     else
@@ -112,7 +112,7 @@ namespace Automation_Game.Map
                         c = Color.ForestGreen;
                         if (scale == DEFAULT_SCALE)
                         {
-                            terrainMap[x, y] = new Terrain("grass", 1);
+                            terrainMap[x, y] = new Terrain("grass", 1, x, y);
                         }
                     }
                     map.SetPixel(x, y, c);
@@ -159,6 +159,17 @@ namespace Automation_Game.Map
             bytes.AddRange(BitConverter.GetBytes(offset.X));
             bytes.AddRange(BitConverter.GetBytes(offset.Y));
             return bytes.ToArray();
+        }
+
+        public void SetItemPointer(Item[,] pointer)
+        {
+            for (int x = 0; x < mapWidth; x++)
+            {
+                for (int y = 0; y < mapHeight; y++)
+                {
+                    terrainMap[x, y].SetItemsPointer(pointer);
+                }
+            }
         }
 
         public MapGenerator( Byte[] bytes)

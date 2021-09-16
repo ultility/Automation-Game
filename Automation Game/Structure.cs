@@ -18,22 +18,29 @@ namespace Automation_Game
         public string name { get; }
         public int id { get; }
 
-        public double sizePercentage { get; }
+        public int sizePercentage { get; }
+
+        public Item dropItem { get; }
 
         Item useableTool;
 
-        public Structure(string name, int id, double sizePercentage, Item useableTool)
+        public virtual bool isBuildable(Terrain t)
+        {
+            return !t.type.Equals("water");
+        }
+
+        public Structure(string name, int id, int size, Item useableTool, Item droppedItem)
         {
             this.name = name;
             this.id = id;
             this.sizePercentage = sizePercentage;
             this.useableTool = useableTool;
+            dropItem = droppedItem;
         }
 
         public bool destory(Player p)
         {
-            
-            return false;
+            return p.GetEquippedItem().Equals(useableTool);
         }
     }
 }

@@ -20,6 +20,8 @@ namespace Automation_Game
         public const int INVENTORY_SIZE = 8;
         public int id { get; }
 
+        Thread MainThread;
+
         public Player(int x, int y, Context context, MapDraw parent)
         {
             this.x = x;
@@ -35,19 +37,27 @@ namespace Automation_Game
             this.parent = p;
         }
 
+        public bool GiveItem(Item item)
+        {
+            return inv.AddItem(item);
+        }
+
         public override void MoveTo(int targetX, int targetY)
         {
             MovementPacket packet = new MovementPacket(this, targetX, targetY);
-            if (movementThread != null && movementThread.IsAlive)
+            while (movementThread != null && movementThread.IsAlive)
             {
                 movementThread.Abort();
             }
+            MainThread = Thread.CurrentThread;
             movementThread = new Thread(new ParameterizedThreadStart(MoveTo));
             movementThread.Start(packet);
         }
 
         private void MoveTo(Object obj)
         {
+            bool canMoveX = true;
+            bool canMoveY = true;
             MovementPacket packet = (MovementPacket)obj;
             Random rng = new Random();
             int dx = 0;
@@ -68,39 +78,109 @@ namespace Automation_Game
             {
                 dy = 1;
             }
+            Terrain step;
             while (packet.moving.GetX() != packet.targetX && packet.moving.GetY() != packet.targetY)
             {
                 if (rng.Next(2) == 0)
                 {
-                    if (!parent.generator.GetTerrain()[packet.moving.GetX() + dx, packet.moving.GetY()].type.Equals("water"))
+                    step = parent.generator.GetTerrain()[packet.moving.GetX() + dx, packet.moving.GetY()];
+                    if (!step.type.Equals("water") && step.GetStructure() == null)
                     {
+                        canMoveY = true;
+                        canMoveX = true;
                         packet.moving.Move(dx, 0);
                         packet.moving.GetParent().Invalidate();
                         Thread.Sleep(500);
                     }
-                    
+                    else
+                    {
+                        canMoveX = false;
+                        if (!(canMoveX || canMoveY))
+                        {
+
+                            if (parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure() != null)
+                            {
+                                parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet);
+                            }
+                            Thread.CurrentThread.Abort();
+                        }
+                    }
                 }
                 else
                 {
-                    if (!parent.generator.GetTerrain()[packet.moving.GetX(), packet.moving.GetY() + dy].type.Equals("water"))
+                    step = parent.generator.GetTerrain()[packet.moving.GetX(), packet.moving.GetY() + dy];
+                    if (!step.type.Equals("water") && step.GetStructure() == null)
                     {
+                        canMoveY = true;
+                        canMoveX = true;
                         packet.moving.Move(0, dy);
                         packet.moving.GetParent().Invalidate();
                         Thread.Sleep(500);
+                    }
+                    else
+                    {
+                        canMoveY = false;
+                        if (!(canMoveX || canMoveY))
+                        {
+
+                            if (parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure() != null)
+                            {
+                                parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet);
+                            }
+                            Thread.CurrentThread.Abort();
+                        }
                     }
                 }
             }
             while (packet.moving.GetX() != packet.targetX)
             {
-                packet.moving.Move(dx, 0);
-                packet.moving.GetParent().Invalidate();
-                Thread.Sleep(500);
+                canMoveY = false;
+                step = parent.generator.GetTerrain()[packet.moving.GetX() + dx, packet.moving.GetY()];
+                if (!step.type.Equals("water") && step.GetStructure() == null)
+                {
+                    canMoveX = true;
+                    packet.moving.Move(dx, 0);
+                    packet.moving.GetParent().Invalidate();
+                    Thread.Sleep(500);
+                }
+                else
+                {
+                    canMoveX = false;
+                    if (!(canMoveX || canMoveY))
+                    {
+
+                        if (parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure() != null)
+                        {
+                            parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet);
+                        }
+                        Thread.CurrentThread.Abort();
+                    }
+                }
             }
             while (packet.moving.GetY() != packet.targetY)
             {
-                packet.moving.Move(0, dy);
-                packet.moving.GetParent().Invalidate();
-                Thread.Sleep(500);
+                canMoveX = false;
+                step = parent.generator.GetTerrain()[packet.moving.GetX(), packet.moving.GetY() + dy];
+                if (!step.type.Equals("water") && step.GetStructure() == null)
+                {
+                    canMoveY = true;
+                    packet.moving.Move(0, dy);
+                    packet.moving.GetParent().Invalidate();
+                    Thread.Sleep(500);
+                }
+                else
+                {
+                    canMoveY = false;
+                    if (!(canMoveX || canMoveY))
+                    {
+
+                        if (parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure() != null)
+                        {
+                            parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet);
+                        }
+                        Thread.CurrentThread.Abort();
+                    }
+                }
             }
             PickUp();
         }
@@ -130,9 +210,19 @@ namespace Automation_Game
             return items;
         }
 
-        public Item dropItem(int index)
+        public Item GetEquippedItem()
         {
-            return inv.RemoveItem(index);
+            return inv.GetItem(-1);
+        }
+
+        public void SortInventory()
+        {
+            inv.sort();
+        }
+
+        public Item dropItem(int index, bool sort = true)
+        {
+            return inv.RemoveItem(index, sort);
         }
 
         public Player(Byte[] bytes, int x, int y)

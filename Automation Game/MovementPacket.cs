@@ -11,7 +11,7 @@ using System.Text;
 
 namespace Automation_Game
 {
-    class MovementPacket
+    public class MovementPacket
     {
         public Moveable moving { get;}
         public int targetX;

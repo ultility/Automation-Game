@@ -33,8 +33,6 @@ namespace Automation_Game
         Vector2 renderDistance;
         Vector2 camera;
 
-        Vector2 check;
-
         public Player player { get; }
 
         bool tap;
@@ -62,6 +60,8 @@ namespace Automation_Game
             itemTypeList.Add(new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt"}));
             itemTypeList.Add(new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }));
             generateItems();
+            generator.SetItemPointer(groundItems);
+            generator.GetTerrain()[player.GetX() - 1, player.GetY()].BuildStructure(new CraftingStation(context));
         }
         public MapDraw(Context context, MapGenerator gen, Item[,] GroundItems, Player p) : base(context)
         {
@@ -80,6 +80,7 @@ namespace Automation_Game
             itemTypeList.Add(new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt" }));
             itemTypeList.Add(new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }));
             groundItems = GroundItems;
+            generator.SetItemPointer(groundItems);
         }
 
         protected override void OnDraw(Canvas canvas)
@@ -102,7 +103,6 @@ namespace Automation_Game
             {
                 for (int y = (int)(camera.Y - renderDistance.Y / 2), posY = 0; y <= camera.Y + renderDistance.Y / 2; y++, posY++)
                 {
-                    Terrain tera = terrain[x, y];
                     int spriteSheetSignleWidth = spritesheet.GetScaledWidth(canvas) / spriteSheetColoumnCount; 
                     Rect src = new Rect(spriteSheetSignleWidth * (terrain[x, y].id % spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x,y].id / spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (terrain[x, y].id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
                     Rect dst = new Rect(posX * Terrain.size, posY * Terrain.size, posX * Terrain.size + Terrain.size, posY * Terrain.size + Terrain.size);
@@ -111,6 +111,13 @@ namespace Automation_Game
                     {
                         src = new Rect(spriteSheetSignleWidth * (groundItems[x,y].id % spriteSheetColoumnCount), spriteSheetSignleWidth * (groundItems[x, y].id) / spriteSheetColoumnCount, spriteSheetSignleWidth * (groundItems[x, y].id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (groundItems[x, y].id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
                         dst = new Rect(posX * (int)(Terrain.size * groundItems[x, y].sizePercentage), posY * (int)(Terrain.size * groundItems[x, y].sizePercentage), (posX + 1) * (int)(Terrain.size * groundItems[x,y].sizePercentage), (posY + 1) * (int)(Terrain.size * groundItems[x, y].sizePercentage));
+                        canvas.DrawBitmap(spritesheet, src, dst, null);
+                    }
+                    else if(terrain[x,y].GetStructure() != null)
+                    {
+                        int id = terrain[x,y].GetStructureId();
+                        src = new Rect(spriteSheetSignleWidth * (id % spriteSheetColoumnCount), spriteSheetSignleWidth * (id / spriteSheetColoumnCount), spriteSheetSignleWidth * (id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
+                        dst = new Rect(posX * Terrain.size, posY * Terrain.size, posX * Terrain.size + Terrain.size, posY * Terrain.size + Terrain.size);
                         canvas.DrawBitmap(spritesheet, src, dst, null);
                     }
                 }
@@ -160,20 +167,23 @@ namespace Automation_Game
             {
 
                 tap = false;
-                if (e.HistorySize != 0)
+                if (e.HistorySize > 1)
                 {
-                    camera.X += (e.GetHistoricalX(0) - e.GetX()) / Terrain.size;
-                    camera.Y += (e.GetHistoricalY(0) - e.GetY()) / Terrain.size;
+                    float historyx = e.GetHistoricalX(0,0);
+                    float x = e.GetX();
+                    float historyy = e.GetHistoricalY(0,0);
+                    float y = e.GetY();
+                    camera.X += (historyx - x) / Terrain.size;
+                    camera.Y += (historyy - y) / Terrain.size;
                 }
                 correctCamera();
+                Invalidate();
             }
             return true;
         }
 
         private void correctCamera()
         {
-            int x = (int)camera.X;
-            int y = (int)camera.Y;
             if (camera.X < renderDistance.X / 2)
             {
                 camera.X = renderDistance.X / 2;
@@ -189,18 +199,6 @@ namespace Automation_Game
             else if (camera.Y + renderDistance.Y / 2 >= generator.GetTerrain().GetLength(1))
             {
                 camera.Y = generator.GetTerrain().GetLength(1) - renderDistance.Y - 1;
-            }
-            if ((int)camera.X != (int)check.X)
-            {
-                check.X = camera.X;
-            }
-            if ((int)camera.Y != (int)check.Y)
-            {
-                check.Y = camera.Y;
-            }
-            if (!((int)camera.X == x && (int)camera.Y == y))
-            {
-                Invalidate();
             }
         }
 

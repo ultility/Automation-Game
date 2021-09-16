@@ -20,12 +20,22 @@ namespace Automation_Game
         public static int size { get; } = 70;
         public int id { get; }
 
+        Item[,] groundItems;
+        int x;
+        int y;
+
         Structure structure;
-        public Terrain(string type, int id)
+        public Terrain(string type, int id, int x, int y)
         {
+            this.x = x;
+            this.y = y;
             this.type = type;
             this.id = id;
             structure = null;
+        }
+        public void SetItemsPointer(Item[,] groundItems)
+        {
+            this.groundItems = groundItems;
         }
 
         public string GetStructure()
@@ -37,9 +47,14 @@ namespace Automation_Game
             return structure.name;
         }
 
+        public int GetStructureId()
+        {
+            return structure.id;
+        }
+
         public bool BuildStructure(Structure structure)
         {
-            if (this.structure == null)
+            if (this.structure == null && structure.isBuildable(this) && groundItems[x,y] == null)
             {
                 this.structure = structure;
                 return true;
@@ -47,10 +62,26 @@ namespace Automation_Game
             return false;
         }
 
+        public void UseStructure(MovementPacket packet)
+        {
+            if (Math.Abs(packet.moving.GetX() - x) <= 1 && Math.Abs(packet.moving.GetY() - y) <= 1)
+            {
+                if (structure is CraftingStation cs)
+                {
+                    if (packet.moving is Player p)
+                    {
+                        cs.use(p);
+                    }
+                    
+                }
+            }
+        }
+
         public bool DestroyStructure(Player p)
         {
             if (structure != null && structure.destory(p))
             {
+                groundItems[x, y] = structure.dropItem;
                 structure = null;
                 return true;
             }
