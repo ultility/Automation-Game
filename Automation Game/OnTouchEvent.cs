@@ -35,7 +35,8 @@ namespace Automation_Game
                     t.Stop();
                     if (!finished && lastView is Button btn)
                     {
-                        activity.Drop(btn);
+                        activity.map.player.dropItem(int.Parse(lastView.Tag.ToString()) - 1);
+                        activity.Invalidate();
                     }
                     break;
                 default:
@@ -53,8 +54,7 @@ namespace Automation_Game
 
         private void equip()
         {
-            activity.map.player.Equip((int)lastView.Tag);
-            //activity.add_equip();
+            activity.map.player.Equip(int.Parse(lastView.Tag.ToString()) - 1);
             activity.Invalidate();
         }
     }

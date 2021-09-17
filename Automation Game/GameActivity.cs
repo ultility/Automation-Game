@@ -27,6 +27,7 @@ namespace Automation_Game
         Button displayMap;
         Button displayInventory;
         Button DisplayCraftingUI;
+        Button[] slots;
 
         Dialog inventory;
 
@@ -47,6 +48,7 @@ namespace Automation_Game
             displayInventory = (Button)FindViewById(Resource.Id.openInventory);
             displayMap = (Button)FindViewById(Resource.Id.openMap);
             DisplayCraftingUI = (Button)FindViewById(Resource.Id.craftingMenu);
+            slots = new Button[9];
             if (Intent.GetBooleanExtra("create", true))
             {
                 map = new MapDraw(this);
@@ -102,12 +104,11 @@ namespace Automation_Game
         }
         public void Invalidate()
         {
-            LinearLayout slotsLayout1 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout1);
-            LinearLayout slotsLayout2 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout2);
-            LinearLayout main = (LinearLayout)inventory.FindViewById(Resource.Id.main);
-            slotsLayout1.Invalidate();
-            slotsLayout2.Invalidate();
-            main.Invalidate();
+            if (inventory != null && inventory.IsShowing)
+            {
+                inventory.Hide();
+                displayInventory.CallOnClick();
+            }
 
         }
         private void DisplayCraftingUI_Click(object sender, EventArgs e)
@@ -172,110 +173,79 @@ namespace Automation_Game
 
         private void DisplayInventory_Click(object sender, EventArgs e)
         {
-            inventory = new Dialog(this);
-            inventory.SetContentView(Resource.Layout.inventory_layout);
-            inventory.SetCancelable(true);
-            inventory.SetTitle("");
-            inventory.Window.SetLayout((int)(Window.DecorView.Width * 0.8), (int)(Window.DecorView.Height * 0.8));
-            Item[] inv = map.player.GetInvetory();
-            Button[] itemSlots = new Button[inv.Length];
-            LinearLayout slotsLayout1 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout1);
-            LinearLayout slotsLayout2 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout2);
-            LinearLayout main = (LinearLayout)inventory.FindViewById(Resource.Id.main);
-            int size = 0;
-            int iconSize = spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
-            BitmapDrawable background;
-            Bitmap icon;
-            for (int i = 0; i < itemSlots.Length; i++)
+            if (inventory == null)
             {
+                inventory = new Dialog(this);
+                inventory.SetContentView(Resource.Layout.inventory_layout);
+                inventory.SetCancelable(true);
+                inventory.SetTitle("");
+                inventory.Window.SetLayout((int)(Window.DecorView.Width * 0.8), (int)(Window.DecorView.Height * 0.8));
+                slots[0] = (Button)inventory.FindViewById(Resource.Id.slot1);
+                slots[0].SetOnTouchListener(new OnTouchEvent(this));
+                slots[1] = (Button)inventory.FindViewById(Resource.Id.slot2);
+                slots[1].SetOnTouchListener(new OnTouchEvent(this));
+                slots[2] = (Button)inventory.FindViewById(Resource.Id.slot3);
+                slots[2].SetOnTouchListener(new OnTouchEvent(this));
+                slots[3] = (Button)inventory.FindViewById(Resource.Id.slot4);
+                slots[3].SetOnTouchListener(new OnTouchEvent(this));
+                slots[4] = (Button)inventory.FindViewById(Resource.Id.slot5);
+                slots[4].SetOnTouchListener(new OnTouchEvent(this));
+                slots[5] = (Button)inventory.FindViewById(Resource.Id.slot6);
+                slots[5].SetOnTouchListener(new OnTouchEvent(this));
+                slots[6] = (Button)inventory.FindViewById(Resource.Id.slot7);
+                slots[6].SetOnTouchListener(new OnTouchEvent(this));
+                slots[7] = (Button)inventory.FindViewById(Resource.Id.slot8);
+                slots[7].SetOnTouchListener(new OnTouchEvent(this));
+                slots[8] = (Button)inventory.FindViewById(Resource.Id.slotEquip);
+                slots[8].Click += DeEquip;
+
+            }
+            Item[] inv = map.player.GetInvetory();
+            int iconSize = spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
+            Bitmap icon;
+            for (int i = 0; i < inv.Length; i++)
+            {
+                icon = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("inventory_slot_border", "drawable", PackageName)).Copy(Bitmap.Config.Argb8888, true);
                 if (inv[i] != null)
                 {
-                    itemSlots[i] = new Button(this);
-                    size = (int)(iconSize);
-                    icon = Bitmap.CreateBitmap(spriteSheet, iconSize * (inv[i].id % MapDraw.spriteSheetColoumnCount), iconSize * (inv[i].id / MapDraw.spriteSheetColoumnCount), iconSize, iconSize);
-                    background = new BitmapDrawable(Resources, icon);
-                    itemSlots[i].SetWidth(background.Bitmap.Width);
-                    itemSlots[i].SetHeight(background.Bitmap.Height);
-                    itemSlots[i].Background = background;
-                    if (slotsLayout1.ChildCount < 4)
-                    {
-                        slotsLayout1.AddView(itemSlots[i]);
-                    }
-                    else
-                    {
-                        slotsLayout2.AddView(itemSlots[i]);
-                    }
-                    itemSlots[i].SetOnTouchListener(new OnTouchEvent(this));
-                    itemSlots[i].Tag = i;
+                    Canvas c = new Canvas(icon);
+                    Rect src = new Rect((inv[i].id % MapDraw.spriteSheetColoumnCount) * iconSize, (inv[i].id / MapDraw.spriteSheetColoumnCount) * iconSize, (inv[i].id % MapDraw.spriteSheetColoumnCount + 1) * iconSize, (inv[i].id / MapDraw.spriteSheetColoumnCount + 1) * iconSize);
+                    int left = c.Width / 11;
+                    int right = c.Width / 11 * 10;
+                    int top = c.Height / 11;
+                    int bottom = c.Height / 11 * 10;
+                    Rect dst = new Rect(left, top, right, bottom);
+                    Bitmap item = Bitmap.CreateBitmap(spriteSheet, src.Left, src.Top, src.Right - src.Left, src.Bottom - src.Top);
+                    Bitmap scaled = Bitmap.CreateScaledBitmap(item, right - left, bottom - top, false);
+                    c.DrawBitmap(scaled, null, dst, null);
                 }
+                slots[i].Background = new BitmapDrawable(Resources, icon);
+
             }
             Item equipment = map.player.GetEquippedItem();
+
+            icon = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("inventory_slot_border", "drawable", PackageName)).Copy(Bitmap.Config.Argb8888, true);
             if (equipment != null)
             {
-                Button btn = new Button(this);
-                size = (int)(iconSize);
-                icon = Bitmap.CreateBitmap(spriteSheet, iconSize * (equipment.id % MapDraw.spriteSheetColoumnCount), iconSize * (equipment.id / MapDraw.spriteSheetColoumnCount), iconSize, iconSize);
-                background = new BitmapDrawable(Resources, icon);
-                btn.SetWidth(background.Bitmap.Width);
-                btn.SetHeight(background.Bitmap.Height);
-                btn.Background = background;
-                btn.SetPadding((int)(Window.DecorView.Width * 0.8) - btn.Width, (int)(Window.DecorView.Height * 0.8) - btn.Height * 3, 0, 0);
+                Canvas c = new Canvas(icon);
+                Rect src = new Rect((equipment.id % MapDraw.spriteSheetColoumnCount) * iconSize, (equipment.id / MapDraw.spriteSheetColoumnCount) * iconSize, (equipment.id % MapDraw.spriteSheetColoumnCount + 1) * iconSize, (equipment.id / MapDraw.spriteSheetColoumnCount + 1) * iconSize);
+                int left = c.Width / 11;
+                int right = c.Width / 11 * 10;
+                int top = c.Height / 11;
+                int bottom = c.Height / 11 * 10;
+                Rect dst = new Rect(left, top, right, bottom);
+                Bitmap item = Bitmap.CreateBitmap(spriteSheet, src.Left, src.Top, src.Right - src.Left, src.Bottom - src.Top);
+                Bitmap scaled = Bitmap.CreateScaledBitmap(item, right - left, bottom - top, false);
+                c.DrawBitmap(scaled, null, dst, null);
             }
+            slots[8].Background = new BitmapDrawable(Resources, icon);
             inventory.Show();
         }
 
-        private void Equipped_Click(object sender, EventArgs e)
+        private void DeEquip(object sender, EventArgs e)
         {
-            if (map.player.DeEquip())
-            {
-                LinearLayout slotsLayout1 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout1);
-                LinearLayout slotsLayout2 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout2);
-                LinearLayout main = (LinearLayout)inventory.FindViewById(Resource.Id.main);
-                main.RemoveView((View)sender);
-                if (slotsLayout1.ChildCount < 4)
-                {
-                    slotsLayout1.AddView((Button)sender);
-                }
-                else
-                {
-                    slotsLayout2.AddView((Button)sender);
-                }
-                Invalidate();
-            }
-        }
-
-        public void add_equip()
-        {
-            inventory.Hide();
-            displayInventory.CallOnClick();
-        }
-
-        public void Drop(Button clicked)
-        {
-            int tag = (int)clicked.Tag;
-            LinearLayout ll1 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout1);
-            LinearLayout ll2 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout2);
-            if (map.dropItem(tag))
-            {
-                ((LinearLayout)clicked.Parent).RemoveView(clicked);
-                if (ll2.ChildCount > 0)
-                {
-                    Button btn = (Button)ll2.GetChildAt(0);
-                    ll2.RemoveViewAt(0);
-                    ll1.AddView(btn);
-                }
-            }
-            for (int i = 0; i < ll1.ChildCount; i++)
-            {
-                Button btn = (Button)ll1.GetChildAt(i);
-                btn.Tag = i;
-            }
-            for (int i = 0; i < ll2.ChildCount; i++)
-            {
-                Button btn = (Button)ll2.GetChildAt(i);
-
-                btn.Tag = i + 4;
-            }
+            map.player.DeEquip();
+            Invalidate();
         }
 
         private Item[,] GenerateGroundItems(Byte[] bytes, int width, int height)
