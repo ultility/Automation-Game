@@ -42,6 +42,16 @@ namespace Automation_Game
             return inv.AddItem(item);
         }
 
+        public void Equip(int n)
+        {
+            inv.equip(n);
+        }
+
+        public bool DeEquip()
+        {
+           return inv.deequip();
+        }
+
         public override void MoveTo(int targetX, int targetY)
         {
             MovementPacket packet = new MovementPacket(this, targetX, targetY);

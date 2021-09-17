@@ -13,7 +13,7 @@ using Android.Graphics;
 
 namespace Automation_Game
 {
-    class ItemType
+    public class ItemType
     {
         public string name { get; }
         public double spawnChance { get; }

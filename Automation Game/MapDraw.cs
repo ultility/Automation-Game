@@ -44,13 +44,14 @@ namespace Automation_Game
         public bool editMode;
         public Item[,] groundItems { get; set; }
 
-        List<ItemType> itemTypeList;
+        public static List<ItemType> itemTypeList;
         public MapDraw(Context context) : base(context)
         {
             this.context = context;
             generator = new MapGenerator(100, 100);
             renderDistance = new Vector2();
             player = new Player(generator.GetWidth() / 2, generator.GetHeight() / 2, context, this);
+            player.GiveItem(new Tool("Axe", 10, 20));
             camera.X = player.GetX();
             camera.Y = player.GetY();
             tap = false;

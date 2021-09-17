@@ -15,7 +15,7 @@ namespace Automation_Game
     class Inventory
     {
         Item[] items;
-        Item equipped;
+        Tool equipped;
         int size;
         int itemsStored;
 
@@ -90,20 +90,25 @@ namespace Automation_Game
 
         public bool equip(int n)
         {
-            if (items[n] != null && items[n].isEquipable)
+            if (items[n] != null)
             {
-                if (equipped == null)
+                Item item = items[n];
+                if (item is Tool tool)
                 {
-                    equipped = items[n];
-                    items[n] = null;
+                    if (equipped == null)
+                    {
+                        equipped = tool;
+                        items[n] = null;
+                    }
+                    else
+                    {
+                        Item removed = equipped;
+                        equipped = tool;
+                        items[n] = equipped;
+                    }
+
+                    return true;
                 }
-                else
-                {
-                    Item removed = equipped;
-                    equipped = items[n];
-                    items[n] = equipped;
-                }
-                return true;
             }
             return false;
         }
@@ -140,7 +145,7 @@ namespace Automation_Game
                 offset += sizeof(int);
                 Byte[] item = new Byte[bytes.Length - offset];
                 Array.Copy(bytes, offset, item, 0, item.Length);
-                equipped = new Item(item);
+                equipped = new Tool(item);
             }
         }
         public Byte[] ToByte()

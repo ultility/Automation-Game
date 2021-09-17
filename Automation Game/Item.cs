@@ -19,14 +19,18 @@ namespace Automation_Game
 
         public double sizePercentage { get; }
 
-        public bool isEquipable { get; }
-
-        public Item(string name, int id, double sizePercentage, bool isEquipable = false)
+        public Item(string name, int id, double sizePercentage)
         {
             this.name = name;
             this.id = id;
             this.sizePercentage = sizePercentage;
-            this.isEquipable = isEquipable;
+        }
+
+        public Item(Item other)
+        {
+            name = other.name;
+            id = other.id;
+            sizePercentage = other.sizePercentage;
         }
 
         public Item(Byte[] bytes)
@@ -40,10 +44,9 @@ namespace Automation_Game
             offset += sizeof(Int32);
             sizePercentage = BitConverter.ToDouble(bytes, offset);
             offset += sizeof(double);
-            isEquipable = BitConverter.ToBoolean(bytes, offset);
         }
 
-        public Byte[] ToByte()
+        public virtual Byte[] ToByte()
         {
             List<Byte> bytes = new List<byte>();
 
@@ -51,7 +54,6 @@ namespace Automation_Game
             bytes.AddRange(Encoding.ASCII.GetBytes(name));
             bytes.AddRange(BitConverter.GetBytes(id));
             bytes.AddRange(BitConverter.GetBytes(sizePercentage));
-            bytes.AddRange(BitConverter.GetBytes(isEquipable));
             return bytes.ToArray();
         }
 

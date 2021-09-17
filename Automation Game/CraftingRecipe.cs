@@ -14,7 +14,7 @@ namespace Automation_Game
 {
     class CraftingRecipe
     {
-        Item result { get; }
+        public Item result { get; }
         Delivery[] Recipe;
 
         public CraftingRecipe(Item result, Delivery[] recipe)
@@ -23,7 +23,7 @@ namespace Automation_Game
             Recipe = recipe;
         }
 
-        public bool Craft(Player p)
+        public void Craft(Player p)
         {
             Item[] inv = p.GetInvetory();
             bool hasRequirments = true;
@@ -32,7 +32,7 @@ namespace Automation_Game
                 int amount = 0;
                 for (int n = 0; n < inv.Length; n++)
                 {
-                    if (inv[n] == Recipe[i].item)
+                    if (inv[n] != null && inv[n].Equals(Recipe[i].item))
                     {
                         amount++;
                     }
@@ -49,7 +49,7 @@ namespace Automation_Game
                     int amount = Recipe[i].amount;
                     for (int n = 0; n < inv.Length && amount > 0; n++)
                     {
-                        if (inv[n] == Recipe[i].item)
+                        if (inv[n] != null && inv[n].Equals(Recipe[i].item))
                         {
                             inv[n] = null;
                             amount--;
@@ -57,10 +57,10 @@ namespace Automation_Game
                         }
                     }
                 }
+                p.SortInventory();
+                p.GiveItem(new Item(result));
             }
-            p.SortInventory();
-            p.GiveItem(result);
-            return false;
+            
             
         }
     }

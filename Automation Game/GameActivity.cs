@@ -22,7 +22,7 @@ namespace Automation_Game
         FrameLayout frame;
         LinearLayout craftingUI;
 
-        MapDraw map;
+        public MapDraw map { get; set; }
 
         Button displayMap;
         Button displayInventory;
@@ -67,7 +67,7 @@ namespace Automation_Game
                             stream.Read(buffer, 0, buffer.Length);
                             offset += buffer.Length;
                             Map.MapGenerator gen = new Map.MapGenerator(buffer);
-                            stream.Read(readSize, 0,4);
+                            stream.Read(readSize, 0, 4);
                             offset += 4;
                             buffer = new Byte[BitConverter.ToInt32(readSize)];
                             stream.Read(buffer, 0, buffer.Length);
@@ -100,7 +100,16 @@ namespace Automation_Game
             spriteSheet = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("sprite_sheet", "drawable", this.PackageName));
 
         }
+        public void Invalidate()
+        {
+            LinearLayout slotsLayout1 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout1);
+            LinearLayout slotsLayout2 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout2);
+            LinearLayout main = (LinearLayout)inventory.FindViewById(Resource.Id.main);
+            slotsLayout1.Invalidate();
+            slotsLayout2.Invalidate();
+            main.Invalidate();
 
+        }
         private void DisplayCraftingUI_Click(object sender, EventArgs e)
         {
             if (craftingUI == null)
@@ -172,16 +181,19 @@ namespace Automation_Game
             Button[] itemSlots = new Button[inv.Length];
             LinearLayout slotsLayout1 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout1);
             LinearLayout slotsLayout2 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout2);
+            LinearLayout main = (LinearLayout)inventory.FindViewById(Resource.Id.main);
             int size = 0;
             int iconSize = spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
+            BitmapDrawable background;
+            Bitmap icon;
             for (int i = 0; i < itemSlots.Length; i++)
             {
                 if (inv[i] != null)
                 {
                     itemSlots[i] = new Button(this);
                     size = (int)(iconSize);
-                    Bitmap icon = Bitmap.CreateBitmap(spriteSheet, iconSize * (inv[i].id % MapDraw.spriteSheetColoumnCount), iconSize * (inv[i].id / MapDraw.spriteSheetColoumnCount), iconSize, iconSize);
-                    BitmapDrawable background = new BitmapDrawable(Resources, icon);
+                    icon = Bitmap.CreateBitmap(spriteSheet, iconSize * (inv[i].id % MapDraw.spriteSheetColoumnCount), iconSize * (inv[i].id / MapDraw.spriteSheetColoumnCount), iconSize, iconSize);
+                    background = new BitmapDrawable(Resources, icon);
                     itemSlots[i].SetWidth(background.Bitmap.Width);
                     itemSlots[i].SetHeight(background.Bitmap.Height);
                     itemSlots[i].Background = background;
@@ -193,16 +205,53 @@ namespace Automation_Game
                     {
                         slotsLayout2.AddView(itemSlots[i]);
                     }
-                    itemSlots[i].Click += GameActivity_Click;
+                    itemSlots[i].SetOnTouchListener(new OnTouchEvent(this));
                     itemSlots[i].Tag = i;
                 }
+            }
+            Item equipment = map.player.GetEquippedItem();
+            if (equipment != null)
+            {
+                Button btn = new Button(this);
+                size = (int)(iconSize);
+                icon = Bitmap.CreateBitmap(spriteSheet, iconSize * (equipment.id % MapDraw.spriteSheetColoumnCount), iconSize * (equipment.id / MapDraw.spriteSheetColoumnCount), iconSize, iconSize);
+                background = new BitmapDrawable(Resources, icon);
+                btn.SetWidth(background.Bitmap.Width);
+                btn.SetHeight(background.Bitmap.Height);
+                btn.Background = background;
+                btn.SetPadding((int)(Window.DecorView.Width * 0.8) - btn.Width, (int)(Window.DecorView.Height * 0.8) - btn.Height * 3, 0, 0);
             }
             inventory.Show();
         }
 
-        private void GameActivity_Click(object sender, EventArgs e)
+        private void Equipped_Click(object sender, EventArgs e)
         {
-            Button clicked = (Button)sender;
+            if (map.player.DeEquip())
+            {
+                LinearLayout slotsLayout1 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout1);
+                LinearLayout slotsLayout2 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout2);
+                LinearLayout main = (LinearLayout)inventory.FindViewById(Resource.Id.main);
+                main.RemoveView((View)sender);
+                if (slotsLayout1.ChildCount < 4)
+                {
+                    slotsLayout1.AddView((Button)sender);
+                }
+                else
+                {
+                    slotsLayout2.AddView((Button)sender);
+                }
+                Invalidate();
+            }
+        }
+
+        public void add_equip()
+        {
+            inventory.Hide();
+            displayInventory.CallOnClick();
+        }
+
+        public void Drop(Button clicked)
+        {
             int tag = (int)clicked.Tag;
             LinearLayout ll1 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout1);
             LinearLayout ll2 = (LinearLayout)inventory.FindViewById(Resource.Id.slotsLayout2);
@@ -227,8 +276,8 @@ namespace Automation_Game
 
                 btn.Tag = i + 4;
             }
-        }    
-        
+        }
+
         private Item[,] GenerateGroundItems(Byte[] bytes, int width, int height)
         {
             Item[,] items = new Item[width, height];
@@ -240,7 +289,7 @@ namespace Automation_Game
                 offset += 4;
                 int y = BitConverter.ToInt32(bytes, offset);
                 offset += 4;
-                while (offset < bytes.Length - 1 && BitConverter.ToInt32(bytes,offset) != 0)
+                while (offset < bytes.Length - 1 && BitConverter.ToInt32(bytes, offset) != 0)
                 {
                     int length = BitConverter.ToInt32(bytes, offset);
                     offset += 4;
