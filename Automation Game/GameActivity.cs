@@ -68,7 +68,7 @@ namespace Automation_Game
                             Byte[] buffer = new Byte[BitConverter.ToInt32(readSize)];
                             stream.Read(buffer, 0, buffer.Length);
                             offset += buffer.Length;
-                            Map.MapGenerator gen = new Map.MapGenerator(buffer);
+                            Map.MapGenerator gen = new Map.MapGenerator(buffer,this);
                             stream.Read(readSize, 0, 4);
                             offset += 4;
                             buffer = new Byte[BitConverter.ToInt32(readSize)];
@@ -79,7 +79,7 @@ namespace Automation_Game
                             offset += 4;
                             buffer = new Byte[BitConverter.ToInt32(readSize)];
                             stream.Read(buffer, 0, buffer.Length);
-                            map = new MapDraw(this, gen, GenerateGroundItems(buffer, gen.GetWidth(), gen.GetHeight()), p);
+                            map = new MapDraw(this, gen, p);
                         }
                         catch (Java.IO.IOException e)
                         {
@@ -246,34 +246,6 @@ namespace Automation_Game
         {
             map.player.DeEquip();
             Invalidate();
-        }
-
-        private Item[,] GenerateGroundItems(Byte[] bytes, int width, int height)
-        {
-            Item[,] items = new Item[width, height];
-            List<Byte> byteList = bytes.ToList();
-            int offset = 0;
-            while (offset < bytes.Length - 1)
-            {
-                int x = BitConverter.ToInt32(bytes, offset);
-                offset += 4;
-                int y = BitConverter.ToInt32(bytes, offset);
-                offset += 4;
-                while (offset < bytes.Length - 1 && BitConverter.ToInt32(bytes, offset) != 0)
-                {
-                    int length = BitConverter.ToInt32(bytes, offset);
-                    offset += 4;
-                    items[x, y] = new Item(byteList.GetRange(offset, length).ToArray());
-                    offset += length;
-                    x++;
-                    y++;
-                }
-                if (BitConverter.ToInt32(bytes, offset) == 0)
-                {
-                    offset += 4;
-                }
-            }
-            return items;
         }
     }
 }

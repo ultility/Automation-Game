@@ -42,5 +42,13 @@ namespace Automation_Game
         {
             return p.GetEquippedItem().Equals(useableTool);
         }
+
+        public Byte[] ToByte()
+        {
+            List<Byte> bytes = new List<byte>();
+            bytes.AddRange(BitConverter.GetBytes(name.Length));
+            bytes.AddRange(Encoding.ASCII.GetBytes(name));
+            return bytes.ToArray();
+        }
     }
 }

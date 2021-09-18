@@ -42,13 +42,12 @@ namespace Automation_Game
         public const int spriteSheetColoumnCount = 6;
 
         public bool editMode;
-        public Item[,] groundItems { get; set; }
 
         public static List<ItemType> itemTypeList;
         public MapDraw(Context context) : base(context)
         {
             this.context = context;
-            generator = new MapGenerator(100, 100);
+            generator = new MapGenerator(100, 100, 1234);
             renderDistance = new Vector2();
             player = new Player(generator.GetWidth() / 2, generator.GetHeight() / 2, context, this);
             player.GiveItem(new Tool("Axe", 10, 20));
@@ -61,10 +60,9 @@ namespace Automation_Game
             itemTypeList.Add(new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt"}));
             itemTypeList.Add(new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }));
             generateItems();
-            generator.SetItemPointer(groundItems);
             generator.GetTerrain()[player.GetX() - 1, player.GetY()].BuildStructure(new CraftingStation(context));
         }
-        public MapDraw(Context context, MapGenerator gen, Item[,] GroundItems, Player p) : base(context)
+        public MapDraw(Context context, MapGenerator gen, Player p) : base(context)
         {
             this.context = context;
             generator = gen;
@@ -80,8 +78,6 @@ namespace Automation_Game
             itemTypeList = new List<ItemType>();
             itemTypeList.Add(new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt" }));
             itemTypeList.Add(new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }));
-            groundItems = GroundItems;
-            generator.SetItemPointer(groundItems);
         }
 
         protected override void OnDraw(Canvas canvas)
@@ -108,10 +104,10 @@ namespace Automation_Game
                     Rect src = new Rect(spriteSheetSignleWidth * (terrain[x, y].id % spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x,y].id / spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (terrain[x, y].id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
                     Rect dst = new Rect(posX * Terrain.size, posY * Terrain.size, posX * Terrain.size + Terrain.size, posY * Terrain.size + Terrain.size);
                     canvas.DrawBitmap(spritesheet,src, dst, null);
-                    if (groundItems[x, y] != null)
+                    if (terrain[x,y].GetItem() != null)
                     {
-                        src = new Rect(spriteSheetSignleWidth * (groundItems[x,y].id % spriteSheetColoumnCount), spriteSheetSignleWidth * (groundItems[x, y].id) / spriteSheetColoumnCount, spriteSheetSignleWidth * (groundItems[x, y].id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (groundItems[x, y].id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
-                        dst = new Rect(posX * (int)(Terrain.size * groundItems[x, y].sizePercentage), posY * (int)(Terrain.size * groundItems[x, y].sizePercentage), (posX + 1) * (int)(Terrain.size * groundItems[x,y].sizePercentage), (posY + 1) * (int)(Terrain.size * groundItems[x, y].sizePercentage));
+                        src = new Rect(spriteSheetSignleWidth * (terrain[x, y].GetItem().id % spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].GetItem().id) / spriteSheetColoumnCount, spriteSheetSignleWidth * (terrain[x, y].GetItem().id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (terrain[x, y].GetItem().id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
+                        dst = new Rect(posX * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), posY * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), (posX + 1) * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), (posY + 1) * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage));
                         canvas.DrawBitmap(spritesheet, src, dst, null);
                     }
                     else if(terrain[x,y].GetStructure() != null)
@@ -217,13 +213,12 @@ namespace Automation_Game
         public void generateItems()
         {
             Terrain[,] terrain = generator.GetTerrain();
-            groundItems = new Item[generator.GetWidth(), generator.GetHeight()];
             Random rng = new Random();
             for (int x = 0; x < generator.GetWidth(); x++)
             {
                 for (int y = 0; y < generator.GetHeight(); y++)
                 {
-                    for (int i = 0; i < itemTypeList.Count && groundItems[x, y] == null; i++)
+                    for (int i = 0; i < itemTypeList.Count && terrain[x, y].GetItem() == null; i++)
                     {
                         bool isSpawnable = false;
                         for (int n = 0; n < itemTypeList[i].spawnableTerrain.Length; n++)
@@ -236,7 +231,7 @@ namespace Automation_Game
                         }
                         if (isSpawnable && rng.NextDouble() < itemTypeList[i].spawnChance)
                         {
-                            groundItems[x, y] = new Item(itemTypeList[i].name, itemTypeList[i].id, itemTypeList[i].sizePercentage);
+                            terrain[x, y].SetItem(new Item(itemTypeList[i].name, itemTypeList[i].id, itemTypeList[i].sizePercentage));
                         }
                     }
                 }
@@ -245,10 +240,10 @@ namespace Automation_Game
 
         public bool dropItem(int index)
         {
-            if (groundItems[player.GetX(), player.GetY()] == null)
+            if (generator.terrainMap[player.GetX(), player.GetY()].GetItem() == null)
             {
                 Item dropped = player.dropItem(index);
-                groundItems[player.GetX(), player.GetY()] = dropped;
+                generator.terrainMap[player.GetX(), player.GetY()].SetItem(dropped);
                 return true;
             }
             return false;
@@ -268,9 +263,6 @@ namespace Automation_Game
                         Byte[] player = this.player.ToByte();
                         stream.Write(BitConverter.GetBytes(player.Length));
                         stream.Write(player);
-                        Byte[] items = GroundItemsToByte();
-                        stream.Write(BitConverter.GetBytes(items.Length));
-                        stream.Write(items);
                         stream.Close();
                     }
                     catch (Java.IO.IOException e)
@@ -283,41 +275,6 @@ namespace Automation_Game
                     {
                 e.PrintStackTrace();
             }
-        }
-
-        private Byte[] GroundItemsToByte()
-        {
-            List<Byte> bytes = new List<byte>();
-            bool coordinates = true;
-            int length1 = groundItems.GetLength(0);
-            int length2 = groundItems.GetLength(1);
-            for (int x = 0; x < groundItems.GetLength(0); x++)
-            {
-                for (int y = 0; y < groundItems.GetLength(1); y++)
-                {
-                    if (groundItems[x,y] != null)
-                    {
-                        if (coordinates)
-                        {
-                            bytes.AddRange(BitConverter.GetBytes(x));
-                            bytes.AddRange(BitConverter.GetBytes(y));
-                            
-                        }
-                        Byte[] item = groundItems[x, y].ToByte();
-                        bytes.AddRange(BitConverter.GetBytes(item.Length));
-                        bytes.AddRange(item);
-                        coordinates = false;
-                    }
-                    else
-                    {
-                        if (bytes.Count != 0 && BitConverter.ToInt32(bytes.GetRange(bytes.Count - 5, 4).ToArray()) != 0) {
-                            coordinates = true;
-                            bytes.AddRange(BitConverter.GetBytes(0));
-                        }
-                    }
-                }
-            }
-            return bytes.ToArray();
         }
     }
 }

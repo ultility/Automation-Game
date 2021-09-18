@@ -20,7 +20,7 @@ namespace Automation_Game
         public static int size { get; } = 70;
         public int id { get; }
 
-        Item[,] groundItems;
+        Item item;
         int x;
         int y;
 
@@ -33,12 +33,22 @@ namespace Automation_Game
             this.id = id;
             structure = null;
         }
-        public void SetItemsPointer(Item[,] groundItems)
+
+        public Item GetItem()
         {
-            this.groundItems = groundItems;
+            return item;
+        }
+        public void SetItem(Item item)
+        {
+            this.item = item;
+        }
+        
+        public Structure GetStructure()
+        {
+            return structure;
         }
 
-        public string GetStructure()
+        public string GetStructureName()
         {
             if (structure == null)
             {
@@ -54,7 +64,7 @@ namespace Automation_Game
 
         public bool BuildStructure(Structure structure)
         {
-            if (this.structure == null && structure.isBuildable(this) && groundItems[x,y] == null)
+            if (this.structure == null && structure != null && structure.isBuildable(this) && item == null)
             {
                 this.structure = structure;
                 return true;
@@ -71,17 +81,18 @@ namespace Automation_Game
                     if (packet.moving is Player p)
                     {
                         cs.use(p);
-                    }
-                    
+                    } 
                 }
             }
+            
         }
+
 
         public bool DestroyStructure(Player p)
         {
             if (structure != null && structure.destory(p))
             {
-                groundItems[x, y] = structure.dropItem;
+                item = structure.dropItem;
                 structure = null;
                 return true;
             }

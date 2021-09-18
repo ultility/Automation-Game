@@ -199,10 +199,10 @@ namespace Automation_Game
         {
             if (!inv.IsFull())
             {
-                if (parent.groundItems[x,y] != null)
+                if (parent.generator.terrainMap[x,y].GetItem() != null)
                 {
-                    inv.AddItem(parent.groundItems[x, y]);
-                    parent.groundItems[x, y] = null;
+                    inv.AddItem(parent.generator.terrainMap[x, y].GetItem());
+                    parent.generator.terrainMap[x, y].SetItem(null);
                     parent.Invalidate();
                     return true;
                 }
