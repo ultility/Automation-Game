@@ -33,7 +33,8 @@ namespace Automation_Game.Map
         const int DEFAULT_OCTAVES = 5;
         const float DEFAULT_PERSISTENCE = 0.9f;
         const float DEFAULT_LACUNARITY = 1.5f;
-        public MapGenerator(int mapWidth, int mapHeight)
+
+        public MapGenerator(int mapWidth, int mapHeight, GameActivity activity)
         {
             Random rng = new Random();
             this.mapWidth = mapWidth;
@@ -46,11 +47,11 @@ namespace Automation_Game.Map
             offset = new Vector2(153.2f, 12);
             terrainMap = new Terrain[mapWidth, mapHeight];
 
-            generateMap();
+            generateMap(activity);
 
         }
 
-        public MapGenerator(int mapWidth, int mapHeight, int seed)
+        public MapGenerator(int mapWidth, int mapHeight, int seed, GameActivity activity)
         {
             Random rng = new Random();
             this.mapWidth = mapWidth;
@@ -62,15 +63,15 @@ namespace Automation_Game.Map
             lacunarity = 1.5f;
             offset = new Vector2(153.2f, 12);
             terrainMap = new Terrain[mapWidth, mapHeight];
-            map = generateMap();
+            map = generateMap(activity);
         }
 
-        public Bitmap generateMap()
+        public Bitmap generateMap(GameActivity activity)
         {
-            return generateMap(1);
+            return generateMap(1, activity);
         }
 
-        public Bitmap generateMap(float scale)
+        public Bitmap generateMap(float scale,GameActivity activity)
         {
 
             int mapWidth = (int)(this.mapWidth * scale);
@@ -115,6 +116,7 @@ namespace Automation_Game.Map
                             terrainMap[x, y] = new Terrain("grass", 1, x, y);
                         }
                     }
+                    terrainMap[x, y].SetActivity(activity);
                     map.SetPixel(x, y, c);
                 }
             }
@@ -213,7 +215,7 @@ namespace Automation_Game.Map
             this.offset.Y = BitConverter.ToSingle(bytes, offset);
             offset += sizeof(float);
             terrainMap = new Terrain[mapWidth, mapHeight];
-            generateMap();
+            generateMap((GameActivity)context);
             for (int x = 0; x < mapWidth; x++)
             {
                 for (int y = 0; y < mapWidth; y++)

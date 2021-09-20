@@ -135,6 +135,7 @@ namespace Automation_Game
 
                             if (parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure() != null)
                             {
+                                Handler handle = new Handler(Looper.MainLooper);
                                 parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet);
                             }
                             Thread.CurrentThread.Abort();

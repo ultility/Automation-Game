@@ -25,13 +25,16 @@ namespace Automation_Game
         int y;
 
         Structure structure;
-        public Terrain(string type, int id, int x, int y)
+
+        GameActivity activity;
+        public Terrain(string type, int id, int x, int y, GameActivity activity = null)
         {
             this.x = x;
             this.y = y;
             this.type = type;
             this.id = id;
             structure = null;
+            this.activity = activity;
         }
 
         public Item GetItem()
@@ -41,6 +44,16 @@ namespace Automation_Game
         public void SetItem(Item item)
         {
             this.item = item;
+        }
+
+        public void SetActivity(GameActivity activity)
+        {
+            this.activity = activity;
+        }
+
+        public GameActivity GetActivity()
+        {
+            return activity;
         }
         
         public Structure GetStructure()
@@ -83,20 +96,51 @@ namespace Automation_Game
                         cs.use(p);
                     } 
                 }
+                else if (structure is StructureBlueprint)
+                {
+                    if (activity != null)
+                    {
+                        Handler handle = new Handler(Looper.MainLooper);
+                        handle.Post(OpenBlueprint);
+                    }
+                    
+                }
             }
             
+        }
+
+        private void OpenBlueprint()
+        {
+            StructureBlueprint sb = (StructureBlueprint)structure;
+            activity.UsedBlueprint = sb;
+            activity.DisplayInventory_Click(null, null);
         }
 
 
         public bool DestroyStructure(Player p)
         {
-            if (structure != null && structure.destory(p))
+            if (structure != null)
             {
-                item = structure.dropItem;
-                structure = null;
-                return true;
+                if (structure.destory(p))
+                {
+                    item = structure.dropItem;
+                    structure = null;
+                    return true;
+                }
             }
             return false;
+        }
+
+        public void build(StructureBlueprint sender)
+        {
+            if (structure is StructureBlueprint sb)
+            {
+                if (sb == sender)
+                {
+                    structure = sb.result;
+                    activity.map.Invalidate();
+                }
+            }
         }
     }
 }

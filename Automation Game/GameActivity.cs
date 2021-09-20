@@ -33,6 +33,10 @@ namespace Automation_Game
 
         Bitmap spriteSheet;
 
+        OnTouchEvent press;
+
+        public StructureBlueprint UsedBlueprint;
+
         protected override void OnStop()
         {
             map.save();
@@ -68,7 +72,7 @@ namespace Automation_Game
                             Byte[] buffer = new Byte[BitConverter.ToInt32(readSize)];
                             stream.Read(buffer, 0, buffer.Length);
                             offset += buffer.Length;
-                            Map.MapGenerator gen = new Map.MapGenerator(buffer,this);
+                            Map.MapGenerator gen = new Map.MapGenerator(buffer, this);
                             stream.Read(readSize, 0, 4);
                             offset += 4;
                             buffer = new Byte[BitConverter.ToInt32(readSize)];
@@ -171,7 +175,15 @@ namespace Automation_Game
             Console.WriteLine("width:" + minimap.Window.Attributes.Width + " height:" + minimap.Window.Attributes.Height);
         }
 
-        private void DisplayInventory_Click(object sender, EventArgs e)
+        public void Hide_Inventory()
+        {
+            if (inventory != null && inventory.IsShowing)
+            {
+                inventory.Hide();
+            }
+        }
+
+        public void DisplayInventory_Click(object sender, EventArgs e)
         {
             if (inventory == null)
             {
@@ -179,27 +191,29 @@ namespace Automation_Game
                 inventory.SetContentView(Resource.Layout.inventory_layout);
                 inventory.SetCancelable(true);
                 inventory.SetTitle("");
+                press = new OnTouchEvent(this);
                 inventory.Window.SetLayout((int)(Window.DecorView.Width * 0.8), (int)(Window.DecorView.Height * 0.8));
                 slots[0] = (Button)inventory.FindViewById(Resource.Id.slot1);
-                slots[0].SetOnTouchListener(new OnTouchEvent(this));
+                slots[0].SetOnTouchListener(press);
                 slots[1] = (Button)inventory.FindViewById(Resource.Id.slot2);
-                slots[1].SetOnTouchListener(new OnTouchEvent(this));
+                slots[1].SetOnTouchListener(press);
                 slots[2] = (Button)inventory.FindViewById(Resource.Id.slot3);
-                slots[2].SetOnTouchListener(new OnTouchEvent(this));
+                slots[2].SetOnTouchListener(press);
                 slots[3] = (Button)inventory.FindViewById(Resource.Id.slot4);
-                slots[3].SetOnTouchListener(new OnTouchEvent(this));
+                slots[3].SetOnTouchListener(press);
                 slots[4] = (Button)inventory.FindViewById(Resource.Id.slot5);
-                slots[4].SetOnTouchListener(new OnTouchEvent(this));
+                slots[4].SetOnTouchListener(press);
                 slots[5] = (Button)inventory.FindViewById(Resource.Id.slot6);
-                slots[5].SetOnTouchListener(new OnTouchEvent(this));
+                slots[5].SetOnTouchListener(press);
                 slots[6] = (Button)inventory.FindViewById(Resource.Id.slot7);
-                slots[6].SetOnTouchListener(new OnTouchEvent(this));
+                slots[6].SetOnTouchListener(press);
                 slots[7] = (Button)inventory.FindViewById(Resource.Id.slot8);
-                slots[7].SetOnTouchListener(new OnTouchEvent(this));
+                slots[7].SetOnTouchListener(press);
                 slots[8] = (Button)inventory.FindViewById(Resource.Id.slotEquip);
                 slots[8].Click += DeEquip;
-
             }
+            press.SetBlueprint(UsedBlueprint);
+            UsedBlueprint = null;
             Item[] inv = map.player.GetInvetory();
             int iconSize = spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
             Bitmap icon;

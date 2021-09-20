@@ -12,10 +12,10 @@ using Android.Widget;
 
 namespace Automation_Game
 {
-    class Delivery
+    public class Delivery
     {
         public Item item { get; }
-        public int amount { get; }
+        public int amount { get; set; }
 
         public Delivery(Item item, int amount)
         {

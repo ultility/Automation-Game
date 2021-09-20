@@ -47,7 +47,7 @@ namespace Automation_Game
         public MapDraw(Context context) : base(context)
         {
             this.context = context;
-            generator = new MapGenerator(100, 100, 1234);
+            generator = new MapGenerator(100, 100, 1234, (GameActivity)context);
             renderDistance = new Vector2();
             player = new Player(generator.GetWidth() / 2, generator.GetHeight() / 2, context, this);
             player.GiveItem(new Tool("Axe", 10, 20));
@@ -56,9 +56,8 @@ namespace Automation_Game
             tap = false;
             editMode = false;
             Drawn = false;
-            itemTypeList = new List<ItemType>();
             generateItems();
-            generator.GetTerrain()[player.GetX() - 1, player.GetY()].BuildStructure(new CraftingStation(context));
+            generator.GetTerrain()[player.GetX() - 1, player.GetY()].BuildStructure(new StructureBlueprint(new CraftingStation(context), new Delivery[] { new Delivery(new Item(itemTypeList[0].name, itemTypeList[0].id, itemTypeList[0].sizePercentage), 1)}, generator.GetTerrain()[player.GetX() - 1, player.GetY()]));
         }
         public MapDraw(Context context, MapGenerator gen, Player p) : base(context)
         {
@@ -106,10 +105,6 @@ namespace Automation_Game
                     {
                         src = new Rect(spriteSheetSignleWidth * (terrain[x, y].GetItem().id % spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].GetItem().id / spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].GetItem().id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (terrain[x, y].GetItem().id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
                         dst = new Rect(posX * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), posY * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), (posX + 1) * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), (posY + 1) * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage));
-                        if (x == 48 && y == 50)
-                        {
-                            int i = 5;
-                        }
                         canvas.DrawBitmap(spritesheet, src, dst, null);
                     }
                     else if(terrain[x,y].GetStructure() != null)
@@ -117,7 +112,13 @@ namespace Automation_Game
                         int id = terrain[x,y].GetStructureId();
                         src = new Rect(spriteSheetSignleWidth * (id % spriteSheetColoumnCount), spriteSheetSignleWidth * (id / spriteSheetColoumnCount), spriteSheetSignleWidth * (id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
                         dst = new Rect(posX * Terrain.size, posY * Terrain.size, posX * Terrain.size + Terrain.size, posY * Terrain.size + Terrain.size);
-                        canvas.DrawBitmap(spritesheet, src, dst, null);
+                        Paint p = null;
+                        if (terrain[x, y].GetStructure() is StructureBlueprint sb)
+                        {
+                            p = new Paint();
+                            p.Alpha = 100;
+                        }
+                        canvas.DrawBitmap(spritesheet, src, dst, p);
                     }
                 }
             }
@@ -204,7 +205,7 @@ namespace Automation_Game
         public Bitmap DisplayMap(int width, int height)
         {
             float scale = Math.Min(width / generator.GetWidth(), height / generator.GetHeight());
-            return Bitmap.CreateScaledBitmap(generator.generateMap(scale), (int)((width - generator.GetWidth() * scale) / 2), (int)((height - generator.GetHeight() * scale) / 2), false);
+            return Bitmap.CreateScaledBitmap(generator.generateMap(scale, (GameActivity)context), (int)((width - generator.GetWidth() * scale) / 2), (int)((height - generator.GetHeight() * scale) / 2), false);
         }
 
         public bool IsDrawn()

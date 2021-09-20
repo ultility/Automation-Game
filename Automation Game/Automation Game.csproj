@@ -88,6 +88,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StartUpMenu.cs" />
     <Compile Include="Structure.cs" />
+    <Compile Include="StructureBlueprint.cs" />
     <Compile Include="Terrain.cs" />
     <Compile Include="Tool.cs" />
   </ItemGroup>
