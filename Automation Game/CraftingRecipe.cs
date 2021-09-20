@@ -58,7 +58,14 @@ namespace Automation_Game
                     }
                 }
                 p.SortInventory();
-                p.GiveItem(new Item(result));
+                if (result is Tool tool)
+                {
+                    p.GiveItem(new Tool(tool));
+                }
+                else
+                {
+                    p.GiveItem(new Item(result));
+                }
             }
             
             

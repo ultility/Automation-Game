@@ -35,7 +35,14 @@ namespace Automation_Game
                     t.Stop();
                     if (!finished && lastView is Button btn)
                     {
-                        activity.map.player.dropItem(int.Parse(lastView.Tag.ToString()) - 1);
+                        int x = activity.map.player.GetX();
+                        int y = activity.map.player.GetY();
+                        Item i = activity.map.player.dropItem(int.Parse(lastView.Tag.ToString()) - 1);
+                        if (i is Tool)
+                        {
+                            Console.WriteLine("true");
+                        }
+                        activity.map.generator.SetItemPointer(x, y, i);
                         activity.Invalidate();
                     }
                     break;
@@ -55,6 +62,7 @@ namespace Automation_Game
         private void equip()
         {
             activity.map.player.Equip(int.Parse(lastView.Tag.ToString()) - 1);
+            activity.map.player.SortInventory();
             activity.Invalidate();
         }
     }

@@ -185,15 +185,9 @@ namespace Automation_Game.Map
             return bytes.ToArray();
         }
 
-        public void SetItemPointer(Item item)
+        public void SetItemPointer(int x, int y, Item item)
         {
-            for (int x = 0; x < mapWidth; x++)
-            {
-                for (int y = 0; y < mapHeight; y++)
-                {
-                    terrainMap[x, y].SetItem(item);
-                }
-            }
+            terrainMap[x, y].SetItem(item);
         }
 
         public MapGenerator(Byte[] bytes, Context context)
@@ -228,7 +222,14 @@ namespace Automation_Game.Map
                     offset += 4;
                     if (length > 0)
                     {
-                        terrainMap[x, y].SetItem(new Item(bytes.ToList<Byte>().GetRange(offset, length).ToArray()));
+                        Byte[] temp = bytes.ToList<Byte>().GetRange(offset, length).ToArray();
+                        if (Tool.IsTool(temp)) {
+                            terrainMap[x, y].SetItem(new Tool(temp));
+                        }
+                        else
+                        {
+                            terrainMap[x, y].SetItem(new Item(temp));
+                        }
                         offset += length;
                     }
                     else

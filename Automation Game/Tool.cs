@@ -20,9 +20,29 @@ namespace Automation_Game
             this.durability = durability;
         }
 
+        public Tool(Tool other) : base(other.name, other.id, 1)
+        {
+            this.durability = other.durability;
+        }
+
         public Tool(Byte[] bytes) : base(bytes)
         {
             durability = BitConverter.ToInt32(bytes, bytes.Length - 5);
+        }
+
+        public static bool IsTool(Byte[] bytes)
+        {
+            int offset = 0;
+            int length = BitConverter.ToInt32(bytes, offset);
+            offset += sizeof(Int32) + length;
+            offset += sizeof(Int32);
+            offset += sizeof(double);
+
+            if (bytes.Length - offset == sizeof(int))
+            {
+                return true;
+            }
+            return false;
         }
 
         public bool use(int hardness)

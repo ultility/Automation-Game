@@ -43,7 +43,7 @@ namespace Automation_Game
 
         public bool editMode;
 
-        public static List<ItemType> itemTypeList;
+        public static List<ItemType> itemTypeList = new List<ItemType>{ new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt" }) , new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }) };
         public MapDraw(Context context) : base(context)
         {
             this.context = context;
@@ -57,8 +57,6 @@ namespace Automation_Game
             editMode = false;
             Drawn = false;
             itemTypeList = new List<ItemType>();
-            itemTypeList.Add(new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt"}));
-            itemTypeList.Add(new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }));
             generateItems();
             generator.GetTerrain()[player.GetX() - 1, player.GetY()].BuildStructure(new CraftingStation(context));
         }
@@ -106,8 +104,12 @@ namespace Automation_Game
                     canvas.DrawBitmap(spritesheet,src, dst, null);
                     if (terrain[x,y].GetItem() != null)
                     {
-                        src = new Rect(spriteSheetSignleWidth * (terrain[x, y].GetItem().id % spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].GetItem().id) / spriteSheetColoumnCount, spriteSheetSignleWidth * (terrain[x, y].GetItem().id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (terrain[x, y].GetItem().id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
+                        src = new Rect(spriteSheetSignleWidth * (terrain[x, y].GetItem().id % spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].GetItem().id / spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].GetItem().id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (terrain[x, y].GetItem().id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
                         dst = new Rect(posX * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), posY * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), (posX + 1) * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), (posY + 1) * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage));
+                        if (x == 48 && y == 50)
+                        {
+                            int i = 5;
+                        }
                         canvas.DrawBitmap(spritesheet, src, dst, null);
                     }
                     else if(terrain[x,y].GetStructure() != null)

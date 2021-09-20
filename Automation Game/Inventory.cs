@@ -136,7 +136,15 @@ namespace Automation_Game
                 offset += sizeof(int);
                 Byte[] item = new Byte[length];
                 Array.Copy(bytes, offset, item, 0, length);
-                items[i] = new Item(item);
+                Byte[] temp = bytes.ToList<Byte>().GetRange(offset, length).ToArray();
+                if (Tool.IsTool(item))
+                {
+                    items[i] = new Tool(item);
+                }
+                else
+                {
+                    items[i] = new Item(item);
+                }
                 offset += length;
                 i++;
             }
@@ -154,9 +162,12 @@ namespace Automation_Game
             bytes.AddRange(BitConverter.GetBytes(size));
             for (int i = 0; i < itemsStored; i++)
             {
-                Byte[] item = items[i].ToByte();
-                bytes.AddRange(BitConverter.GetBytes(item.Length));
-                bytes.AddRange(item);
+                if (items[i] != null)
+                {
+                    Byte[] item = items[i].ToByte();
+                    bytes.AddRange(BitConverter.GetBytes(item.Length));
+                    bytes.AddRange(item);
+                }
             }
             if (equipped != null)
             {
