@@ -117,7 +117,7 @@ namespace Automation_Game
         }
         private void DisplayCraftingUI_Click(object sender, EventArgs e)
         {
-            if (craftingUI == null)
+           // if (craftingUI == null)
             {
                 int width = Window.DecorView.Width;
                 int height = (int)(displayInventory.Height);
@@ -137,11 +137,16 @@ namespace Automation_Game
                 craftingStation.SetHeight(height);
                 Bitmap bs = Bitmap.CreateBitmap(width / 8, height, Bitmap.Config.Argb8888);
                 Canvas c = new Canvas(bs);
-                c.DrawColor(Color.CadetBlue);
-                Rect src = new Rect((9 / 6) * spriteSheet.Width, (9 % 6) * spriteSheet.Height, (9 / 6 + 1) * spriteSheet.Width, (9 % 6 + 1) * spriteSheet.Height);
+                Rect src = new Rect((9 % 6) * spriteSheet.Width / 6, (9 / 6) * spriteSheet.Height / 2, (9 % 6 + 1) * spriteSheet.Width / 6, (9 / 6 + 1) * spriteSheet.Height / 2);
                 Rect dst = new Rect(0, 0, c.Width, c.Height);
-                c.DrawBitmap(spriteSheet, src, dst, null);
+                Paint p = new Paint();
+                Color color = Color.CadetBlue;
+                c.DrawColor(color);
+                PorterDuffColorFilter cf = new PorterDuffColorFilter(color, PorterDuff.Mode.Multiply);
+                p.SetColorFilter(cf);
+                c.DrawBitmap(spriteSheet, src, dst, p);
                 craftingStation.Background = new BitmapDrawable(Resources, bs);
+                craftingStation.Click += CraftingStation_Click;
                 craftingUI.AddView(close);
                 craftingUI.AddView(craftingStation);
                 frame.AddView(craftingUI);
@@ -151,6 +156,14 @@ namespace Automation_Game
             displayInventory.Visibility = ViewStates.Invisible;
             map.editMode = true;
 
+        }
+
+        private void CraftingStation_Click(object sender, EventArgs e)
+        {
+            Structure s = new CraftingStation(this);
+            Delivery[] d = new Delivery[1];
+            d[0] = new Delivery(new Item(MapDraw.itemTypeList[0].name, MapDraw.itemTypeList[0].id, MapDraw.itemTypeList[0].sizePercentage), 1);
+            map.CurrentlyBuilding = new StructureBlueprint(s, d, null);
         }
 
         private void Close_Click(object sender, EventArgs e)

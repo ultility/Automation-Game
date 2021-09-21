@@ -44,13 +44,16 @@ namespace Automation_Game
                             {
                                 int x = activity.map.player.GetX();
                                 int y = activity.map.player.GetY();
-                                Item i = activity.map.player.dropItem(int.Parse(lastView.Tag.ToString()) - 1);
-                                if (i is Tool)
+                                if (activity.map.generator.terrainMap[x, y].GetItem() == null)
                                 {
-                                    Console.WriteLine("true");
+                                    Item i = activity.map.player.dropItem(int.Parse(lastView.Tag.ToString()) - 1);
+                                    if (i is Tool)
+                                    {
+                                        Console.WriteLine("true");
+                                    }
+                                    activity.map.generator.SetItemPointer(x, y, i);
+                                    activity.Invalidate();
                                 }
-                                activity.map.generator.SetItemPointer(x, y, i);
-                                activity.Invalidate();
                             }
                         }
                         break;

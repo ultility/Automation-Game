@@ -24,6 +24,11 @@ namespace Automation_Game
             this.parent = parent;
         }
 
+        public void SetTerrain(Terrain t)
+        {
+            parent = t;
+        }
+
         public bool AddItem(Item item)
         {
             for (int i = 0; i < recipe.Count; i++)
@@ -44,6 +49,11 @@ namespace Automation_Game
                 }
             }
             return false;
+        }
+
+        public override bool destory(Player p)
+        {
+            return true;
         }
     }
 }

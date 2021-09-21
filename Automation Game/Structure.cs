@@ -38,9 +38,13 @@ namespace Automation_Game
             dropItem = droppedItem;
         }
 
-        public bool destory(Player p)
+        public virtual bool destory(Player p)
         {
-            return p.GetEquippedItem().Equals(useableTool);
+            if (p != null)
+            {
+                return p.GetEquippedItem().Equals(useableTool);
+            }
+            return false;
         }
 
         public Byte[] ToByte()
