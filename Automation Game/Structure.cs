@@ -41,6 +41,15 @@ namespace Automation_Game
             this.hardness = hardness;
         }
 
+        public Structure(Structure other)
+        {
+            name = other.name;
+            id = other.id;
+            sizePercentage = other.sizePercentage;
+            useableTool = other.useableTool;
+            dropItem = other.dropItem;
+        }
+
         public virtual bool destory(Player p)
         {
             if (p != null)
@@ -50,12 +59,18 @@ namespace Automation_Game
             return false;
         }
 
-        public Byte[] ToByte()
+        public virtual Byte[] ToByte()
         {
             List<Byte> bytes = new List<byte>();
             bytes.AddRange(BitConverter.GetBytes(name.Length));
             bytes.AddRange(Encoding.ASCII.GetBytes(name));
             return bytes.ToArray();
+        }
+
+        public static bool IsStructure(Byte[] bytes)
+        {
+            int length = BitConverter.ToInt32(bytes);
+            return bytes.Length == length + 4;
         }
     }
 }

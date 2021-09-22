@@ -24,6 +24,45 @@ namespace Automation_Game
             this.parent = parent;
         }
 
+        public StructureBlueprint(Byte[] bytes, Context c) : base(ByteToStructure(bytes, c))
+        {
+            int offset = 0;
+            int length = BitConverter.ToInt32(bytes, offset);
+            offset += 4;
+            string name = Encoding.Default.GetString(bytes, offset, length);
+            switch (name)
+            {
+                case "CraftingStation":
+                    result = new CraftingStation(c);
+                    break;
+            }
+            recipe = new List<Delivery>();
+            offset += length;
+            while (offset < bytes.Length - 1)
+            {
+                length = BitConverter.ToInt32(bytes, offset);
+                offset += 4;
+                Delivery d = new Delivery(bytes.ToList().GetRange(offset, length).ToArray());
+                recipe.Add(d);
+                offset += length;
+            }
+        }
+
+        private static Structure ByteToStructure(Byte[] bytes, Context c)
+        {
+            int offset = 0;
+            int length = BitConverter.ToInt32(bytes, offset);
+            offset += 4;
+            string name = Encoding.Default.GetString(bytes, offset, length);
+            switch (name)
+            {
+                case "CraftingStation":
+                    return new CraftingStation(c);
+                default:
+                    return null;
+            }
+        }
+
         public void SetTerrain(Terrain t)
         {
             parent = t;
@@ -54,6 +93,19 @@ namespace Automation_Game
         public override bool destory(Player p)
         {
             return true;
+        }
+
+        public override Byte[] ToByte()
+        {
+            List<Byte> bytes = new List<byte>();
+            bytes.AddRange(result.ToByte());
+            for (int i = 0; i < recipe.Count; i++)
+            {
+                Byte[] delivery = recipe[i].ToByte();
+                bytes.AddRange(BitConverter.GetBytes(delivery.Length));
+                bytes.AddRange(delivery);
+            }
+            return bytes.ToArray();
         }
     }
 }
