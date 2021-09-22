@@ -17,7 +17,7 @@ namespace Automation_Game
         public Structure result { get; }
         List<Delivery> recipe;
         Terrain parent;
-        public StructureBlueprint(Structure structure, Delivery[] recipe, Terrain parent) : base(structure.name, structure.id, structure.sizePercentage, null, null)
+        public StructureBlueprint(Structure structure, Delivery[] recipe, Terrain parent) : base(structure.name, structure.id, structure.sizePercentage, null, null, 0)
         {
             result = structure;
             this.recipe = recipe.ToList();

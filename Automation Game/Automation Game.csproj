@@ -81,6 +81,7 @@
     <Compile Include="IMoveable.cs" />
     <Compile Include="Moveable.cs" />
     <Compile Include="MovementPacket.cs" />
+    <Compile Include="StructureType.cs" />
     <Compile Include="OnTouchEvent.cs" />
     <Compile Include="PaintInfo.cs" />
     <Compile Include="Player.cs" />

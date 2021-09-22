@@ -24,18 +24,21 @@ namespace Automation_Game
 
         Item useableTool;
 
+        public int hardness { get; }
+
         public virtual bool isBuildable(Terrain t)
         {
             return !t.type.Equals("water");
         }
 
-        public Structure(string name, int id, int size, Item useableTool, Item droppedItem)
+        public Structure(string name, int id, int size, Item useableTool, Item droppedItem, int hardness)
         {
             this.name = name;
             this.id = id;
             this.sizePercentage = sizePercentage;
             this.useableTool = useableTool;
             dropItem = droppedItem;
+            this.hardness = hardness;
         }
 
         public virtual bool destory(Player p)

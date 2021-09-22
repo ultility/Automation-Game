@@ -19,7 +19,7 @@ namespace Automation_Game
         CraftingRecipe[] recipes;
         Context c;
         Player p;
-        public CraftingStation(Context context, string name = "CraftingStation", int id = 9, int size = 1, Item useableItem = null, Item droppedItem = null) : base(name,id,size,useableItem,droppedItem)
+        public CraftingStation(Context context, string name = "CraftingStation", int id = 9, int size = 1, Item useableItem = null, Item droppedItem = null) : base(name,id,size,useableItem,droppedItem, 0)
         {
             recipes = new CraftingRecipe[1];
             Delivery[] axeRecipe = new Delivery[2];

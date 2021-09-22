@@ -14,23 +14,24 @@ namespace Automation_Game
 {
     public abstract class Moveable : IMoveable
     {
-        protected int x;
-        protected int y;
+        protected float x;
+        protected float y;
         protected MapDraw parent;
         protected Thread movementThread;
+        protected MovementPacket packet;
         public abstract void MoveTo(int targetX, int targetY);
 
-        public int GetX()
+        public float GetX()
         {
             return x;
         }
 
-        public int GetY()
+        public float GetY()
         {
             return y;
         }
 
-        public void Move(int dx, int dy)
+        public void Move(float dx, float dy)
         {
             x += dx;
             y += dy;

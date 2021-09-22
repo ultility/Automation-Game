@@ -42,8 +42,8 @@ namespace Automation_Game
                             t.Stop();
                             if (!finished && lastView is Button btn)
                             {
-                                int x = activity.map.player.GetX();
-                                int y = activity.map.player.GetY();
+                                int x = (int)activity.map.player.GetX();
+                                int y = (int)activity.map.player.GetY();
                                 if (activity.map.generator.terrainMap[x, y].GetItem() == null)
                                 {
                                     Item i = activity.map.player.dropItem(int.Parse(lastView.Tag.ToString()) - 1);

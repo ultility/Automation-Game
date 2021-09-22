@@ -61,7 +61,14 @@ namespace Automation_Game
 
         public Item RemoveItem(int index, bool sort)
         {
-            Item item = items[index];
+            Item item;
+            if (index < 0)
+            {
+                item = equipped;
+                equipped = null;
+                return item;
+            }
+            item = items[index];
             items[index] = null;
             if (item != null)
             {

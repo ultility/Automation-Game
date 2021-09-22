@@ -45,6 +45,7 @@ namespace Automation_Game
         public StructureBlueprint CurrentlyBuilding;
 
         public static List<ItemType> itemTypeList = new List<ItemType> { new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt" }), new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }) };
+        public static List<StructureType> structureTypeList = new List<StructureType> { new StructureType("tree", 8, 1, new Item(itemTypeList[0].name, itemTypeList[0].id, itemTypeList[0].sizePercentage), new Tool("Axe", 10, 20), 0.08, new string[] { "dirt" }, 1) };
         public MapDraw(Context context) : base(context)
         {
             this.context = context;
@@ -59,7 +60,7 @@ namespace Automation_Game
             editMode = false;
             Drawn = false;
             generateItems();
-            generator.GetTerrain()[player.GetX() - 1, player.GetY()].BuildStructure(new StructureBlueprint(new CraftingStation(context), new Delivery[] { new Delivery(new Item(itemTypeList[0].name, itemTypeList[0].id, itemTypeList[0].sizePercentage), 1) }, generator.GetTerrain()[player.GetX() - 1, player.GetY()]));
+            generator.GetTerrain()[(int)player.GetX() - 1, (int)player.GetY()].BuildStructure(new StructureBlueprint(new CraftingStation(context), new Delivery[] { new Delivery(new Item(itemTypeList[0].name, itemTypeList[0].id, itemTypeList[0].sizePercentage), 1) }, generator.GetTerrain()[(int)player.GetX() - 1, (int)player.GetY()]));
             CurrentlyBuilding = null;
         }
         public MapDraw(Context context, MapGenerator gen, Player p) : base(context)
@@ -130,10 +131,10 @@ namespace Automation_Game
                 if (player.GetY() >= camera.Y - renderDistance.Y / 2 && player.GetY() <= camera.Y + renderDistance.Y / 2)
                 {
                     int spriteSheetSignleWidth = spritesheet.GetScaledWidth(canvas) / spriteSheetColoumnCount;
-                    int playerDrawY = player.GetY() - (int)(camera.Y - renderDistance.Y / 2);
-                    int playerDrawX = player.GetX() - (int)(camera.X - renderDistance.X / 2);
+                    float playerDrawY = player.GetY() - (int)(camera.Y - renderDistance.Y / 2);
+                    float playerDrawX = player.GetX() - (int)(camera.X - renderDistance.X / 2);
                     Rect src = new Rect(spriteSheetSignleWidth * (player.id % spriteSheetColoumnCount), spriteSheetSignleWidth * (player.id / spriteSheetColoumnCount), spriteSheetSignleWidth * (player.id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (player.id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
-                    Rect dst = new Rect(playerDrawX * (int)(Terrain.size), playerDrawY * (int)(Terrain.size), (playerDrawX + 1) * (int)(Terrain.size), (playerDrawY + 1) * (int)(Terrain.size));
+                    RectF dst = new RectF(playerDrawX * (int)(Terrain.size), playerDrawY * (int)(Terrain.size), (playerDrawX + 1) * (int)(Terrain.size), (playerDrawY + 1) * (int)(Terrain.size));
 
                     canvas.DrawBitmap(spritesheet, src, dst, null);
 
@@ -271,16 +272,32 @@ namespace Automation_Game
                             terrain[x, y].SetItem(new Item(itemTypeList[i].name, itemTypeList[i].id, itemTypeList[i].sizePercentage));
                         }
                     }
+                    for (int i = 0; i < structureTypeList.Count && terrain[x, y].GetItem() == null; i++)
+                    {
+                        bool isSpawnable = false;
+                        for (int n = 0; n < structureTypeList[i].spawnableTerrain.Length; n++)
+                        {
+                            if (terrain[x, y].type.Equals(structureTypeList[i].spawnableTerrain[n]))
+                            {
+                                isSpawnable = true;
+                                break;
+                            }
+                        }
+                        if (isSpawnable && rng.NextDouble() < structureTypeList[i].spawnChance)
+                        {
+                            terrain[x, y].BuildStructure(new Structure(structureTypeList[i].name, structureTypeList[i].id, structureTypeList[i].sizePercentage, structureTypeList[i].useableItem, structureTypeList[i].dropItem, structureTypeList[i].hardness));
+                        }
+                    }
                 }
             }
         }
 
         public bool dropItem(int index)
         {
-            if (generator.terrainMap[player.GetX(), player.GetY()].GetItem() == null)
+            if (generator.terrainMap[(int)player.GetX(), (int)player.GetY()].GetItem() == null)
             {
                 Item dropped = player.dropItem(index);
-                generator.terrainMap[player.GetX(), player.GetY()].SetItem(dropped);
+                generator.terrainMap[(int)player.GetX(), (int)player.GetY()].SetItem(dropped);
                 return true;
             }
             return false;
