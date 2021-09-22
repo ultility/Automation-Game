@@ -85,7 +85,7 @@ namespace Automation_Game
             return false;
         }
 
-        public void UseStructure(MovementPacket packet)
+        public bool UseStructure(MovementPacket packet)
         {
             if (Math.Abs(packet.moving.GetX() - x) <= 1 && Math.Abs(packet.moving.GetY() - y) <= 1)
             {
@@ -94,6 +94,7 @@ namespace Automation_Game
                     if (packet.moving is Player p)
                     {
                         cs.use(p);
+                        return true;
                     } 
                 }
                 else if (structure is StructureBlueprint)
@@ -102,11 +103,12 @@ namespace Automation_Game
                     {
                         Handler handle = new Handler(Looper.MainLooper);
                         handle.Post(OpenBlueprint);
+                        return true;
                     }
                     
                 }
             }
-            
+            return false;
         }
 
         private void OpenBlueprint()

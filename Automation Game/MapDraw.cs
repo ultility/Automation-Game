@@ -53,7 +53,6 @@ namespace Automation_Game
             renderDistance = new Vector2();
             LastPoint = new Vector2();
             player = new Player(generator.GetWidth() / 2, generator.GetHeight() / 2, context, this);
-            player.GiveItem(new Tool("Axe", 10, 20));
             camera.X = player.GetX();
             camera.Y = player.GetY();
             tap = false;
@@ -87,13 +86,21 @@ namespace Automation_Game
             int size = Terrain.size;
             renderDistance.X = (int)Math.Ceiling((double)(canvas.Width / Terrain.size));
             renderDistance.Y = (int)Math.Ceiling((double)(canvas.Height / Terrain.size));
-            if (camera.X == 0)
+            if (camera.X < renderDistance.X / 2)
             {
                 camera.X = renderDistance.X / 2;
             }
-            if (camera.Y == 0)
+            else if (camera.X > generator.GetWidth() - renderDistance.X)
+            {
+                camera.X = generator.GetWidth() - renderDistance.X;
+            }
+            if (camera.Y < renderDistance.Y / 2)
             {
                 camera.Y = renderDistance.Y / 2;
+            }
+            else if (camera.Y > generator.GetHeight() - renderDistance.Y)
+            {
+                camera.Y = generator.GetHeight() - renderDistance.Y;
             }
             Terrain[,] terrain = generator.GetTerrain();
             Bitmap spritesheet = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("sprite_sheet", "drawable", context.PackageName));
