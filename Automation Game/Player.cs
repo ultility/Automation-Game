@@ -103,17 +103,8 @@ namespace Automation_Game
 
                             if (parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure() != null)
                             {
-                                if (!parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet))
-                                {
-                                    int hardness = parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure().hardness;
-                                    if (parent.generator.terrainMap[packet.targetX, packet.targetY].DestroyStructure(this))
-                                    {
-                                        if (GetEquippedItem() != null && GetEquippedItem().use(hardness))
-                                        {
-                                            inv.RemoveItem(-1, false);
-                                        }
-                                    }
-                                }
+                                parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet);
+                                parent.generator.terrainMap[packet.targetX, packet.targetY].DestroyStructure(this);
                             }
                             Thread.CurrentThread.Abort();
                         }
@@ -141,17 +132,8 @@ namespace Automation_Game
 
                             if (parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure() != null)
                             {
-                                if (!parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet))
-                                {
-                                    int hardness = parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure().hardness;
-                                    if (parent.generator.terrainMap[packet.targetX, packet.targetY].DestroyStructure(this))
-                                    {
-                                        if (GetEquippedItem() != null && GetEquippedItem().use(hardness))
-                                        {
-                                            inv.RemoveItem(-1, false);
-                                        }
-                                    }
-                                }
+                                parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet);
+                                parent.generator.terrainMap[packet.targetX, packet.targetY].DestroyStructure(this);
                             }
                             Thread.CurrentThread.Abort();
                         }
@@ -181,15 +163,13 @@ namespace Automation_Game
 
                         if (parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure() != null)
                         {
-                            if (!parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet))
+                            parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet);
+                            int hardness = parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure().hardness;
+                            if (parent.generator.terrainMap[packet.targetX, packet.targetY].DestroyStructure(this))
                             {
-                                int hardness = parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure().hardness;
-                                if (parent.generator.terrainMap[packet.targetX, packet.targetY].DestroyStructure(this))
+                                if (GetEquippedItem().use(hardness))
                                 {
-                                    if (GetEquippedItem() != null && GetEquippedItem().use(hardness))
-                                    {
-                                        inv.RemoveItem(-1, false);
-                                    }
+                                    inv.RemoveItem(-1, false);
                                 }
                             }
                         }
@@ -220,17 +200,8 @@ namespace Automation_Game
 
                         if (parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure() != null)
                         {
-                            if (!parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet))
-                            {
-                                int hardness = parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure().hardness;
-                                if (parent.generator.terrainMap[packet.targetX, packet.targetY].DestroyStructure(this))
-                                {
-                                    if (GetEquippedItem() != null && GetEquippedItem().use(hardness))
-                                    {
-                                        inv.RemoveItem(-1, false);
-                                    }
-                                }
-                            }
+                            parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet);
+                            parent.generator.terrainMap[packet.targetX, packet.targetY].DestroyStructure(this);
                         }
                         Thread.CurrentThread.Abort();
                     }
@@ -309,9 +280,9 @@ namespace Automation_Game
             Array.Copy(bytes, 4, inventory, 0, length);
             offset += length;
             inv = new Inventory(inventory);
-            this.x = BitConverter.ToSingle(bytes, offset);
+            this.x = BitConverter.ToInt32(bytes, offset);
             offset += 4;
-            this.y = BitConverter.ToSingle(bytes, offset);
+            this.y = BitConverter.ToInt32(bytes, offset);
             id = 4;
         }
 
