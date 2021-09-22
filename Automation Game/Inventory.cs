@@ -113,7 +113,7 @@ namespace Automation_Game
                         equipped = tool;
                         items[n] = equipped;
                     }
-
+                    itemsStored--;
                     return true;
                 }
             }

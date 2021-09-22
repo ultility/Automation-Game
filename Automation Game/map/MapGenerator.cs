@@ -116,7 +116,10 @@ namespace Automation_Game.Map
                             terrainMap[x, y] = new Terrain("grass", 1, x, y);
                         }
                     }
-                    terrainMap[x, y].SetActivity(activity);
+                    if (scale == DEFAULT_SCALE)
+                    {
+                        terrainMap[x, y].SetActivity(activity);
+                    }
                     map.SetPixel(x, y, c);
                 }
             }
@@ -242,16 +245,37 @@ namespace Automation_Game.Map
                         {
                             Structure structure;
                             string name = Encoding.Default.GetString(bytes, offset, length);
+                            Delivery[] deliveries = null;
+                            bool isblueprint = false;
+                            if (name.Contains("blueprint"))
+                            {
+                                isblueprint = true;
+                                name = name.Replace("blueprint", "");
+                            }
                             switch (name)
                             {
                                 case "CraftingStation":
                                     structure = new CraftingStation(context);
+                                    deliveries = new Delivery[1];
+                                    deliveries[0] = new Delivery(new Item(MapDraw.itemTypeList[0].name, MapDraw.itemTypeList[0].id, MapDraw.itemTypeList[0].sizePercentage), 1);
+                                    break;
+                                case "tree":
+                                    StructureType st = MapDraw.structureTypeList[0];
+                                    structure = new Structure(st.name, st.id, st.sizePercentage, st.useableItem, st.dropItem, st.hardness);
                                     break;
                                 default:
                                     structure = null;
                                     break;
                             }
-                            terrainMap[x, y].BuildStructure(structure);
+                            if (isblueprint)
+                            {
+                                StructureBlueprint blueprint = new StructureBlueprint(structure, deliveries, terrainMap[x, y]);
+                                terrainMap[x, y].BuildStructure(blueprint);
+                            }
+                            else
+                            {
+                                terrainMap[x, y].BuildStructure(structure);
+                            }
                             offset += length;
                         }
                     }
