@@ -102,7 +102,7 @@ namespace Automation_Game
                     if (activity != null)
                     {
                         Handler handle = new Handler(Looper.MainLooper);
-                        handle.Post(OpenBlueprint);
+                        handle.PostAtFrontOfQueue(OpenBlueprint);
                         return true;
                     }
                     
@@ -121,13 +121,16 @@ namespace Automation_Game
 
         public bool DestroyStructure(Player p)
         {
-            if (structure != null)
+            if (Math.Abs(p.GetX() - x) <= 1 && Math.Abs(p.GetY() - y) <= 1)
             {
-                if (structure.destory(p))
+                if (structure != null)
                 {
-                    item = structure.dropItem;
-                    structure = null;
-                    return true;
+                    if (structure.destory(p))
+                    {
+                        item = structure.dropItem;
+                        structure = null;
+                        return true;
+                    }
                 }
             }
             return false;

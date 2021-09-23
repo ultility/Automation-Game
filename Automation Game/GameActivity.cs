@@ -162,7 +162,7 @@ namespace Automation_Game
         {
             Structure s = new CraftingStation(this);
             Delivery[] d = new Delivery[1];
-            d[0] = new Delivery(new Item(MapDraw.itemTypeList[0].name, MapDraw.itemTypeList[0].id, MapDraw.itemTypeList[0].sizePercentage), 1);
+            d[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].name, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].id, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].sizePercentage), 1);
             map.CurrentlyBuilding = new StructureBlueprint(s, d, null);
         }
 

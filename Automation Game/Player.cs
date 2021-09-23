@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Automation_Game
 {
@@ -51,9 +52,10 @@ namespace Automation_Game
             return inv.deequip();
         }
 
-        public override void MoveTo(int targetX, int targetY)
+        public async override void MoveTo(int targetX, int targetY)
         {
-            if (packet == null) {
+            if (packet == null)
+            {
                 packet = new MovementPacket(this, targetX, targetY);
             }
             else
@@ -61,14 +63,31 @@ namespace Automation_Game
                 packet.targetX = targetX;
                 packet.targetY = targetY;
             }
-            if (movementThread == null || !movementThread.IsAlive)
+
+            
+            CancellationTokenSource source = new CancellationTokenSource();
+            CancellationToken token = source.Token;
+            if (t == null || t.IsCompleted)
             {
-                movementThread = new Thread(new ParameterizedThreadStart(MoveTo));
-                movementThread.Start(packet);
+
+                t = Task.Run(() => MoveTo(packet, source), token);
+                try
+                {
+                    await t;
+                }
+                catch (System.OperationCanceledException e)
+                {
+                    Console.WriteLine($"{nameof(System.OperationCanceledException)} thrown with message: {e.Message}");
+                }
+                finally
+                {
+                    source.Dispose();
+                }
             }
+
         }
 
-        private void MoveTo(Object obj)
+        private void MoveTo(Object obj, CancellationTokenSource token)
         {
             bool canMoveX = true;
             bool canMoveY = true;
@@ -76,7 +95,7 @@ namespace Automation_Game
             Random rng = new Random();
             int dx = 0;
             int dy = 0;
-            update(ref  dx, ref dy, packet);
+            update(ref dx, ref dy, packet);
             Terrain step;
             while ((int)packet.moving.GetX() != packet.targetX && (int)packet.moving.GetY() != packet.targetY)
             {
@@ -94,6 +113,7 @@ namespace Automation_Game
                             packet.moving.GetParent().Invalidate();
                             Thread.Sleep(500 / 10);
                         }
+                        packet.moving.SetX((float)Math.Round(packet.moving.GetX()));
                     }
                     else
                     {
@@ -115,7 +135,8 @@ namespace Automation_Game
                                     }
                                 }
                             }
-                            Thread.CurrentThread.Abort();
+                            token.Cancel();
+                            token.Token.ThrowIfCancellationRequested();
                         }
                     }
                 }
@@ -132,6 +153,7 @@ namespace Automation_Game
                             packet.moving.GetParent().Invalidate();
                             Thread.Sleep(500 / 10);
                         }
+                        packet.moving.SetY((float)Math.Round(packet.moving.GetY()));
                     }
                     else
                     {
@@ -153,7 +175,8 @@ namespace Automation_Game
                                     }
                                 }
                             }
-                            Thread.CurrentThread.Abort();
+                            token.Cancel();
+                            token.Token.ThrowIfCancellationRequested();
                         }
                     }
                 }
@@ -172,6 +195,7 @@ namespace Automation_Game
                         packet.moving.GetParent().Invalidate();
                         Thread.Sleep(500 / 10);
                     }
+                    packet.moving.SetX((float)Math.Round(packet.moving.GetX()));
                 }
                 else
                 {
@@ -193,11 +217,12 @@ namespace Automation_Game
                                 }
                             }
                         }
-                        Thread.CurrentThread.Abort();
+                        token.Cancel();
+                        token.Token.ThrowIfCancellationRequested();
                     }
                 }
             }
-            while ((int)packet.moving.GetY() != packet.targetY)
+            while (packet.moving.GetY() != packet.targetY)
             {
                 update(ref dx, ref dy, packet);
                 canMoveX = false;
@@ -211,6 +236,7 @@ namespace Automation_Game
                         packet.moving.GetParent().Invalidate();
                         Thread.Sleep(500 / 10);
                     }
+                    packet.moving.SetY((float)Math.Round(packet.moving.GetY()));
                 }
                 else
                 {
@@ -232,13 +258,15 @@ namespace Automation_Game
                                 }
                             }
                         }
-                        Thread.CurrentThread.Abort();
+                        token.Cancel();
+                        token.Token.ThrowIfCancellationRequested();
                     }
                 }
             }
             PickUp();
 
         }
+
 
         private void update(ref int dx, ref int dy, MovementPacket packet)
         {

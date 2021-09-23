@@ -24,9 +24,17 @@ using System.Reflection;
 
 namespace Automation_Game
 {
-
     public class MapDraw : View
     {
+        public enum ItemTypes
+        {
+            STICK,
+            STONE
+        };
+        public enum StructureTypes
+        {
+            TREE
+        };
         public MapGenerator generator { get; }
         Context context;
 
@@ -45,7 +53,7 @@ namespace Automation_Game
         public StructureBlueprint CurrentlyBuilding;
 
         public static List<ItemType> itemTypeList = new List<ItemType> { new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt" }), new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }) };
-        public static List<StructureType> structureTypeList = new List<StructureType> { new StructureType("tree", 8, 1, new Item(itemTypeList[0].name, itemTypeList[0].id, itemTypeList[0].sizePercentage), new Tool("Axe", 10, 20), 0.08, new string[] { "dirt" }, 1) };
+        public static List<StructureType> structureTypeList = new List<StructureType> { new StructureType("tree", 8, 1, new Item(itemTypeList[(int)ItemTypes.STICK].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), new Tool("Axe", 10, 20), 0.08, new string[] { "dirt" }, 1) };
         public MapDraw(Context context) : base(context)
         {
             this.context = context;
@@ -59,7 +67,7 @@ namespace Automation_Game
             editMode = false;
             Drawn = false;
             generateItems();
-            generator.GetTerrain()[(int)player.GetX() - 1, (int)player.GetY()].BuildStructure(new StructureBlueprint(new CraftingStation(context), new Delivery[] { new Delivery(new Item(itemTypeList[0].name, itemTypeList[0].id, itemTypeList[0].sizePercentage), 1) }, generator.GetTerrain()[(int)player.GetX() - 1, (int)player.GetY()]));
+            generator.GetTerrain()[(int)player.GetX() - 1, (int)player.GetY()].BuildStructure(new StructureBlueprint(new CraftingStation(context), new Delivery[] { new Delivery(new Item(itemTypeList[(int)ItemTypes.STICK].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), 1) }, generator.GetTerrain()[(int)player.GetX() - 1, (int)player.GetY()]));
             CurrentlyBuilding = null;
         }
         public MapDraw(Context context, MapGenerator gen, Player p) : base(context)

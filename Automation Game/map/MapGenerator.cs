@@ -257,10 +257,10 @@ namespace Automation_Game.Map
                                 case "CraftingStation":
                                     structure = new CraftingStation(context);
                                     deliveries = new Delivery[1];
-                                    deliveries[0] = new Delivery(new Item(MapDraw.itemTypeList[0].name, MapDraw.itemTypeList[0].id, MapDraw.itemTypeList[0].sizePercentage), 1);
+                                    deliveries[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].name, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].id, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].sizePercentage), 1);
                                     break;
                                 case "tree":
-                                    StructureType st = MapDraw.structureTypeList[0];
+                                    StructureType st = MapDraw.structureTypeList[(int)MapDraw.StructureTypes.TREE];
                                     structure = new Structure(st.name, st.id, st.sizePercentage, st.useableItem, st.dropItem, st.hardness);
                                     break;
                                 default:

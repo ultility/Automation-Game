@@ -45,7 +45,10 @@ namespace Automation_Game
         {
             if (p != null)
             {
-                return p.GetEquippedItem().Equals(useableTool);
+                if (p.GetEquippedItem() != null)
+                {
+                    return p.GetEquippedItem().Equals(useableTool);
+                }
             }
             return false;
         }

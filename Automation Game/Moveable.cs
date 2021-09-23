@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Automation_Game
 {
@@ -17,13 +18,23 @@ namespace Automation_Game
         protected float x;
         protected float y;
         protected MapDraw parent;
-        protected Thread movementThread;
+        protected Task t;
         protected MovementPacket packet;
         public abstract void MoveTo(int targetX, int targetY);
 
         public float GetX()
         {
             return x;
+        }
+
+        public void SetX(float x)
+        {
+            this.x = x;
+        }
+
+        public void SetY(float y)
+        {
+            this.y = y;
         }
 
         public float GetY()
