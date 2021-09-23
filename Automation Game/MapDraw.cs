@@ -118,26 +118,27 @@ namespace Automation_Game
                 {
                     int spriteSheetSignleWidth = spritesheet.GetScaledWidth(canvas) / spriteSheetColoumnCount;
                     Rect src = new Rect(spriteSheetSignleWidth * (terrain[x, y].id % spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].id / spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (terrain[x, y].id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
-                    Rect dst = new Rect(posX * Terrain.size, posY * Terrain.size, posX * Terrain.size + Terrain.size, posY * Terrain.size + Terrain.size);
+                    RectF dst = new RectF(posX * Terrain.size, posY * Terrain.size, posX * Terrain.size + Terrain.size, posY * Terrain.size + Terrain.size);
                     canvas.DrawBitmap(spritesheet, src, dst, null);
                     if (terrain[x, y].GetItem() != null)
                     {
                         src = new Rect(spriteSheetSignleWidth * (terrain[x, y].GetItem().id % spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].GetItem().id / spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].GetItem().id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (terrain[x, y].GetItem().id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
-                        dst = new Rect(posX * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), posY * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), (posX + 1) * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), (posY + 1) * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage));
+                        dst = new RectF(posX * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), posY * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), (posX + 1) * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), (posY + 1) * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage));
                         canvas.DrawBitmap(spritesheet, src, dst, null);
                     }
                     else if (terrain[x, y].GetStructure() != null)
                     {
                         int id = terrain[x, y].GetStructureId();
                         src = new Rect(spriteSheetSignleWidth * (id % spriteSheetColoumnCount), spriteSheetSignleWidth * (id / spriteSheetColoumnCount), spriteSheetSignleWidth * (id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
-                        dst = new Rect(posX * Terrain.size, posY * Terrain.size, posX * Terrain.size + Terrain.size, posY * Terrain.size + Terrain.size);
+                        dst = new RectF(posX * Terrain.size, posY * Terrain.size, posX * Terrain.size + Terrain.size, posY * Terrain.size + Terrain.size);
+                        RectF dst2 = new RectF(dst.Left + Math.Abs(1 - terrain[x, y].GetStructure().sizePercentage) * Terrain.size / 2, dst.Top + Math.Abs(1 - terrain[x, y].GetStructure().sizePercentage) * Terrain.size / 2, dst.Right - Math.Abs(1 - terrain[x, y].GetStructure().sizePercentage) * Terrain.size / 2, dst.Bottom - Math.Abs(1 - terrain[x, y].GetStructure().sizePercentage) * Terrain.size / 2);
                         Paint p = null;
                         if (terrain[x, y].GetStructure() is StructureBlueprint sb)
                         {
                             p = new Paint();
                             p.Alpha = 100;
                         }
-                        canvas.DrawBitmap(spritesheet, src, dst, p);
+                        canvas.DrawBitmap(spritesheet, src, dst2, p);
                     }
                 }
             }
@@ -254,8 +255,8 @@ namespace Automation_Game
 
         public Bitmap DisplayMap(int width, int height)
         {
-            float scale = Math.Min(width / generator.GetWidth(), height / generator.GetHeight());
-            return Bitmap.CreateScaledBitmap(generator.generateMap(scale, (GameActivity)context), (int)((width - generator.GetWidth() * scale) / 2), (int)((height - generator.GetHeight() * scale) / 2), false);
+            float scale = Math.Min((float)width / generator.GetWidth(), (float)height / generator.GetHeight());
+            return generator.generateMap(scale, (GameActivity)context);
         }
 
         public bool IsDrawn()

@@ -12,7 +12,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-
+using System.Threading.Tasks;
 
 namespace Automation_Game
 {
@@ -32,8 +32,10 @@ namespace Automation_Game
         Dialog inventory;
 
         Bitmap spriteSheet;
+        Bitmap minimapBitmap;
 
         OnTouchEvent press;
+        bool IsMinimapShown;
 
         public StructureBlueprint UsedBlueprint;
 
@@ -53,6 +55,7 @@ namespace Automation_Game
             displayMap = (Button)FindViewById(Resource.Id.openMap);
             DisplayCraftingUI = (Button)FindViewById(Resource.Id.craftingMenu);
             slots = new Button[9];
+            IsMinimapShown = false;
             if (Intent.GetBooleanExtra("create", true))
             {
                 map = new MapDraw(this);
@@ -117,7 +120,7 @@ namespace Automation_Game
         }
         private void DisplayCraftingUI_Click(object sender, EventArgs e)
         {
-           // if (craftingUI == null)
+            if (craftingUI == null)
             {
                 int width = Window.DecorView.Width;
                 int height = (int)(displayInventory.Height);
@@ -175,17 +178,51 @@ namespace Automation_Game
             map.editMode = false;
         }
 
-        private void DisplayMap_Click(object sender, EventArgs e)
+        private async void DisplayMap_Click(object sender, EventArgs e)
         {
-            Dialog minimap = new Dialog(this);
-            View background = new View(this);
-            background.Background = new BitmapDrawable(Resources, map.DisplayMap((int)(Window.DecorView.Width * 0.8), (int)(Window.DecorView.Height * 0.8)));
-            minimap.SetContentView(background);
-            minimap.SetCancelable(true);
-            minimap.SetTitle("");
-            minimap.Show();
-            minimap.Window.SetLayout((int)(Window.DecorView.Width * 0.8), (int)(Window.DecorView.Height * 0.8));
-            Console.WriteLine("width:" + minimap.Window.Attributes.Width + " height:" + minimap.Window.Attributes.Height);
+            if (!IsMinimapShown)
+            {
+                IsMinimapShown = true;
+                Dialog minimap = new Dialog(this);
+                View background = new View(this);
+                int size = (int)Math.Min(Window.DecorView.Width * 0.8, Window.DecorView.Height * 0.8);
+                if (minimapBitmap == null)
+                {
+                    minimapBitmap = await Task.Run(() => map.DisplayMap(size, size));
+                }
+                Bitmap mm = minimapBitmap.Copy(minimapBitmap.GetConfig(), true);
+                Canvas c = new Canvas(mm);
+                int spriteSheetSignleWidth = spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
+                Player player = map.player;
+                int centerX = (int)(player.GetX() / 100 * c.Width);
+                int centerY = (int)(player.GetY() / 100 * c.Height);
+                int width = 3 * c.Width / map.generator.GetWidth();
+                int height = 3 * c.Height / map.generator.GetHeight();
+                int length = Math.Min(width, height);
+                if (Window.DecorView.Width > Window.DecorView.Height)
+                {
+                    width = length / (Window.DecorView.Width / Window.DecorView.Height);
+                }
+                else
+                {
+                    height = length / (Window.DecorView.Height / Window.DecorView.Width);
+                }
+                Paint p = new Paint();
+                p.Color = Color.Red;
+                c.DrawOval(centerX - width / 2, centerY - height / 2, centerX + width / 2, centerY + height / 2, p);
+                background.Background = new BitmapDrawable(Resources, mm);
+                minimap.SetContentView(background);
+                minimap.SetCancelable(true);
+                minimap.CancelEvent += Minimap_CancelEvent;
+                minimap.SetTitle("");
+                minimap.Show();
+                minimap.Window.SetLayout((int)(Window.DecorView.Width * 0.8), (int)(Window.DecorView.Height * 0.8));
+            }
+        }
+
+        private void Minimap_CancelEvent(object sender, EventArgs e)
+        {
+            IsMinimapShown = false;
         }
 
         public void Hide_Inventory()
