@@ -1,14 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 
 namespace Automation_Game
 {
@@ -45,9 +36,9 @@ namespace Automation_Game
             return false;
         }
 
-        public bool use(int hardness)
+        public bool Use(int Hardness)
         {
-            durability -= hardness;
+            durability -= Hardness;
             return durability <= 0;
         }
 

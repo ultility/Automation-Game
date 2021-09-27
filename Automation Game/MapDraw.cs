@@ -1,26 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
-using System.Threading.Tasks;
-using System.IO;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Util;
-using Android.Views;
-using Android.Widget;
-using Java.IO;
-
-using Automation_Game.Map;
+﻿using Android.Content;
 using Android.Graphics;
-using Bitmap = Android.Graphics.Bitmap;
+using Android.Views;
+using Automation_Game.Map;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
-using System.Threading;
-using System.Reflection;
+using Bitmap = Android.Graphics.Bitmap;
 
 namespace Automation_Game
 {
@@ -29,19 +15,20 @@ namespace Automation_Game
         public enum ItemTypes
         {
             STICK,
-            STONE
+            STONE,
+            TREE_SEED
         };
         public enum StructureTypes
         {
             TREE
         };
-        public MapGenerator generator { get; }
-        Context context;
+        public MapGenerator Generator { get; }
+        readonly Context context;
 
         Vector2 renderDistance;
         Vector2 camera;
         Vector2 LastPoint;
-        public Player player { get; }
+        public Player Player { get; }
 
         bool tap;
 
@@ -52,111 +39,113 @@ namespace Automation_Game
         public bool editMode;
         public StructureBlueprint CurrentlyBuilding;
 
-        public static List<ItemType> itemTypeList = new List<ItemType> { new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt" }), new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }) };
-        public static List<StructureType> structureTypeList = new List<StructureType> { new StructureType("tree", 8, 1, new Item(itemTypeList[(int)ItemTypes.STICK].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), new Tool("Axe", 10, 20), 0.08, new string[] { "dirt" }, 1) };
+        public static List<ItemType> itemTypeList = new List<ItemType> { new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt" }),
+                                                    new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }),
+                                                    new ItemType("Tree Seed", 0,14,1,new string[] { }) };
+        public static List<StructureType> structureTypeList = new List<StructureType> { new StructureType("tree", 8, 1, new Item[] { new Item(itemTypeList[(int)ItemTypes.STICK].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), new Item(itemTypeList[(int)ItemTypes.TREE_SEED].name, itemTypeList[(int)ItemTypes.TREE_SEED].id, itemTypeList[(int)ItemTypes.TREE_SEED].sizePercentage) }, new Tool("Axe", 10, 20), 0.08, new string[] { "dirt" }, 1) };
         public MapDraw(Context context) : base(context)
         {
             this.context = context;
-            generator = new MapGenerator(100, 100, 1234, (GameActivity)context);
+            Generator = new MapGenerator(100, 100, 1234, (GameActivity)context);
             renderDistance = new Vector2();
             LastPoint = new Vector2();
-            player = new Player(generator.GetWidth() / 2, generator.GetHeight() / 2, context, this);
-            camera.X = player.GetX();
-            camera.Y = player.GetY();
+            Player = new Player(Generator.GetWidth() / 2, Generator.GetHeight() / 2, this);
+            camera.X = Player.GetX();
+            camera.Y = Player.GetY();
             tap = false;
             editMode = false;
             Drawn = false;
-            generateItems();
-            generator.GetTerrain()[(int)player.GetX() - 1, (int)player.GetY()].BuildStructure(new StructureBlueprint(new CraftingStation(context), new Delivery[] { new Delivery(new Item(itemTypeList[(int)ItemTypes.STICK].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), 1) }, generator.GetTerrain()[(int)player.GetX() - 1, (int)player.GetY()]));
+            GenerateItems();
+            Generator.GetTerrain()[(int)Player.GetX() - 1, (int)Player.GetY()].BuildStructure(new StructureBlueprint(new CraftingStation(context), new Delivery[] { new Delivery(new Item(itemTypeList[(int)ItemTypes.STICK].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), 1) }, Generator.GetTerrain()[(int)Player.GetX() - 1, (int)Player.GetY()]));
             CurrentlyBuilding = null;
         }
         public MapDraw(Context context, MapGenerator gen, Player p) : base(context)
         {
             this.context = context;
-            generator = gen;
+            Generator = gen;
             renderDistance = new Vector2();
-            player = p;
+            Player = p;
             p.SetParent(this);
-            camera.X = player.GetX();
-            camera.Y = player.GetY();
-            correctCamera();
+            camera.X = Player.GetX();
+            camera.Y = Player.GetY();
+            CorrectCamera();
             tap = false;
             editMode = false;
             Drawn = false;
-            itemTypeList = new List<ItemType>();
-            itemTypeList.Add(new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt" }));
-            itemTypeList.Add(new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }));
         }
 
         protected override void OnDraw(Canvas canvas)
         {
             Drawn = false;
-            int size = Terrain.size;
-            renderDistance.X = (int)Math.Ceiling((double)(canvas.Width / Terrain.size));
-            renderDistance.Y = (int)Math.Ceiling((double)(canvas.Height / Terrain.size));
+            renderDistance.X = (int)Math.Ceiling((double)(canvas.Width / Terrain.Size));
+            renderDistance.Y = (int)Math.Ceiling((double)(canvas.Height / Terrain.Size));
             if (camera.X < renderDistance.X / 2)
             {
                 camera.X = renderDistance.X / 2;
             }
-            else if (camera.X > generator.GetWidth() - renderDistance.X)
+            else if (camera.X > Generator.GetWidth() - renderDistance.X)
             {
-                camera.X = generator.GetWidth() - renderDistance.X;
+                camera.X = Generator.GetWidth() - renderDistance.X;
             }
             if (camera.Y < renderDistance.Y / 2)
             {
                 camera.Y = renderDistance.Y / 2;
             }
-            else if (camera.Y > generator.GetHeight() - renderDistance.Y)
+            else if (camera.Y > Generator.GetHeight() - renderDistance.Y)
             {
-                camera.Y = generator.GetHeight() - renderDistance.Y;
+                camera.Y = Generator.GetHeight() - renderDistance.Y;
             }
-            Terrain[,] terrain = generator.GetTerrain();
-            Bitmap spritesheet = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("sprite_sheet", "drawable", context.PackageName));
+            Terrain[,] terrain = Generator.GetTerrain();
             for (int x = (int)(camera.X - renderDistance.X / 2), posX = 0; x <= camera.X + renderDistance.X / 2; x++, posX++)
             {
                 for (int y = (int)(camera.Y - renderDistance.Y / 2), posY = 0; y <= camera.Y + renderDistance.Y / 2; y++, posY++)
                 {
-                    int spriteSheetSignleWidth = spritesheet.GetScaledWidth(canvas) / spriteSheetColoumnCount;
-                    Rect src = new Rect(spriteSheetSignleWidth * (terrain[x, y].id % spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].id / spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (terrain[x, y].id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
-                    RectF dst = new RectF(posX * Terrain.size, posY * Terrain.size, posX * Terrain.size + Terrain.size, posY * Terrain.size + Terrain.size);
-                    canvas.DrawBitmap(spritesheet, src, dst, null);
-                    if (terrain[x, y].GetItem() != null)
+                    int spriteSheetSignleWidth = GameActivity.spriteSheet.GetScaledWidth(canvas) / spriteSheetColoumnCount;
+                    Rect src = new Rect(spriteSheetSignleWidth * (terrain[x, y].Id % spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].Id / spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].Id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (terrain[x, y].Id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
+                    RectF dst = new RectF(posX * Terrain.Size, posY * Terrain.Size, posX * Terrain.Size + Terrain.Size, posY * Terrain.Size + Terrain.Size);
+                    canvas.DrawBitmap(GameActivity.spriteSheet, src, dst, null);
+                    Item i;
+                    if ((i = terrain[x, y].GetItem()) != null)
                     {
-                        src = new Rect(spriteSheetSignleWidth * (terrain[x, y].GetItem().id % spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].GetItem().id / spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].GetItem().id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (terrain[x, y].GetItem().id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
-                        dst = new RectF(posX * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), posY * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), (posX + 1) * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage), (posY + 1) * (int)(Terrain.size * terrain[x, y].GetItem().sizePercentage));
-                        canvas.DrawBitmap(spritesheet, src, dst, null);
+                        src = new Rect(spriteSheetSignleWidth * (i.id % spriteSheetColoumnCount), spriteSheetSignleWidth * (i.id / spriteSheetColoumnCount), spriteSheetSignleWidth * (i.id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (i.id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
+                        dst = new RectF(posX * (int)(Terrain.Size * i.sizePercentage), posY * (int)(Terrain.Size * i.sizePercentage), (posX + 1) * (int)(Terrain.Size * i.sizePercentage), (posY + 1) * (int)(Terrain.Size * i.sizePercentage));
+                        canvas.DrawBitmap(GameActivity.spriteSheet, src, dst, null);
                     }
                     else if (terrain[x, y].GetStructure() != null)
                     {
                         int id = terrain[x, y].GetStructureId();
                         src = new Rect(spriteSheetSignleWidth * (id % spriteSheetColoumnCount), spriteSheetSignleWidth * (id / spriteSheetColoumnCount), spriteSheetSignleWidth * (id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
-                        dst = new RectF(posX * Terrain.size, posY * Terrain.size, posX * Terrain.size + Terrain.size, posY * Terrain.size + Terrain.size);
-                        RectF dst2 = new RectF(dst.Left + Math.Abs(1 - terrain[x, y].GetStructure().sizePercentage) * Terrain.size / 2, dst.Top + Math.Abs(1 - terrain[x, y].GetStructure().sizePercentage) * Terrain.size / 2, dst.Right - Math.Abs(1 - terrain[x, y].GetStructure().sizePercentage) * Terrain.size / 2, dst.Bottom - Math.Abs(1 - terrain[x, y].GetStructure().sizePercentage) * Terrain.size / 2);
+                        dst = new RectF(posX * Terrain.Size, posY * Terrain.Size, posX * Terrain.Size + Terrain.Size, posY * Terrain.Size + Terrain.Size);
+                        RectF dst2 = new RectF(dst.Left + Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2, dst.Top + Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2, dst.Right - Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2, dst.Bottom - Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2);
                         Paint p = null;
-                        if (terrain[x, y].GetStructure() is StructureBlueprint sb)
+                        if (terrain[x, y].GetStructure() is StructureBlueprint)
                         {
-                            p = new Paint();
-                            p.Alpha = 100;
+                            p = new Paint
+                            {
+                                Alpha = 100
+                            };
                         }
-                        canvas.DrawBitmap(spritesheet, src, dst2, p);
+                        canvas.DrawBitmap(GameActivity.spriteSheet, src, dst2, p);
                     }
+                    src.Dispose();
+                    dst.Dispose();
                 }
             }
-            if (player.GetX() >= camera.X - renderDistance.X / 2 && player.GetX() <= camera.X + renderDistance.X / 2)
+            if (Player.GetX() >= camera.X - renderDistance.X / 2 && Player.GetX() <= camera.X + renderDistance.X / 2)
             {
-                if (player.GetY() >= camera.Y - renderDistance.Y / 2 && player.GetY() <= camera.Y + renderDistance.Y / 2)
+                if (Player.GetY() >= camera.Y - renderDistance.Y / 2 && Player.GetY() <= camera.Y + renderDistance.Y / 2)
                 {
-                    int spriteSheetSignleWidth = spritesheet.GetScaledWidth(canvas) / spriteSheetColoumnCount;
-                    float playerDrawY = player.GetY() - (int)(camera.Y - renderDistance.Y / 2);
-                    float playerDrawX = player.GetX() - (int)(camera.X - renderDistance.X / 2);
-                    Rect src = new Rect(spriteSheetSignleWidth * (player.id % spriteSheetColoumnCount), spriteSheetSignleWidth * (player.id / spriteSheetColoumnCount), spriteSheetSignleWidth * (player.id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (player.id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
-                    RectF dst = new RectF(playerDrawX * (int)(Terrain.size), playerDrawY * (int)(Terrain.size), (playerDrawX + 1) * (int)(Terrain.size), (playerDrawY + 1) * (int)(Terrain.size));
+                    int spriteSheetSignleWidth = GameActivity.spriteSheet.GetScaledWidth(canvas) / spriteSheetColoumnCount;
+                    float PlayerDrawY = Player.GetY() - (int)(camera.Y - renderDistance.Y / 2);
+                    float PlayerDrawX = Player.GetX() - (int)(camera.X - renderDistance.X / 2);
+                    Rect src = new Rect(spriteSheetSignleWidth * (Player.Id % spriteSheetColoumnCount), spriteSheetSignleWidth * (Player.Id / spriteSheetColoumnCount), spriteSheetSignleWidth * (Player.Id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (Player.Id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
+                    RectF dst = new RectF(PlayerDrawX * (int)(Terrain.Size), PlayerDrawY * (int)(Terrain.Size), (PlayerDrawX + 1) * (int)(Terrain.Size), (PlayerDrawY + 1) * (int)(Terrain.Size));
 
-                    canvas.DrawBitmap(spritesheet, src, dst, null);
-
+                    canvas.DrawBitmap(GameActivity.spriteSheet, src, dst, null);
+                    src.Dispose();
+                    dst.Dispose();
                 }
             }
-
             Drawn = true;
         }
 
@@ -168,8 +157,8 @@ namespace Automation_Game
                 {
                     if (e.Action == MotionEventActions.Down)
                     {
-                        int x = (int)e.GetX() / Terrain.size;
-                        int y = (int)e.GetY() / Terrain.size;
+                        int x = (int)e.GetX() / Terrain.Size;
+                        int y = (int)e.GetY() / Terrain.Size;
                         if (x < renderDistance.X / 2)
                         {
                             x--;
@@ -182,12 +171,12 @@ namespace Automation_Game
                         y = (int)(y - renderDistance.Y / 2);
                         x = (int)camera.X + x;
                         y = (int)camera.Y + y;
-                        if (generator.terrainMap[x, y].BuildStructure(CurrentlyBuilding))
+                        if (Generator.TerrainMap[x, y].BuildStructure(CurrentlyBuilding))
                         {
-                            CurrentlyBuilding.SetTerrain(generator.terrainMap[x, y]);
-                            if (generator.terrainMap[(int)LastPoint.X, (int)LastPoint.Y].GetStructure() is StructureBlueprint sb && sb == CurrentlyBuilding)
+                            CurrentlyBuilding.SetTerrain(Generator.TerrainMap[x, y]);
+                            if (Generator.TerrainMap[(int)LastPoint.X, (int)LastPoint.Y].GetStructure() is StructureBlueprint sb && sb == CurrentlyBuilding)
                             {
-                                generator.terrainMap[(int)LastPoint.X, (int)LastPoint.Y].DestroyStructure(null);
+                                Generator.TerrainMap[(int)LastPoint.X, (int)LastPoint.Y].DestroyStructure(null);
                             }
                             LastPoint.X = x;
                             LastPoint.Y = y;
@@ -205,11 +194,11 @@ namespace Automation_Game
             {
                 if (tap)
                 {
-                    int rowTilesFromCorner = (int)e.GetX() / Terrain.size;
-                    int coloumnTilesFromCorner = (int)e.GetY() / Terrain.size;
+                    int rowTilesFromCorner = (int)e.GetX() / Terrain.Size;
+                    int coloumnTilesFromCorner = (int)e.GetY() / Terrain.Size;
                     int newX = (int)((camera.X - renderDistance.X / 2) + rowTilesFromCorner);
                     int newY = (int)((camera.Y - renderDistance.Y / 2) + coloumnTilesFromCorner);
-                    player.MoveTo(newX, newY);
+                    Player.MoveTo(newX, newY);
                     Invalidate();
                 }
 
@@ -224,39 +213,39 @@ namespace Automation_Game
                     float x = e.GetX();
                     float historyy = e.GetHistoricalY(0, 0);
                     float y = e.GetY();
-                    camera.X += (historyx - x) / Terrain.size;
-                    camera.Y += (historyy - y) / Terrain.size;
+                    camera.X += (historyx - x) / Terrain.Size;
+                    camera.Y += (historyy - y) / Terrain.Size;
                 }
-                correctCamera();
+                CorrectCamera();
                 Invalidate();
             }
             return true;
         }
 
-        private void correctCamera()
+        private void CorrectCamera()
         {
             if (camera.X < renderDistance.X / 2)
             {
                 camera.X = renderDistance.X / 2;
             }
-            else if (camera.X + renderDistance.X / 2 >= generator.GetTerrain().GetLength(0))
+            else if (camera.X + renderDistance.X / 2 >= Generator.GetTerrain().GetLength(0))
             {
-                camera.X = generator.GetTerrain().GetLength(0) - renderDistance.X - 1;
+                camera.X = Generator.GetTerrain().GetLength(0) - renderDistance.X - 1;
             }
             if (camera.Y < renderDistance.Y / 2)
             {
                 camera.Y = renderDistance.Y / 2;
             }
-            else if (camera.Y + renderDistance.Y / 2 >= generator.GetTerrain().GetLength(1))
+            else if (camera.Y + renderDistance.Y / 2 >= Generator.GetTerrain().GetLength(1))
             {
-                camera.Y = generator.GetTerrain().GetLength(1) - renderDistance.Y - 1;
+                camera.Y = Generator.GetTerrain().GetLength(1) - renderDistance.Y - 1;
             }
         }
 
         public Bitmap DisplayMap(int width, int height)
         {
-            float scale = Math.Min((float)width / generator.GetWidth(), (float)height / generator.GetHeight());
-            return generator.generateMap(scale, (GameActivity)context);
+            float scale = Math.Min((float)width / Generator.GetWidth(), (float)height / Generator.GetHeight());
+            return Generator.GenerateMap(scale, (GameActivity)context);
         }
 
         public bool IsDrawn()
@@ -264,81 +253,82 @@ namespace Automation_Game
             return Drawn;
         }
 
-        public void generateItems()
+        public void GenerateItems()
         {
-            Terrain[,] terrain = generator.GetTerrain();
+            Terrain[,] terrain = Generator.GetTerrain();
             Random rng = new Random();
-            for (int x = 0; x < generator.GetWidth(); x++)
+            for (int x = 0; x < Generator.GetWidth(); x++)
             {
-                for (int y = 0; y < generator.GetHeight(); y++)
+                for (int y = 0; y < Generator.GetHeight(); y++)
                 {
-                    for (int i = 0; i < itemTypeList.Count && terrain[x, y].GetItem() == null; i++)
+                    if (terrain[x, y].GetStructure() == null && terrain[x, y].GetItem() == null)
                     {
-                        bool isSpawnable = false;
-                        for (int n = 0; n < itemTypeList[i].spawnableTerrain.Length; n++)
+                        for (int i = 0; i < itemTypeList.Count && terrain[x, y].GetItem() == null; i++)
                         {
-                            if (terrain[x, y].type.Equals(itemTypeList[i].spawnableTerrain[n]))
+                            bool isSpawnable = false;
+                            for (int n = 0; n < itemTypeList[i].spawnableTerrain.Length; n++)
                             {
-                                isSpawnable = true;
-                                break;
+                                if (terrain[x, y].Type.Equals(itemTypeList[i].spawnableTerrain[n]))
+                                {
+                                    isSpawnable = true;
+                                    break;
+                                }
+                            }
+                            if (isSpawnable && rng.NextDouble() < itemTypeList[i].spawnChance)
+                            {
+                                terrain[x, y].AddItem(new Item(itemTypeList[i].name, itemTypeList[i].id, itemTypeList[i].sizePercentage));
                             }
                         }
-                        if (isSpawnable && rng.NextDouble() < itemTypeList[i].spawnChance)
+                        for (int i = 0; i < structureTypeList.Count && terrain[x, y].GetItem() == null; i++)
                         {
-                            terrain[x, y].SetItem(new Item(itemTypeList[i].name, itemTypeList[i].id, itemTypeList[i].sizePercentage));
-                        }
-                    }
-                    for (int i = 0; i < structureTypeList.Count && terrain[x, y].GetItem() == null; i++)
-                    {
-                        bool isSpawnable = false;
-                        for (int n = 0; n < structureTypeList[i].spawnableTerrain.Length; n++)
-                        {
-                            if (terrain[x, y].type.Equals(structureTypeList[i].spawnableTerrain[n]))
+                            bool isSpawnable = false;
+                            for (int n = 0; n < structureTypeList[i].SpawnableTerrain.Length; n++)
                             {
-                                isSpawnable = true;
-                                break;
+                                if (terrain[x, y].Type.Equals(structureTypeList[i].SpawnableTerrain[n]))
+                                {
+                                    isSpawnable = true;
+                                    break;
+                                }
                             }
-                        }
-                        if (isSpawnable && rng.NextDouble() < structureTypeList[i].spawnChance)
-                        {
-                            terrain[x, y].BuildStructure(new Structure(structureTypeList[i].name, structureTypeList[i].id, structureTypeList[i].sizePercentage, structureTypeList[i].useableItem, structureTypeList[i].dropItem, structureTypeList[i].hardness));
+                            if (isSpawnable && rng.NextDouble() < structureTypeList[i].SpawnChance)
+                            {
+                                terrain[x, y].BuildStructure(new Structure(structureTypeList[i].Name, structureTypeList[i].Id, structureTypeList[i].SizePercentage, structureTypeList[i].UseableItem, structureTypeList[i].DropItem, structureTypeList[i].Hardness));
+                            }
                         }
                     }
                 }
             }
         }
 
-        public bool dropItem(int index)
+        public bool DropItem(int index)
         {
-            if (generator.terrainMap[(int)player.GetX(), (int)player.GetY()].GetItem() == null)
+            if (Generator.TerrainMap[(int)Player.GetX(), (int)Player.GetY()].GetItem() == null)
             {
-                Item dropped = player.dropItem(index);
-                generator.terrainMap[(int)player.GetX(), (int)player.GetY()].SetItem(dropped);
+                Item dropped = Player.DropItem(index);
+                Generator.TerrainMap[(int)Player.GetX(), (int)Player.GetY()].AddItem(dropped);
                 return true;
             }
             return false;
         }
 
-        public void save()
+        public void Save()
         {
             try
             {
-                using (Stream stream = context.OpenFileOutput("world.txt", Android.Content.FileCreationMode.Private))
+                using Stream stream = context.OpenFileOutput("world.txt", Android.Content.FileCreationMode.Private);
+                try
                 {
-                    try
-                    {
-                        Byte[] generation = generator.GetBytes();
-                        stream.Write(BitConverter.GetBytes(generation.Length));
-                        stream.Write(generation);
-                        Byte[] player = this.player.ToByte();
-                        stream.Write(BitConverter.GetBytes(player.Length));
-                        stream.Write(player);
-                        stream.Close();
-                    }
-                    catch (Java.IO.IOException e)
-                    {
-                        e.PrintStackTrace();
-                    }
+                    Byte[] generation = Generator.GetBytes();
+                    stream.Write(BitConverter.GetBytes(generation.Length));
+                    stream.Write(generation);
+                    Byte[] Player = this.Player.ToByte();
+                    stream.Write(BitConverter.GetBytes(Player.Length));
+                    stream.Write(Player);
+                    stream.Close();
+                }
+                catch (Java.IO.IOException e)
+                {
+                    e.PrintStackTrace();
                 }
             }
             catch (Java.IO.FileNotFoundException e)

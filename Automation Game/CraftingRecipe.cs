@@ -1,25 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-
-namespace Automation_Game
+﻿namespace Automation_Game
 {
     class CraftingRecipe
     {
-        public Item result { get; }
-        Delivery[] Recipe;
+        public Item Result { get; }
+        readonly Delivery[] Recipe;
 
         public CraftingRecipe(Item result, Delivery[] recipe)
         {
-            this.result = result;
+            this.Result = result;
             Recipe = recipe;
         }
 
@@ -53,22 +41,22 @@ namespace Automation_Game
                         {
                             inv[n] = null;
                             amount--;
-                            p.dropItem(n, false);
+                            p.DropItem(n, false);
                         }
                     }
                 }
                 p.SortInventory();
-                if (result is Tool tool)
+                if (Result is Tool tool)
                 {
                     p.GiveItem(new Tool(tool));
                 }
                 else
                 {
-                    p.GiveItem(new Item(result));
+                    p.GiveItem(new Item(Result));
                 }
             }
-            
-            
+
+
         }
     }
 }

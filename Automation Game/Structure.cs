@@ -1,47 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 
 
 namespace Automation_Game
 {
     public class Structure
     {
-        public string name { get; }
-        public int id { get; }
+        public string Name { get; }
+        public int Id { get; }
 
-        public float sizePercentage { get; }
+        public float SizePercentage { get; }
 
-        public Item dropItem { get; }
+        readonly List<Item> dropItems;
 
-        Item useableTool;
+        readonly Item useableTool;
 
-        public int hardness { get; }
+        public int Hardness { get; }
 
-        public virtual bool isBuildable(Terrain t)
+        public virtual bool IsBuildable(Terrain t)
         {
-            return !t.type.Equals("water");
+            return !t.Type.Equals("water");
         }
 
-        public Structure(string name, int id, float size, Item useableTool, Item droppedItem, int hardness)
+        public Structure(string name, int id, float size, Item useableTool, IEnumerable<Item> droppedItems, int Hardness)
         {
-            this.name = name;
-            this.id = id;
-            sizePercentage = size;
+            this.dropItems = new List<Item>();
+            this.dropItems.AddRange(droppedItems);
+            this.Name = name;
+            this.Id = id;
+            SizePercentage = size;
             this.useableTool = useableTool;
-            dropItem = droppedItem;
-            this.hardness = hardness;
+            this.Hardness = Hardness;
         }
 
-        public virtual bool destory(Player p)
+        public Structure(string name, int id, float size, Item useableTool, Item droppedItem, int Hardness)
+        {
+            this.dropItems = new List<Item>
+            {
+                droppedItem
+            };
+            this.Name = name;
+            this.Id = id;
+            SizePercentage = size;
+            this.useableTool = useableTool;
+            this.Hardness = Hardness;
+        }
+
+        public virtual bool Destory(Player p)
         {
             if (p != null)
             {
@@ -53,11 +59,25 @@ namespace Automation_Game
             return false;
         }
 
+        public Item GetDropItem(int n)
+        {
+            if (n < dropItems.Count && n > 0)
+            {
+                return dropItems[n];
+            }
+            return null;
+        }
+
+        public Item[] GetDropItems()
+        {
+            return dropItems.ToArray();
+        }
+
         public Byte[] ToByte()
         {
             List<Byte> bytes = new List<byte>();
-            bytes.AddRange(BitConverter.GetBytes(name.Length));
-            bytes.AddRange(Encoding.ASCII.GetBytes(name));
+            bytes.AddRange(BitConverter.GetBytes(Name.Length));
+            bytes.AddRange(Encoding.ASCII.GetBytes(Name));
             return bytes.ToArray();
         }
     }

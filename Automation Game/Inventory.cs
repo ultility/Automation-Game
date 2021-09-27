@@ -1,22 +1,13 @@
-﻿using Android.App;
-using Android.Content;
-using Android.Graphics;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Automation_Game
 {
     class Inventory
     {
-        Item[] items;
+        readonly Item[] items;
         Tool equipped;
-        int size;
+        readonly int size;
         int itemsStored;
 
         public Inventory(int inventorySize)
@@ -25,6 +16,11 @@ namespace Automation_Game
             items = new Item[size];
             equipped = null;
             itemsStored = 0;
+        }
+
+        public int LeftOutSpace()
+        {
+            return size - itemsStored;
         }
 
         public bool AddItem(Item item)
@@ -44,7 +40,7 @@ namespace Automation_Game
             return false;
         }
 
-        public void sort()
+        public void Sort()
         {
             for (int k = 0; k < items.Length; k++)
             {
@@ -54,7 +50,7 @@ namespace Automation_Game
                     {
                         items[i] = items[i + 1];
                     }
-                    items[items.Length - 1] = null;
+                    items[^1] = null;
                 }
             }
         }
@@ -75,7 +71,7 @@ namespace Automation_Game
                 itemsStored--;
                 if (sort)
                 {
-                    this.sort();
+                    this.Sort();
                 }
             }
             return item;
@@ -95,7 +91,7 @@ namespace Automation_Game
             return items[n];
         }
 
-        public bool equip(int n)
+        public bool Equip(int n)
         {
             if (items[n] != null)
             {
@@ -111,7 +107,7 @@ namespace Automation_Game
                     {
                         Item removed = equipped;
                         equipped = tool;
-                        items[n] = equipped;
+                        items[n] = removed;
                     }
                     itemsStored--;
                     return true;
@@ -119,7 +115,7 @@ namespace Automation_Game
             }
             return false;
         }
-        public bool deequip()
+        public bool DeEquip()
         {
             if (AddItem(equipped))
             {
@@ -131,7 +127,7 @@ namespace Automation_Game
 
         public Inventory(Byte[] bytes)
         {
-            
+
             int offset = 0;
             int i = 0;
             size = BitConverter.ToInt32(bytes, offset);
@@ -143,7 +139,6 @@ namespace Automation_Game
                 offset += sizeof(int);
                 Byte[] item = new Byte[length];
                 Array.Copy(bytes, offset, item, 0, length);
-                Byte[] temp = bytes.ToList<Byte>().GetRange(offset, length).ToArray();
                 if (Tool.IsTool(item))
                 {
                     items[i] = new Tool(item);

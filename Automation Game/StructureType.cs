@@ -1,38 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
+﻿using System.Collections.Generic;
 
 namespace Automation_Game
 {
     public class StructureType
     {
-        public string name { get; }
-        public int id { get; }
-        public int sizePercentage { get; }
-        public Item dropItem { get; }
-        public Item useableItem { get; }
-        public double spawnChance { get; }
-        public string[] spawnableTerrain { get; }
-        public int hardness { get; }
+        public string Name { get; }
+        public int Id { get; }
+        public int SizePercentage { get; }
+        public List<Item> DropItem { get; }
+        public Item UseableItem { get; }
+        public double SpawnChance { get; }
+        public string[] SpawnableTerrain { get; }
+        public int Hardness { get; }
 
-        public StructureType(string name, int id, int size, Item DropItem, Item UseableItem, double spawnChance, string[] SpawnableTerrain, int hardness)
+        public StructureType(string name, int id, int size, Item DropItem, Item UseableItem, double spawnChance, string[] SpawnableTerrain, int Hardness)
         {
-            this.name = name;
-            this.id = id;
-            this.sizePercentage = size;
-            dropItem = DropItem;
-            useableItem = UseableItem;
-            this.spawnChance = spawnChance;
-            this.spawnableTerrain = SpawnableTerrain;
-            this.hardness = hardness;
+            this.Name = name;
+            this.Id = id;
+            this.SizePercentage = size;
+            this.DropItem = new List<Item>
+            {
+                DropItem
+            };
+            this.UseableItem = UseableItem;
+            this.SpawnChance = spawnChance;
+            this.SpawnableTerrain = SpawnableTerrain;
+            this.Hardness = Hardness;
+        }
+
+        public StructureType(string name, int id, int size, IEnumerable<Item> DropItem, Item UseableItem, double spawnChance, string[] SpawnableTerrain, int Hardness)
+        {
+            this.Name = name;
+            this.Id = id;
+            this.SizePercentage = size;
+            this.DropItem = new List<Item>();
+            this.DropItem.AddRange(DropItem);
+            this.UseableItem = UseableItem;
+            this.SpawnChance = spawnChance;
+            this.SpawnableTerrain = SpawnableTerrain;
+            this.Hardness = Hardness;
         }
     }
 }

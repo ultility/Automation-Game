@@ -1,28 +1,18 @@
-﻿using System;
+﻿using Android.OS;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-using Android.Graphics;
 
 namespace Automation_Game
 {
     public class Terrain
     {
-        public string type { get; }
-        public static int size { get; } = 70;
-        public int id { get; }
+        public string Type { get; }
+        public static int Size { get; } = 70;
+        public int Id { get; }
 
-        Item item;
-        int x;
-        int y;
+        readonly List<Item> items;
+        readonly int x;
+        readonly int y;
 
         Structure structure;
 
@@ -31,19 +21,31 @@ namespace Automation_Game
         {
             this.x = x;
             this.y = y;
-            this.type = type;
-            this.id = id;
+            this.Type = type;
+            this.Id = id;
             structure = null;
             this.activity = activity;
+            items = new List<Item>();
         }
 
         public Item GetItem()
         {
-            return item;
+            if (items.Count > 0)
+            {
+                return items[^1];
+            }
+            return null;
         }
-        public void SetItem(Item item)
+
+        public Item Pickup()
         {
-            this.item = item;
+            Item i = items[^1];
+            items.RemoveAt(items.Count - 1);
+            return i;
+        }
+        public void AddItem(Item item)
+        {
+            items.Add(item);
         }
 
         public void SetActivity(GameActivity activity)
@@ -55,7 +57,7 @@ namespace Automation_Game
         {
             return activity;
         }
-        
+
         public Structure GetStructure()
         {
             return structure;
@@ -67,17 +69,17 @@ namespace Automation_Game
             {
                 return null;
             }
-            return structure.name;
+            return structure.Name;
         }
 
         public int GetStructureId()
         {
-            return structure.id;
+            return structure.Id;
         }
 
         public bool BuildStructure(Structure structure)
         {
-            if (this.structure == null && structure != null && structure.isBuildable(this) && item == null)
+            if (this.structure == null && structure != null && structure.IsBuildable(this) && items.Count == 0)
             {
                 this.structure = structure;
                 return true;
@@ -93,29 +95,26 @@ namespace Automation_Game
                 {
                     if (packet.moving is Player p)
                     {
-                        cs.use(p);
+                        cs.Use(p);
                         return true;
-                    } 
+                    }
                 }
-                else if (structure is StructureBlueprint)
+                else if (structure is StructureBlueprint blueprint)
                 {
                     if (activity != null)
                     {
                         Handler handle = new Handler(Looper.MainLooper);
-                        handle.PostAtFrontOfQueue(OpenBlueprint);
+                        handle.Post(() =>
+                        {
+                            activity.UsedBlueprint = blueprint;
+                            activity.DisplayInventory_Click(null, null);
+                        });
                         return true;
                     }
-                    
+
                 }
             }
             return false;
-        }
-
-        private void OpenBlueprint()
-        {
-            StructureBlueprint sb = (StructureBlueprint)structure;
-            activity.UsedBlueprint = sb;
-            activity.DisplayInventory_Click(null, null);
         }
 
 
@@ -125,25 +124,36 @@ namespace Automation_Game
             {
                 if (structure != null)
                 {
-                    if (structure.destory(p))
+                    if (structure.Destory(p))
                     {
-                        item = structure.dropItem;
-                        structure = null;
-                        return true;
+                        if (structure.Name.Equals("Rock"))
+                        {
+                            if (!p.IsInventoryFull())
+                            {
+                                p.GiveItem(structure.GetDropItem(0));
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            items.AddRange(structure.GetDropItems());
+                            structure = null;
+                            return true;
+                        }
                     }
                 }
             }
             return false;
         }
 
-        public void build(StructureBlueprint sender)
+        public void Build(StructureBlueprint sender)
         {
             if (structure is StructureBlueprint sb)
             {
                 if (sb == sender)
                 {
-                    structure = sb.result;
-                    activity.map.Invalidate();
+                    structure = sb.Result;
+                    activity.Map.Invalidate();
                 }
             }
         }

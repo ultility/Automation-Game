@@ -1,10 +1,8 @@
 ﻿using Android.App;
 using Android.OS;
-using Android.Support.V7.App;
 using Android.Runtime;
+using Android.Support.V7.App;
 using Android.Widget;
-using System.IO;
-using System;
 
 
 namespace Automation_Game

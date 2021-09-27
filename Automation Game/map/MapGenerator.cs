@@ -1,31 +1,24 @@
-﻿using System;
+﻿using Android.Content;
+using Android.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
-using Android.Graphics;
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using System.Numerics;
+using System.Text;
 
 namespace Automation_Game.Map
 {
     public class MapGenerator
     {
-        int mapWidth;
-        int mapHeight;
-        int seed;
-        int octaves;
-        float scale;
-        float persistence;
-        float lacunarity;
+        readonly int mapWidth;
+        readonly int mapHeight;
+        readonly int seed;
+        readonly int octaves;
+        readonly float scale;
+        readonly float persistence;
+        readonly float lacunarity;
         Vector2 offset;
-        public Terrain[,] terrainMap { get; }
-        Bitmap map;
+        public Terrain[,] TerrainMap { get; }
 
 
 
@@ -45,15 +38,14 @@ namespace Automation_Game.Map
             persistence = DEFAULT_PERSISTENCE;
             lacunarity = DEFAULT_LACUNARITY;
             offset = new Vector2(153.2f, 12);
-            terrainMap = new Terrain[mapWidth, mapHeight];
+            TerrainMap = new Terrain[mapWidth, mapHeight];
 
-            generateMap(activity);
+            GenerateMap(activity);
 
         }
 
         public MapGenerator(int mapWidth, int mapHeight, int seed, GameActivity activity)
         {
-            Random rng = new Random();
             this.mapWidth = mapWidth;
             this.mapHeight = mapHeight;
             scale = .4f;
@@ -62,21 +54,21 @@ namespace Automation_Game.Map
             persistence = .9f;
             lacunarity = 1.5f;
             offset = new Vector2(153.2f, 12);
-            terrainMap = new Terrain[mapWidth, mapHeight];
-            map = generateMap(activity);
+            TerrainMap = new Terrain[mapWidth, mapHeight];
+            GenerateMap(activity);
         }
 
-        public Bitmap generateMap(GameActivity activity)
+        public Bitmap GenerateMap(GameActivity activity)
         {
-            return generateMap(1, activity);
+            return GenerateMap(1, activity);
         }
 
-        public Bitmap generateMap(float scale,GameActivity activity)
+        public Bitmap GenerateMap(float scale, GameActivity activity)
         {
 
             int mapWidth = (int)(this.mapWidth * scale);
             int mapHeight = (int)(this.mapHeight * scale);
-            scale = scale * this.scale;
+            scale *= this.scale;
             float[,] mapNoise = NoiseMaker.GenerateNoiseMap(mapWidth, mapHeight, scale, octaves, persistence, lacunarity, seed, offset);
             Bitmap map = Bitmap.CreateBitmap(mapWidth, mapHeight, Bitmap.Config.Argb8888);
             Color c;
@@ -89,7 +81,7 @@ namespace Automation_Game.Map
                         c = Color.Blue;
                         if (scale == DEFAULT_SCALE)
                         {
-                            terrainMap[x, y] = new Terrain("water", 2, x, y);
+                            TerrainMap[x, y] = new Terrain("water", 2, x, y);
                         }
                     }
                     else if (mapNoise[x, y] < .50)
@@ -97,7 +89,7 @@ namespace Automation_Game.Map
                         c = Color.SandyBrown;
                         if (scale == DEFAULT_SCALE)
                         {
-                            terrainMap[x, y] = new Terrain("sand", 3, x, y);
+                            TerrainMap[x, y] = new Terrain("sand", 3, x, y);
                         }
                     }
                     else if (mapNoise[x, y] < .70)
@@ -105,10 +97,10 @@ namespace Automation_Game.Map
                         c = Color.SaddleBrown;
                         if (scale == DEFAULT_SCALE)
                         {
-                            terrainMap[x, y] = new Terrain("dirt", 0, x, y);
+                            TerrainMap[x, y] = new Terrain("dirt", 0, x, y);
                             if (mapNoise[x, y] > .63 && mapNoise[x, y] < .64)
                             {
-                                terrainMap[x, y].BuildStructure(new Structure("Rock", 13, .85f, new Tool("Pickaxe", 11, 0), new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].name, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].id, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].sizePercentage), 2));
+                                TerrainMap[x, y].BuildStructure(new Structure("Rock", 13, .85f, new Tool("Pickaxe", 11, 0), new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].name, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].id, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].sizePercentage), 2));
                             }
                         }
                     }
@@ -117,12 +109,12 @@ namespace Automation_Game.Map
                         c = Color.ForestGreen;
                         if (scale == DEFAULT_SCALE)
                         {
-                            terrainMap[x, y] = new Terrain("grass", 1, x, y);
+                            TerrainMap[x, y] = new Terrain("grass", 1, x, y);
                         }
                     }
                     if (scale == DEFAULT_SCALE)
                     {
-                        terrainMap[x, y].SetActivity(activity);
+                        TerrainMap[x, y].SetActivity(activity);
                     }
                     map.SetPixel(x, y, c);
                 }
@@ -130,14 +122,10 @@ namespace Automation_Game.Map
             return map;
         }
 
-        public Bitmap GetMap()
-        {
-            return map;
-        }
 
         public Terrain[,] GetTerrain()
         {
-            return terrainMap;
+            return TerrainMap;
         }
 
         public int GetWidth()
@@ -171,17 +159,17 @@ namespace Automation_Game.Map
             {
                 for (int y = 0; y < mapWidth; y++)
                 {
-                    if (terrainMap[x, y].GetItem() != null)
+                    if (TerrainMap[x, y].GetItem() != null)
                     {
-                        bytes.AddRange(BitConverter.GetBytes(terrainMap[x, y].GetItem().ToByte().Length));
-                        bytes.AddRange(terrainMap[x, y].GetItem().ToByte());
+                        bytes.AddRange(BitConverter.GetBytes(TerrainMap[x, y].GetItem().ToByte().Length));
+                        bytes.AddRange(TerrainMap[x, y].GetItem().ToByte());
                     }
                     else
                     {
                         bytes.AddRange(BitConverter.GetBytes(0));
-                        if (terrainMap[x, y].GetStructure() != null)
+                        if (TerrainMap[x, y].GetStructure() != null)
                         {
-                            bytes.AddRange(terrainMap[x, y].GetStructure().ToByte());
+                            bytes.AddRange(TerrainMap[x, y].GetStructure().ToByte());
                         }
                         else
                         {
@@ -196,7 +184,7 @@ namespace Automation_Game.Map
 
         public void SetItemPointer(int x, int y, Item item)
         {
-            terrainMap[x, y].SetItem(item);
+            TerrainMap[x, y].AddItem(item);
         }
 
         public MapGenerator(Byte[] bytes, Context context)
@@ -216,13 +204,15 @@ namespace Automation_Game.Map
             offset += sizeof(float);
             lacunarity = BitConverter.ToSingle(bytes, offset);
             offset += sizeof(float);
-            this.offset = new Vector2();
-            this.offset.X = BitConverter.ToSingle(bytes, offset);
+            this.offset = new Vector2
+            {
+                X = BitConverter.ToSingle(bytes, offset)
+            };
             offset += sizeof(float);
             this.offset.Y = BitConverter.ToSingle(bytes, offset);
             offset += sizeof(float);
-            terrainMap = new Terrain[mapWidth, mapHeight];
-            generateMap((GameActivity)context);
+            TerrainMap = new Terrain[mapWidth, mapHeight];
+            GenerateMap((GameActivity)context);
             for (int x = 0; x < mapWidth; x++)
             {
                 for (int y = 0; y < mapWidth; y++)
@@ -232,12 +222,13 @@ namespace Automation_Game.Map
                     if (length > 0)
                     {
                         Byte[] temp = bytes.ToList<Byte>().GetRange(offset, length).ToArray();
-                        if (Tool.IsTool(temp)) {
-                            terrainMap[x, y].SetItem(new Tool(temp));
+                        if (Tool.IsTool(temp))
+                        {
+                            TerrainMap[x, y].AddItem(new Tool(temp));
                         }
                         else
                         {
-                            terrainMap[x, y].SetItem(new Item(temp));
+                            TerrainMap[x, y].AddItem(new Item(temp));
                         }
                         offset += length;
                     }
@@ -265,7 +256,7 @@ namespace Automation_Game.Map
                                     break;
                                 case "tree":
                                     StructureType st = MapDraw.structureTypeList[(int)MapDraw.StructureTypes.TREE];
-                                    structure = new Structure(st.name, st.id, st.sizePercentage, st.useableItem, st.dropItem, st.hardness);
+                                    structure = new Structure(st.Name, st.Id, st.SizePercentage, st.UseableItem, st.DropItem, st.Hardness);
                                     break;
                                 default:
                                     structure = null;
@@ -273,12 +264,12 @@ namespace Automation_Game.Map
                             }
                             if (isblueprint)
                             {
-                                StructureBlueprint blueprint = new StructureBlueprint(structure, deliveries, terrainMap[x, y]);
-                                terrainMap[x, y].BuildStructure(blueprint);
+                                StructureBlueprint blueprint = new StructureBlueprint(structure, deliveries, TerrainMap[x, y]);
+                                TerrainMap[x, y].BuildStructure(blueprint);
                             }
                             else
                             {
-                                terrainMap[x, y].BuildStructure(structure);
+                                TerrainMap[x, y].BuildStructure(structure);
                             }
                             offset += length;
                         }

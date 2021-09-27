@@ -1,34 +1,27 @@
-﻿using Android.App;
-using Android.Content;
-using Android.Graphics;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Timer = System.Timers.Timer;
 namespace Automation_Game
 {
     public class Player : Moveable
     {
         //string mode;
-        Inventory inv;
+        readonly Inventory inv;
         public const int INVENTORY_SIZE = 8;
-        public int id { get; }
+        Thread t;
+        public int Id { get; }
+        int dx, dy;
+        int i, frames = 10;
 
-
-        public Player(int x, int y, Context context, MapDraw parent)
+        public Player(int x, int y, MapDraw parent)
         {
             this.x = x;
             this.y = y;
             //mode = "awake";
             inv = new Inventory(INVENTORY_SIZE);
-            id = 4;
+            Id = 4;
             this.parent = parent;
         }
 
@@ -44,15 +37,20 @@ namespace Automation_Game
 
         public void Equip(int n)
         {
-            inv.equip(n);
+            inv.Equip(n);
         }
 
         public bool DeEquip()
         {
-            return inv.deequip();
+            return inv.DeEquip();
         }
 
-        public async override void MoveTo(int targetX, int targetY)
+        public bool IsInventoryFull()
+        {
+            return inv.IsFull();
+        }
+
+        public override void MoveTo(int targetX, int targetY)
         {
             if (packet == null)
             {
@@ -63,56 +61,37 @@ namespace Automation_Game
                 packet.targetX = targetX;
                 packet.targetY = targetY;
             }
-
-            
-            CancellationTokenSource source = new CancellationTokenSource();
-            CancellationToken token = source.Token;
-            if (t == null || t.IsCompleted)
+            if (t == null || !t.IsAlive)
             {
-
-                t = Task.Run(() => MoveTo(packet, source), token);
-                try
-                {
-                    await t;
-                }
-                catch (System.OperationCanceledException e)
-                {
-                    Console.WriteLine($"{nameof(System.OperationCanceledException)} thrown with message: {e.Message}");
-                }
-                finally
-                {
-                    source.Dispose();
-                }
+                t = new Thread(new ParameterizedThreadStart(MoveTo));
+                t.Start(packet);
             }
 
         }
 
-        private void MoveTo(Object obj, CancellationTokenSource token)
+        private void MoveTo(Object obj)
         {
             bool canMoveX = true;
             bool canMoveY = true;
             MovementPacket packet = (MovementPacket)obj;
             Random rng = new Random();
-            int dx = 0;
-            int dy = 0;
-            update(ref dx, ref dy, packet);
+            dx = UpdateDX(packet);
+            dy = UpdateDY(packet);
             Terrain step;
-            while ((int)packet.moving.GetX() != packet.targetX && (int)packet.moving.GetY() != packet.targetY)
+            while (dx != 0 || dy != 0 && (canMoveX || canMoveY))
             {
-                update(ref dx, ref dy, packet);
-                if (rng.Next(2) == 0)
+                if (rng.Next(2) == 0 || (canMoveX && !canMoveY))
                 {
-                    step = parent.generator.GetTerrain()[(int)packet.moving.GetX() + dx, (int)packet.moving.GetY()];
-                    if (!step.type.Equals("water") && step.GetStructure() == null)
+                    step = parent.Generator.GetTerrain()[(int)packet.moving.GetX() + dx, (int)packet.moving.GetY()];
+                    if (!step.Type.Equals("water") && step.GetStructure() == null)
                     {
                         canMoveY = true;
                         canMoveX = true;
-                        for (int i = 0; i < 10; i++)
-                        {
-                            packet.moving.Move((float)dx / 10, 0);
-                            packet.moving.GetParent().Invalidate();
-                            Thread.Sleep(500 / 10);
-                        }
+                        i = 0;
+                        Timer t = new Timer(50);
+                        t.Elapsed += Timer1_Elapsed;
+                        t.Start();
+                        while (t.Enabled) ;
                         packet.moving.SetX((float)Math.Round(packet.moving.GetX()));
                     }
                     else
@@ -120,39 +99,22 @@ namespace Automation_Game
                         canMoveX = false;
                         if (!(canMoveX || canMoveY))
                         {
-
-                            if (parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure() != null)
-                            {
-                                if (!parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet))
-                                {
-                                    int hardness = parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure().hardness;
-                                    if (parent.generator.terrainMap[packet.targetX, packet.targetY].DestroyStructure(this))
-                                    {
-                                        if (GetEquippedItem() != null && GetEquippedItem().use(hardness))
-                                        {
-                                            inv.RemoveItem(-1, false);
-                                        }
-                                    }
-                                }
-                            }
-                            token.Cancel();
-                            token.Token.ThrowIfCancellationRequested();
+                            TryUsing(parent.Generator.TerrainMap[packet.targetX, packet.targetY]);
                         }
                     }
                 }
                 else
                 {
-                    step = parent.generator.GetTerrain()[(int)packet.moving.GetX(), (int)packet.moving.GetY() + dy];
-                    if (!step.type.Equals("water") && step.GetStructure() == null)
+                    step = parent.Generator.GetTerrain()[(int)packet.moving.GetX(), (int)packet.moving.GetY() + dy];
+                    if (!step.Type.Equals("water") && step.GetStructure() == null)
                     {
                         canMoveY = true;
                         canMoveX = true;
-                        for (int i = 0; i < 10; i++)
-                        {
-                            packet.moving.Move(0, (float)dy / 10);
-                            packet.moving.GetParent().Invalidate();
-                            Thread.Sleep(500 / 10);
-                        }
+                        i = 0;
+                        Timer t = new Timer(50);
+                        t.Elapsed += Timer2_Elapsed;
+                        t.Start();
+                        while (t.Enabled) ;
                         packet.moving.SetY((float)Math.Round(packet.moving.GetY()));
                     }
                     else
@@ -161,40 +123,25 @@ namespace Automation_Game
                         if (!(canMoveX || canMoveY))
                         {
 
-                            if (parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure() != null)
-                            {
-                                if (!parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet))
-                                {
-                                    int hardness = parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure().hardness;
-                                    if (parent.generator.terrainMap[packet.targetX, packet.targetY].DestroyStructure(this))
-                                    {
-                                        if (GetEquippedItem() != null && GetEquippedItem().use(hardness))
-                                        {
-                                            inv.RemoveItem(-1, false);
-                                        }
-                                    }
-                                }
-                            }
-                            token.Cancel();
-                            token.Token.ThrowIfCancellationRequested();
+                            TryUsing(parent.Generator.TerrainMap[packet.targetX, packet.targetY]);
                         }
                     }
                 }
+                dx = UpdateDX(packet);
+                dy = UpdateDY(packet);
             }
-            while ((int)packet.moving.GetX() != packet.targetX)
+            while (dx != 0 && canMoveX)
             {
-                update(ref dx, ref dy, packet);
                 canMoveY = false;
-                step = parent.generator.GetTerrain()[(int)packet.moving.GetX() + dx, (int)packet.moving.GetY()];
-                if (!step.type.Equals("water") && step.GetStructure() == null)
+                step = parent.Generator.GetTerrain()[(int)packet.moving.GetX() + dx, (int)packet.moving.GetY()];
+                if (!step.Type.Equals("water") && step.GetStructure() == null)
                 {
                     canMoveX = true;
-                    for (int i = 0; i < 10; i++)
-                    {
-                        packet.moving.Move((float)dx / 10, 0);
-                        packet.moving.GetParent().Invalidate();
-                        Thread.Sleep(500 / 10);
-                    }
+                    i = 0;
+                    Timer t = new Timer(50);
+                    t.Elapsed += Timer1_Elapsed;
+                    t.Start();
+                    while (t.Enabled) ;
                     packet.moving.SetX((float)Math.Round(packet.moving.GetX()));
                 }
                 else
@@ -203,88 +150,143 @@ namespace Automation_Game
                     if (!(canMoveX || canMoveY))
                     {
 
-                        if (parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure() != null)
-                        {
-                            if (!parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet))
-                            {
-                                int hardness = parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure().hardness;
-                                if (parent.generator.terrainMap[packet.targetX, packet.targetY].DestroyStructure(this))
-                                {
-                                    if (GetEquippedItem() != null && GetEquippedItem().use(hardness))
-                                    {
-                                        inv.RemoveItem(-1, false);
-                                    }
-                                }
-                            }
-                        }
-                        token.Cancel();
-                        token.Token.ThrowIfCancellationRequested();
+                        TryUsing(parent.Generator.TerrainMap[packet.targetX, packet.targetY]);
                     }
                 }
+                dx = UpdateDX(packet);
+                dy = UpdateDY(packet);
             }
-            while (packet.moving.GetY() != packet.targetY)
+            while (dy != 0 && canMoveY)
             {
-                update(ref dx, ref dy, packet);
-                canMoveX = false;
-                step = parent.generator.GetTerrain()[(int)packet.moving.GetX(), (int)packet.moving.GetY() + dy];
-                if (!step.type.Equals("water") && step.GetStructure() == null)
+                canMoveY = false;
+                step = parent.Generator.GetTerrain()[(int)packet.moving.GetX(), (int)packet.moving.GetY() + dy];
+                if (!step.Type.Equals("water") && step.GetStructure() == null)
                 {
-                    canMoveY = true;
-                    for (int i = 0; i < 10; i++)
-                    {
-                        packet.moving.Move(0, (float)dy / 10);
-                        packet.moving.GetParent().Invalidate();
-                        Thread.Sleep(500 / 10);
-                    }
+                    canMoveX = true;
+                    i = 0;
+                    Timer t = new Timer(50);
+                    t.Elapsed += Timer2_Elapsed;
+                    t.Start();
+                    while (t.Enabled) ;
                     packet.moving.SetY((float)Math.Round(packet.moving.GetY()));
                 }
                 else
                 {
-                    canMoveY = false;
+                    canMoveX = false;
                     if (!(canMoveX || canMoveY))
                     {
-
-                        if (parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure() != null)
-                        {
-                            if (!parent.generator.terrainMap[packet.targetX, packet.targetY].UseStructure(packet))
-                            {
-                                int hardness = parent.generator.terrainMap[packet.targetX, packet.targetY].GetStructure().hardness;
-                                if (parent.generator.terrainMap[packet.targetX, packet.targetY].DestroyStructure(this))
-                                {
-                                    if (GetEquippedItem() != null && GetEquippedItem().use(hardness))
-                                    {
-                                        inv.RemoveItem(-1, false);
-                                    }
-                                }
-                            }
-                        }
-                        token.Cancel();
-                        token.Token.ThrowIfCancellationRequested();
+                        TryUsing(parent.Generator.TerrainMap[packet.targetX, packet.targetY]);
                     }
                 }
+                dx = UpdateDX(packet);
+                dy = UpdateDY(packet);
             }
-            PickUp();
-
+            if (dx == 0 && dy == 0)
+            {
+                PickUp();
+            }
         }
 
 
-        private void update(ref int dx, ref int dy, MovementPacket packet)
+        private void Timer1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (i++ < frames)
+            {
+                Move((float)dx / frames, 0);
+                GetParent().Invalidate();
+            }
+            else
+            {
+                ((Timer)sender).Stop();
+                ((Timer)sender).Close();
+                ((Timer)sender).Dispose();
+            }
+        }
+        private void Timer2_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (i++ < frames)
+            {
+                Move(0, (float)dy / frames);
+                GetParent().Invalidate();
+            }
+            else
+            {
+                ((Timer)sender).Stop();
+                ((Timer)sender).Close();
+                ((Timer)sender).Dispose();
+            }
+        }
+
+        private void TryUsing(Terrain t)
+        {
+            if (t.GetStructure() != null)
+            {
+                if (!t.UseStructure(packet))
+                {
+                    int Hardness = t.GetStructure().Hardness;
+                    if (t.DestroyStructure(this))
+                    {
+                        if (GetEquippedItem() != null && GetEquippedItem().Use(Hardness))
+                        {
+                            inv.RemoveItem(-1, false);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        private int UpdateDX(MovementPacket packet)
+        {
+            if (packet.moving.GetX() < packet.targetX)
+            {
+                return 1;
+            }
+            else if (packet.moving.GetX() > packet.targetX)
+            {
+                return -1;
+            }
+            return 0;
+        }
+
+        private int UpdateDY(MovementPacket packet)
+        {
+            if (packet.moving.GetY() < packet.targetY)
+            {
+                return 1;
+            }
+            else if (packet.moving.GetY() > packet.targetY)
+            {
+                return -1;
+            }
+            return 0;
+        }
+
+        private void Update(ref int dx, ref int dy, MovementPacket packet)
         {
             if (packet.moving.GetX() > packet.targetX)
             {
                 dx = -1;
             }
-            else
+            else if (packet.moving.GetX() < packet.targetX)
             {
                 dx = 1;
+            }
+            else
+            {
+                dx = 0;
             }
             if (packet.moving.GetY() > packet.targetY)
             {
                 dy = -1;
             }
-            else
+            else if (packet.moving.GetY() < packet.targetY)
             {
                 dy = 1;
+            }
+            else
+            {
+                dy = 0;
             }
         }
 
@@ -292,10 +294,9 @@ namespace Automation_Game
         {
             if (!inv.IsFull())
             {
-                if (parent.generator.terrainMap[(int)x, (int)y].GetItem() != null)
+                if (parent.Generator.TerrainMap[(int)x, (int)y].GetItem() != null)
                 {
-                    inv.AddItem(parent.generator.terrainMap[(int)x, (int)y].GetItem());
-                    parent.generator.terrainMap[(int)x, (int)y].SetItem(null);
+                    inv.AddItem(parent.Generator.TerrainMap[(int)x, (int)y].Pickup());
                     parent.Invalidate();
                     return true;
                 }
@@ -320,15 +321,15 @@ namespace Automation_Game
 
         public void SortInventory()
         {
-            inv.sort();
+            inv.Sort();
         }
 
-        public Item dropItem(int index, bool sort = true)
+        public Item DropItem(int index, bool sort = true)
         {
             return inv.RemoveItem(index, sort);
         }
 
-        public Player(Byte[] bytes, int x, int y)
+        public Player(Byte[] bytes)
         {
             int offset = 0;
             int length = BitConverter.ToInt32(bytes, offset);
@@ -340,7 +341,7 @@ namespace Automation_Game
             this.x = BitConverter.ToSingle(bytes, offset);
             offset += 4;
             this.y = BitConverter.ToSingle(bytes, offset);
-            id = 4;
+            Id = 4;
         }
 
         public Byte[] ToByte()

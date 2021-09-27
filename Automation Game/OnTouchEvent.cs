@@ -1,7 +1,6 @@
 ﻿using Android.OS;
 using Android.Views;
 using Android.Widget;
-using Java.Interop;
 using System;
 using System.Timers;
 
@@ -10,7 +9,7 @@ namespace Automation_Game
     internal class OnTouchEvent : Java.Lang.Object, View.IOnTouchListener
     {
         Timer t;
-        GameActivity activity;
+        readonly GameActivity activity;
         View lastView;
         bool finished;
         StructureBlueprint blueprint;
@@ -29,8 +28,10 @@ namespace Automation_Game
                 {
 
                     case MotionEventActions.Down:
-                        t = new Timer();
-                        t.Interval = 1000;
+                        t = new Timer
+                        {
+                            Interval = 1000
+                        };
                         t.Elapsed += Elapsed;
                         t.Start();
                         lastView = v;
@@ -42,16 +43,16 @@ namespace Automation_Game
                             t.Stop();
                             if (!finished && lastView is Button btn)
                             {
-                                int x = (int)activity.map.player.GetX();
-                                int y = (int)activity.map.player.GetY();
-                                if (activity.map.generator.terrainMap[x, y].GetItem() == null)
+                                int x = (int)activity.Map.Player.GetX();
+                                int y = (int)activity.Map.Player.GetY();
+                                if (activity.Map.Generator.TerrainMap[x, y].GetItem() == null)
                                 {
-                                    Item i = activity.map.player.dropItem(int.Parse(lastView.Tag.ToString()) - 1);
+                                    Item i = activity.Map.Player.DropItem(int.Parse(lastView.Tag.ToString()) - 1);
                                     if (i is Tool)
                                     {
                                         Console.WriteLine("true");
                                     }
-                                    activity.map.generator.SetItemPointer(x, y, i);
+                                    activity.Map.Generator.SetItemPointer(x, y, i);
                                     activity.Invalidate();
                                 }
                             }
@@ -67,10 +68,10 @@ namespace Automation_Game
                 {
 
                     case MotionEventActions.Down:
-                        Item item = activity.map.player.GetInvetory()[int.Parse(v.Tag.ToString()) - 1];
+                        Item item = activity.Map.Player.GetInvetory()[int.Parse(v.Tag.ToString()) - 1];
                         if (blueprint.AddItem(item))
                         {
-                            activity.map.player.dropItem(int.Parse(v.Tag.ToString()) - 1);
+                            activity.Map.Player.DropItem(int.Parse(v.Tag.ToString()) - 1);
                             activity.Invalidate();
                         }
                         break;
@@ -90,13 +91,13 @@ namespace Automation_Game
         {
             finished = true;
             Handler handle = new Handler(Looper.MainLooper);
-            handle.Post(equip);
+            handle.Post(Equip);
         }
 
-        private void equip()
+        private void Equip()
         {
-            activity.map.player.Equip(int.Parse(lastView.Tag.ToString()) - 1);
-            activity.map.player.SortInventory();
+            activity.Map.Player.Equip(int.Parse(lastView.Tag.ToString()) - 1);
+            activity.Map.Player.SortInventory();
             activity.Invalidate();
         }
     }
