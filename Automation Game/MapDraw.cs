@@ -39,14 +39,14 @@ namespace Automation_Game
         public bool editMode;
         public StructureBlueprint CurrentlyBuilding;
 
-        public static List<ItemType> itemTypeList = new List<ItemType> { new ItemType("Stick", 0.05, 7, 1, new string[] { "dirt" }),
-                                                    new ItemType("Stone", 0.05, 6, 1, new string[] { "dirt" }),
-                                                    new ItemType("Tree Seed", 0,14,1,new string[] { }) };
-        public static List<StructureType> structureTypeList = new List<StructureType> { new StructureType("tree", 8, 1, new Item[] { new Item(itemTypeList[(int)ItemTypes.STICK].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), new Item(itemTypeList[(int)ItemTypes.TREE_SEED].name, itemTypeList[(int)ItemTypes.TREE_SEED].id, itemTypeList[(int)ItemTypes.TREE_SEED].sizePercentage) }, new Tool("Axe", 10, 20), 0.08, new string[] { "dirt" }, 1) };
+        public static List<ItemType> itemTypeList = new List<ItemType> { new ItemType("Stick", 0.05, (int)GameActivity.IDs.STICK, 1, new string[] { "dirt" }),
+                                                    new ItemType("Stone", 0.05, (int)GameActivity.IDs.STONE, 1, new string[] { "dirt" }),
+                                                    new ItemType("Tree Seed", 0,(int)GameActivity.IDs.TREE_SEED,1,new string[] { }) };
+        public static List<StructureType> structureTypeList = new List<StructureType> { new StructureType("tree", (int)GameActivity.IDs.TREE, 1, new Item[] { new Item(itemTypeList[(int)ItemTypes.STICK].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), new Item(itemTypeList[(int)ItemTypes.TREE_SEED].name, itemTypeList[(int)ItemTypes.TREE_SEED].id, itemTypeList[(int)ItemTypes.TREE_SEED].sizePercentage) }, new Tool("Axe", (int)GameActivity.IDs.AXE, 20), 0.08, new string[] { "dirt" }, 1) };
         public MapDraw(Context context) : base(context)
         {
             this.context = context;
-            Generator = new MapGenerator(100, 100, 1234, (GameActivity)context);
+            Generator = new MapGenerator(100, 100, (GameActivity)context);
             renderDistance = new Vector2();
             LastPoint = new Vector2();
             Player = new Player(Generator.GetWidth() / 2, Generator.GetHeight() / 2, this);
@@ -96,27 +96,50 @@ namespace Automation_Game
                 camera.Y = Generator.GetHeight() - renderDistance.Y;
             }
             Terrain[,] terrain = Generator.GetTerrain();
+            Rect src = new Rect();
+            RectF dst = new RectF();
             for (int x = (int)(camera.X - renderDistance.X / 2), posX = 0; x <= camera.X + renderDistance.X / 2; x++, posX++)
             {
                 for (int y = (int)(camera.Y - renderDistance.Y / 2), posY = 0; y <= camera.Y + renderDistance.Y / 2; y++, posY++)
                 {
                     int spriteSheetSignleWidth = GameActivity.spriteSheet.GetScaledWidth(canvas) / spriteSheetColoumnCount;
-                    Rect src = new Rect(spriteSheetSignleWidth * (terrain[x, y].Id % spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].Id / spriteSheetColoumnCount), spriteSheetSignleWidth * (terrain[x, y].Id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (terrain[x, y].Id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
-                    RectF dst = new RectF(posX * Terrain.Size, posY * Terrain.Size, posX * Terrain.Size + Terrain.Size, posY * Terrain.Size + Terrain.Size);
+                    src.Left = spriteSheetSignleWidth * (terrain[x, y].Id % spriteSheetColoumnCount);
+                    src.Top = spriteSheetSignleWidth * (terrain[x, y].Id / spriteSheetColoumnCount);
+                    src.Right = spriteSheetSignleWidth * (terrain[x, y].Id % spriteSheetColoumnCount) + spriteSheetSignleWidth;
+                    src.Bottom = spriteSheetSignleWidth * (terrain[x, y].Id / spriteSheetColoumnCount) + spriteSheetSignleWidth;
+                    dst.Left = posX * Terrain.Size;
+                    dst.Top = posY * Terrain.Size;
+                    dst.Right = posX * Terrain.Size + Terrain.Size;
+                    dst.Bottom = posY * Terrain.Size + Terrain.Size;
                     canvas.DrawBitmap(GameActivity.spriteSheet, src, dst, null);
                     Item i;
                     if ((i = terrain[x, y].GetItem()) != null)
                     {
-                        src = new Rect(spriteSheetSignleWidth * (i.id % spriteSheetColoumnCount), spriteSheetSignleWidth * (i.id / spriteSheetColoumnCount), spriteSheetSignleWidth * (i.id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (i.id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
-                        dst = new RectF(posX * (int)(Terrain.Size * i.sizePercentage), posY * (int)(Terrain.Size * i.sizePercentage), (posX + 1) * (int)(Terrain.Size * i.sizePercentage), (posY + 1) * (int)(Terrain.Size * i.sizePercentage));
+                        src.Left = spriteSheetSignleWidth * (i.id % spriteSheetColoumnCount);
+                        src.Top = spriteSheetSignleWidth * (i.id / spriteSheetColoumnCount);
+                        src.Right = spriteSheetSignleWidth * (i.id % spriteSheetColoumnCount) + spriteSheetSignleWidth;
+                        src.Bottom = spriteSheetSignleWidth * (i.id / spriteSheetColoumnCount) + spriteSheetSignleWidth;
+                        dst.Left = posX * (int)(Terrain.Size * i.sizePercentage);
+                        dst.Top = posY * (int)(Terrain.Size * i.sizePercentage);
+                        dst.Right = (posX + 1) * (int)(Terrain.Size * i.sizePercentage);
+                        dst.Bottom = (posY + 1) * (int)(Terrain.Size * i.sizePercentage);
                         canvas.DrawBitmap(GameActivity.spriteSheet, src, dst, null);
                     }
                     else if (terrain[x, y].GetStructure() != null)
                     {
                         int id = terrain[x, y].GetStructureId();
-                        src = new Rect(spriteSheetSignleWidth * (id % spriteSheetColoumnCount), spriteSheetSignleWidth * (id / spriteSheetColoumnCount), spriteSheetSignleWidth * (id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
-                        dst = new RectF(posX * Terrain.Size, posY * Terrain.Size, posX * Terrain.Size + Terrain.Size, posY * Terrain.Size + Terrain.Size);
-                        RectF dst2 = new RectF(dst.Left + Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2, dst.Top + Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2, dst.Right - Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2, dst.Bottom - Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2);
+                        src.Left = spriteSheetSignleWidth * (id % spriteSheetColoumnCount);
+                        src.Top = spriteSheetSignleWidth * (id / spriteSheetColoumnCount);
+                        src.Right = spriteSheetSignleWidth * (id % spriteSheetColoumnCount) + spriteSheetSignleWidth;
+                        src.Bottom = spriteSheetSignleWidth * (id / spriteSheetColoumnCount) + spriteSheetSignleWidth;
+                        dst.Left = posX * Terrain.Size;
+                        dst.Top = posY * Terrain.Size;
+                        dst.Right = posX * Terrain.Size + Terrain.Size;
+                        dst.Bottom = posY * Terrain.Size + Terrain.Size;
+                        dst.Left = dst.Left + Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2;
+                        dst.Top = dst.Top + Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2;
+                        dst.Right = dst.Right - Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2;
+                        dst.Bottom = dst.Bottom - Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2;
                         Paint p = null;
                         if (terrain[x, y].GetStructure() is StructureBlueprint)
                         {
@@ -125,10 +148,8 @@ namespace Automation_Game
                                 Alpha = 100
                             };
                         }
-                        canvas.DrawBitmap(GameActivity.spriteSheet, src, dst2, p);
+                        canvas.DrawBitmap(GameActivity.spriteSheet, src, dst, p);
                     }
-                    src.Dispose();
-                    dst.Dispose();
                 }
             }
             if (Player.GetX() >= camera.X - renderDistance.X / 2 && Player.GetX() <= camera.X + renderDistance.X / 2)
@@ -138,14 +159,21 @@ namespace Automation_Game
                     int spriteSheetSignleWidth = GameActivity.spriteSheet.GetScaledWidth(canvas) / spriteSheetColoumnCount;
                     float PlayerDrawY = Player.GetY() - (int)(camera.Y - renderDistance.Y / 2);
                     float PlayerDrawX = Player.GetX() - (int)(camera.X - renderDistance.X / 2);
-                    Rect src = new Rect(spriteSheetSignleWidth * (Player.Id % spriteSheetColoumnCount), spriteSheetSignleWidth * (Player.Id / spriteSheetColoumnCount), spriteSheetSignleWidth * (Player.Id % spriteSheetColoumnCount) + spriteSheetSignleWidth, spriteSheetSignleWidth * (Player.Id / spriteSheetColoumnCount) + spriteSheetSignleWidth);
-                    RectF dst = new RectF(PlayerDrawX * (int)(Terrain.Size), PlayerDrawY * (int)(Terrain.Size), (PlayerDrawX + 1) * (int)(Terrain.Size), (PlayerDrawY + 1) * (int)(Terrain.Size));
+                    src.Left = spriteSheetSignleWidth * (Player.Id % spriteSheetColoumnCount);
+                    src.Top = spriteSheetSignleWidth * (Player.Id / spriteSheetColoumnCount);
+                    src.Right = spriteSheetSignleWidth * (Player.Id % spriteSheetColoumnCount) + spriteSheetSignleWidth;
+                    src.Bottom = spriteSheetSignleWidth * (Player.Id / spriteSheetColoumnCount) + spriteSheetSignleWidth;
+                    dst.Left = PlayerDrawX * (int)(Terrain.Size);
+                    dst.Top = PlayerDrawY * (int)(Terrain.Size);
+                    dst.Right = (PlayerDrawX + 1) * (int)(Terrain.Size);
+                    dst.Bottom = (PlayerDrawY + 1) * (int)(Terrain.Size);
 
                     canvas.DrawBitmap(GameActivity.spriteSheet, src, dst, null);
-                    src.Dispose();
-                    dst.Dispose();
+                    
                 }
             }
+            src.Dispose();
+            dst.Dispose();
             Drawn = true;
         }
 

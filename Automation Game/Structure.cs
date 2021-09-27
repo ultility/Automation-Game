@@ -61,7 +61,7 @@ namespace Automation_Game
 
         public Item GetDropItem(int n)
         {
-            if (n < dropItems.Count && n > 0)
+            if (n < dropItems.Count && n >= 0)
             {
                 return dropItems[n];
             }

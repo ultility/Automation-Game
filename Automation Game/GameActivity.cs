@@ -34,6 +34,25 @@ namespace Automation_Game
 
         public StructureBlueprint UsedBlueprint;
 
+        public enum IDs
+        {
+            DIRT,
+            GRASS,
+            WATER,
+            SAND,
+            PLAYER_WAKE,
+            PLAYER_ASLEEP,
+            STONE,
+            STICK,
+            TREE,
+            CRAFTING_STATION,
+            AXE,
+            PICKAXE,
+            SHOVEL,
+            ROCK,
+            TREE_SEED
+        };
+
         protected override void OnStop()
         {
             Map.Save();
@@ -144,7 +163,7 @@ namespace Automation_Game
                 craftingStation.SetHeight(height);
                 Bitmap bs = Bitmap.CreateBitmap(width / 8, height, Bitmap.Config.Argb8888);
                 Canvas c = new Canvas(bs);
-                Rect src = new Rect((9 % 6) * spriteSheet.Width / 6, (9 / 6) * spriteSheet.Height / 2, (9 % 6 + 1) * spriteSheet.Width / 6, (9 / 6 + 1) * spriteSheet.Height / 2);
+                Rect src = new Rect(((int)IDs.CRAFTING_STATION % MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount) * spriteSheet.Height / 2, (9 % MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount);
                 Rect dst = new Rect(0, 0, c.Width, c.Height);
                 Paint p = new Paint();
                 Color color = Color.CadetBlue;

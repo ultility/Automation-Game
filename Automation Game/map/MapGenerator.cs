@@ -101,7 +101,7 @@ namespace Automation_Game.Map
                             if (mapNoise[x, y] > .63 && mapNoise[x, y] < .64)
                             {
                                 TerrainMap[x, y].BuildStructure(new Structure("Rock", 13, .85f, new Tool("Pickaxe", 11, 0), new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].name, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].id, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].sizePercentage), 2));
-                            }
+                            }   
                         }
                     }
                     else

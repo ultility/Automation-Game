@@ -13,8 +13,8 @@ namespace Automation_Game
         Thread t;
         public int Id { get; }
         int dx, dy;
-        int i, frames = 10;
-
+        int i = 10, j = 10, frames = 10;
+        Timer timer;
         public Player(int x, int y, MapDraw parent)
         {
             this.x = x;
@@ -23,6 +23,9 @@ namespace Automation_Game
             inv = new Inventory(INVENTORY_SIZE);
             Id = 4;
             this.parent = parent;
+            timer = new Timer(50);
+            timer.Elapsed += Timer_Elapsed;
+            timer.Start();
         }
 
         public void SetParent(MapDraw p)
@@ -78,7 +81,7 @@ namespace Automation_Game
             dx = UpdateDX(packet);
             dy = UpdateDY(packet);
             Terrain step;
-            while (dx != 0 || dy != 0 && (canMoveX || canMoveY))
+            while (dx != 0 && dy != 0 && (canMoveX || canMoveY))
             {
                 if (rng.Next(2) == 0 || (canMoveX && !canMoveY))
                 {
@@ -88,11 +91,9 @@ namespace Automation_Game
                         canMoveY = true;
                         canMoveX = true;
                         i = 0;
-                        Timer t = new Timer(50);
-                        t.Elapsed += Timer1_Elapsed;
-                        t.Start();
-                        while (t.Enabled) ;
+                        while (i < frames) ;
                         packet.moving.SetX((float)Math.Round(packet.moving.GetX()));
+                        
                     }
                     else
                     {
@@ -110,12 +111,11 @@ namespace Automation_Game
                     {
                         canMoveY = true;
                         canMoveX = true;
-                        i = 0;
-                        Timer t = new Timer(50);
-                        t.Elapsed += Timer2_Elapsed;
-                        t.Start();
-                        while (t.Enabled) ;
+                        j = 0;
+                        
+                        while (j < frames) ;
                         packet.moving.SetY((float)Math.Round(packet.moving.GetY()));
+                        
                     }
                     else
                     {
@@ -138,10 +138,7 @@ namespace Automation_Game
                 {
                     canMoveX = true;
                     i = 0;
-                    Timer t = new Timer(50);
-                    t.Elapsed += Timer1_Elapsed;
-                    t.Start();
-                    while (t.Enabled) ;
+                    while (i < frames) ;
                     packet.moving.SetX((float)Math.Round(packet.moving.GetX()));
                 }
                 else
@@ -163,11 +160,8 @@ namespace Automation_Game
                 if (!step.Type.Equals("water") && step.GetStructure() == null)
                 {
                     canMoveX = true;
-                    i = 0;
-                    Timer t = new Timer(50);
-                    t.Elapsed += Timer2_Elapsed;
-                    t.Start();
-                    while (t.Enabled) ;
+                    j = 0;
+                    while (j < frames) ;
                     packet.moving.SetY((float)Math.Round(packet.moving.GetY()));
                 }
                 else
@@ -188,32 +182,19 @@ namespace Automation_Game
         }
 
 
-        private void Timer1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (i++ < frames)
+            if (i < frames)
             {
                 Move((float)dx / frames, 0);
                 GetParent().Invalidate();
+                i++;
             }
-            else
-            {
-                ((Timer)sender).Stop();
-                ((Timer)sender).Close();
-                ((Timer)sender).Dispose();
-            }
-        }
-        private void Timer2_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            if (i++ < frames)
+            else if (j < frames)
             {
                 Move(0, (float)dy / frames);
                 GetParent().Invalidate();
-            }
-            else
-            {
-                ((Timer)sender).Stop();
-                ((Timer)sender).Close();
-                ((Timer)sender).Dispose();
+                j++;
             }
         }
 
