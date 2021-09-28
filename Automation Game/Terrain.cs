@@ -113,6 +113,21 @@ namespace Automation_Game
                     }
 
                 }
+                else if (structure ==  null)
+                {
+                    if (packet.moving is Player p)
+                    {
+                        if (p.GetEquippedItem() != null && p.GetEquippedItem().name.Equals("Shovel"))
+                        {
+                            if (Type.Equals("dirt"))
+                            {
+                                structure = new Structure("Dirt hole", (int)GameActivity.IDs.DIRT_HOLE, 1, new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.TREE_SEED].name, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.TREE_SEED].id, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.TREE_SEED].sizePercentage), (Item)null, 0, true);
+                                p.GetEquippedItem().Use(1);
+                                return true;
+                            }
+                        }
+                    }
+                }
             }
             return false;
         }
@@ -156,6 +171,11 @@ namespace Automation_Game
                     activity.Map.Invalidate();
                 }
             }
+        }
+
+        public static bool IsWalkable(Terrain t)
+        {
+            return !t.Type.Equals("water") || t.structure == null || t.structure.Walkable;
         }
     }
 }

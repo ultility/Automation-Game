@@ -18,12 +18,14 @@ namespace Automation_Game
 
         public int Hardness { get; }
 
+        public bool Walkable { get; }
+
         public virtual bool IsBuildable(Terrain t)
         {
             return !t.Type.Equals("water");
         }
 
-        public Structure(string name, int id, float size, Item useableTool, IEnumerable<Item> droppedItems, int Hardness)
+        public Structure(string name, int id, float size, Item useableTool, IEnumerable<Item> droppedItems, int Hardness, bool Walkable = false)
         {
             this.dropItems = new List<Item>();
             this.dropItems.AddRange(droppedItems);
@@ -32,9 +34,10 @@ namespace Automation_Game
             SizePercentage = size;
             this.useableTool = useableTool;
             this.Hardness = Hardness;
+            this.Walkable = Walkable;
         }
 
-        public Structure(string name, int id, float size, Item useableTool, Item droppedItem, int Hardness)
+        public Structure(string name, int id, float size, Item useableTool, Item droppedItem, int Hardness, bool Walkable = false)
         {
             this.dropItems = new List<Item>
             {
@@ -45,6 +48,7 @@ namespace Automation_Game
             SizePercentage = size;
             this.useableTool = useableTool;
             this.Hardness = Hardness;
+            this.Walkable = Walkable;
         }
 
         public virtual bool Destory(Player p)

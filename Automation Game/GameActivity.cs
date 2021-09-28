@@ -6,8 +6,10 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Timer = System.Timers.Timer;
 
 namespace Automation_Game
 {
@@ -34,6 +36,10 @@ namespace Automation_Game
 
         public StructureBlueprint UsedBlueprint;
 
+        Timer timer;
+        const int MAX_FPS = 60;
+        public List<IUpdateable> Updateables;
+
         public enum IDs
         {
             DIRT,
@@ -50,7 +56,8 @@ namespace Automation_Game
             PICKAXE,
             SHOVEL,
             ROCK,
-            TREE_SEED
+            TREE_SEED,
+            DIRT_HOLE
         };
 
         protected override void OnStop()
@@ -72,6 +79,9 @@ namespace Automation_Game
             displayMap.FocusChange += FocusChange;
             slots = new Button[9];
             IsMinimapShown = false;
+            timer = new Timer(1000 / MAX_FPS);
+            timer.Elapsed += Tick;
+            Updateables = new List<IUpdateable>();
             if (Intent.GetBooleanExtra("create", true))
             {
                 Map = new MapDraw(this);
@@ -121,7 +131,20 @@ namespace Automation_Game
             DisplayCraftingUI.Click += DisplayCraftingUI_Click;
 
             spriteSheet = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("sprite_sheet", "drawable", this.PackageName));
+            timer.Start();
+        }
 
+        private async void Tick(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            timer.Stop();
+            List<Task> tasks = new List<Task>();
+            foreach (IUpdateable updateable in Updateables)
+            {
+                tasks.Add(updateable.Update());
+            }
+            await Task.WhenAll(tasks);
+            Map.Invalidate();
+            timer.Start();
         }
 
         private void FocusChange(object sender, View.FocusChangeEventArgs e)

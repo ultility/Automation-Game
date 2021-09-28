@@ -73,6 +73,7 @@
     <Compile Include="Inventory.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="ItemType.cs" />
+    <Compile Include="IUpdateable.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="MapDraw.cs" />
     <Compile Include="map\FastNoiseLite.cs" />
@@ -81,6 +82,9 @@
     <Compile Include="IMoveable.cs" />
     <Compile Include="Moveable.cs" />
     <Compile Include="MovementPacket.cs" />
+    <Compile Include="PathFinding\AStar.cs" />
+    <Compile Include="PathFinding\Tile.cs" />
+    <Compile Include="Point.cs" />
     <Compile Include="StructureType.cs" />
     <Compile Include="OnTouchEvent.cs" />
     <Compile Include="PaintInfo.cs" />
@@ -159,6 +163,9 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\inventory_slot_border.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\acorn.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

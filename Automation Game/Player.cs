@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Automation_Game.PathFinding;
 using Timer = System.Timers.Timer;
 namespace Automation_Game
 {
-    public class Player : Moveable
+    public class Player : Moveable, IUpdateable
     {
         //string mode;
         readonly Inventory inv;
         public const int INVENTORY_SIZE = 8;
-        Thread t;
         public int Id { get; }
         int dx, dy;
         int i = 10, j = 10, frames = 10;
-        Timer timer;
+        List<Point> MovementPath;
+        Random rng = new Random();
+        bool updating;
         public Player(int x, int y, MapDraw parent)
         {
             this.x = x;
@@ -23,9 +25,8 @@ namespace Automation_Game
             inv = new Inventory(INVENTORY_SIZE);
             Id = 4;
             this.parent = parent;
-            timer = new Timer(50);
-            timer.Elapsed += Timer_Elapsed;
-            timer.Start();
+            MovementPath = new List<Point>();
+            updating = false;
         }
 
         public void SetParent(MapDraw p)
@@ -53,156 +54,112 @@ namespace Automation_Game
             return inv.IsFull();
         }
 
+        public Task Update()
+        {
+            if (!updating)
+            {
+                return Task.Run(() =>
+                {
+                    if (MovementPath.Count > 0)
+                    {
+                        if (i == frames || j == frames)
+                        {
+                            if (MovementPath[0].X != x && MovementPath[0].Y != y)
+                            {
+                                if (rng.Next(2) == 0)
+                                {
+                                    i = 0;
+                                }
+                                else
+                                {
+                                    j = 0;
+                                }
+                            }
+                            else if (i == frames && MovementPath[0].X != x)
+                            {
+                                i = 0;
+                            }
+                            else if (j == frames && MovementPath[0].Y != y)
+                            {
+                                j = 0;
+                            }
+                        }
+                        if (i < frames)
+                        {
+                            i++;
+                            Move((float)dx / frames, 0);
+                            if (i == frames)
+                            {
+                                x = (int)Math.Round(x);
+                                UpdateDX(packet.targetX);
+                                if (dx == 0 || (MovementPath.Count == 1 && Terrain.IsWalkable(parent.Generator.TerrainMap[MovementPath[0].X, MovementPath[0].Y])))
+                                {
+                                    TryUsing(parent.Generator.TerrainMap[MovementPath[0].X, MovementPath[0].Y]);
+                                }
+                                if (x == MovementPath[0].X && y == MovementPath[0].Y)
+                                {
+                                    MovementPath.RemoveAt(0);
+                                }
+                            }
+                        }
+                        else if (j < frames)
+                        {
+                            j++;
+                            Move(0, (float)dy / frames);
+                            if (j == frames)
+                            {
+                                y = (int)Math.Round(y);
+                                UpdateDY(packet.targetY);
+                                if (dy == 0 || (MovementPath.Count == 1 && Terrain.IsWalkable(parent.Generator.TerrainMap[MovementPath[0].X, MovementPath[0].Y])))
+                                {
+                                    TryUsing(parent.Generator.TerrainMap[MovementPath[0].X, MovementPath[0].Y]);
+                                }
+                                if (x == MovementPath[0].X && y == MovementPath[0].Y)
+                                {
+                                    MovementPath.RemoveAt(0);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            return Task.CompletedTask;
+        }
+
         public override void MoveTo(int targetX, int targetY)
         {
+            updating = true;
             if (packet == null)
             {
-                packet = new MovementPacket(this, targetX, targetY);
+                packet = new MovementPacket(this, (int)x, (int)y);
             }
-            else
+            if (packet.targetX != targetX || packet.targetY != targetY)
             {
                 packet.targetX = targetX;
                 packet.targetY = targetY;
-            }
-            if (t == null || !t.IsAlive)
-            {
-                t = new Thread(new ParameterizedThreadStart(MoveTo));
-                t.Start(packet);
-            }
-
-        }
-
-        private void MoveTo(Object obj)
-        {
-            bool canMoveX = true;
-            bool canMoveY = true;
-            MovementPacket packet = (MovementPacket)obj;
-            Random rng = new Random();
-            dx = UpdateDX(packet);
-            dy = UpdateDY(packet);
-            Terrain step;
-            while (dx != 0 && dy != 0 && (canMoveX || canMoveY))
-            {
-                if (rng.Next(2) == 0 || (canMoveX && !canMoveY))
+                MovementPath = AStar.GetPath((int)x,(int)y,targetX,targetY, parent.Generator.TerrainMap);
+                int oldDX = dx;
+                int oldDY = dy;
+                UpdateDX(targetX);
+                UpdateDY(targetY);
+                if (dx != oldDX && i == frames)
                 {
-                    step = parent.Generator.GetTerrain()[(int)packet.moving.GetX() + dx, (int)packet.moving.GetY()];
-                    if (!step.Type.Equals("water") && step.GetStructure() == null)
-                    {
-                        canMoveY = true;
-                        canMoveX = true;
-                        i = 0;
-                        while (i < frames) ;
-                        packet.moving.SetX((float)Math.Round(packet.moving.GetX()));
-                        
-                    }
-                    else
-                    {
-                        canMoveX = false;
-                        if (!(canMoveX || canMoveY))
-                        {
-                            TryUsing(parent.Generator.TerrainMap[packet.targetX, packet.targetY]);
-                        }
-                    }
+                    i = -i;
                 }
-                else
+                if (dy != oldDY && j == frames)
                 {
-                    step = parent.Generator.GetTerrain()[(int)packet.moving.GetX(), (int)packet.moving.GetY() + dy];
-                    if (!step.Type.Equals("water") && step.GetStructure() == null)
-                    {
-                        canMoveY = true;
-                        canMoveX = true;
-                        j = 0;
-                        
-                        while (j < frames) ;
-                        packet.moving.SetY((float)Math.Round(packet.moving.GetY()));
-                        
-                    }
-                    else
-                    {
-                        canMoveY = false;
-                        if (!(canMoveX || canMoveY))
-                        {
-
-                            TryUsing(parent.Generator.TerrainMap[packet.targetX, packet.targetY]);
-                        }
-                    }
+                    j = -j;
                 }
-                dx = UpdateDX(packet);
-                dy = UpdateDY(packet);
             }
-            while (dx != 0 && canMoveX)
-            {
-                canMoveY = false;
-                step = parent.Generator.GetTerrain()[(int)packet.moving.GetX() + dx, (int)packet.moving.GetY()];
-                if (!step.Type.Equals("water") && step.GetStructure() == null)
-                {
-                    canMoveX = true;
-                    i = 0;
-                    while (i < frames) ;
-                    packet.moving.SetX((float)Math.Round(packet.moving.GetX()));
-                }
-                else
-                {
-                    canMoveX = false;
-                    if (!(canMoveX || canMoveY))
-                    {
-
-                        TryUsing(parent.Generator.TerrainMap[packet.targetX, packet.targetY]);
-                    }
-                }
-                dx = UpdateDX(packet);
-                dy = UpdateDY(packet);
-            }
-            while (dy != 0 && canMoveY)
-            {
-                canMoveY = false;
-                step = parent.Generator.GetTerrain()[(int)packet.moving.GetX(), (int)packet.moving.GetY() + dy];
-                if (!step.Type.Equals("water") && step.GetStructure() == null)
-                {
-                    canMoveX = true;
-                    j = 0;
-                    while (j < frames) ;
-                    packet.moving.SetY((float)Math.Round(packet.moving.GetY()));
-                }
-                else
-                {
-                    canMoveX = false;
-                    if (!(canMoveX || canMoveY))
-                    {
-                        TryUsing(parent.Generator.TerrainMap[packet.targetX, packet.targetY]);
-                    }
-                }
-                dx = UpdateDX(packet);
-                dy = UpdateDY(packet);
-            }
-            if (dx == 0 && dy == 0)
-            {
-                PickUp();
-            }
-        }
-
-
-        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            if (i < frames)
-            {
-                Move((float)dx / frames, 0);
-                GetParent().Invalidate();
-                i++;
-            }
-            else if (j < frames)
-            {
-                Move(0, (float)dy / frames);
-                GetParent().Invalidate();
-                j++;
-            }
+            updating = false;
         }
 
         private void TryUsing(Terrain t)
         {
-            if (t.GetStructure() != null)
+
+            if (!t.UseStructure(packet))
             {
-                if (!t.UseStructure(packet))
+                if (t.GetStructure() != null)
                 {
                     int Hardness = t.GetStructure().Hardness;
                     if (t.DestroyStructure(this))
@@ -214,33 +171,40 @@ namespace Automation_Game
                     }
                 }
             }
+
         }
 
 
-        private int UpdateDX(MovementPacket packet)
+        private void UpdateDX(int targetX)
         {
-            if (packet.moving.GetX() < packet.targetX)
+            if (x < targetX)
             {
-                return 1;
+                dx = 1;
             }
-            else if (packet.moving.GetX() > packet.targetX)
+            else if (x > targetX)
             {
-                return -1;
+                dx = -1;
             }
-            return 0;
+            else
+            {
+                dx = 0;
+            }
         }
 
-        private int UpdateDY(MovementPacket packet)
+        private void UpdateDY(int targetY)
         {
-            if (packet.moving.GetY() < packet.targetY)
+            if (y < targetY)
             {
-                return 1;
+                dy = 1;
             }
-            else if (packet.moving.GetY() > packet.targetY)
+            else if (y > targetY)
             {
-                return -1;
+                dy = -1;
             }
-            return 0;
+            else
+            {
+                dy = 0;
+            }
         }
 
         private void Update(ref int dx, ref int dy, MovementPacket packet)

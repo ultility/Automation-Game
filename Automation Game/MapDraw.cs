@@ -50,6 +50,7 @@ namespace Automation_Game
             renderDistance = new Vector2();
             LastPoint = new Vector2();
             Player = new Player(Generator.GetWidth() / 2, Generator.GetHeight() / 2, this);
+            ((GameActivity)context).Updateables.Add(Player);
             camera.X = Player.GetX();
             camera.Y = Player.GetY();
             tap = false;
@@ -58,6 +59,7 @@ namespace Automation_Game
             GenerateItems();
             Generator.GetTerrain()[(int)Player.GetX() - 1, (int)Player.GetY()].BuildStructure(new StructureBlueprint(new CraftingStation(context), new Delivery[] { new Delivery(new Item(itemTypeList[(int)ItemTypes.STICK].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), 1) }, Generator.GetTerrain()[(int)Player.GetX() - 1, (int)Player.GetY()]));
             CurrentlyBuilding = null;
+            Player.GiveItem(new Tool("Shovel", (int)GameActivity.IDs.SHOVEL, 3));
         }
         public MapDraw(Context context, MapGenerator gen, Player p) : base(context)
         {
@@ -65,6 +67,7 @@ namespace Automation_Game
             Generator = gen;
             renderDistance = new Vector2();
             Player = p;
+            ((GameActivity)context).Updateables.Add(Player);
             p.SetParent(this);
             camera.X = Player.GetX();
             camera.Y = Player.GetY();
