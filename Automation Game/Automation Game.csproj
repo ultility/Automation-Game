@@ -69,7 +69,6 @@
     <Compile Include="CraftingStation.cs" />
     <Compile Include="Delivery.cs" />
     <Compile Include="GameActivity.cs" />
-    <Compile Include="GestureDialog.cs" />
     <Compile Include="Inventory.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="ItemType.cs" />
@@ -84,6 +83,7 @@
     <Compile Include="MovementPacket.cs" />
     <Compile Include="PathFinding\AStar.cs" />
     <Compile Include="PathFinding\Tile.cs" />
+    <Compile Include="Plant.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="StructureType.cs" />
     <Compile Include="OnTouchEvent.cs" />

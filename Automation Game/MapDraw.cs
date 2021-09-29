@@ -20,7 +20,8 @@ namespace Automation_Game
         };
         public enum StructureTypes
         {
-            TREE
+            TREE,
+            DIRT_HOLE
         };
         public MapGenerator Generator { get; }
         readonly Context context;
@@ -42,7 +43,8 @@ namespace Automation_Game
         public static List<ItemType> itemTypeList = new List<ItemType> { new ItemType("Stick", 0.05, (int)GameActivity.IDs.STICK, 1, new string[] { "dirt" }),
                                                     new ItemType("Stone", 0.05, (int)GameActivity.IDs.STONE, 1, new string[] { "dirt" }),
                                                     new ItemType("Tree Seed", 0,(int)GameActivity.IDs.TREE_SEED,1,new string[] { }) };
-        public static List<StructureType> structureTypeList = new List<StructureType> { new StructureType("tree", (int)GameActivity.IDs.TREE, 1, new Item[] { new Item(itemTypeList[(int)ItemTypes.STICK].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), new Item(itemTypeList[(int)ItemTypes.TREE_SEED].name, itemTypeList[(int)ItemTypes.TREE_SEED].id, itemTypeList[(int)ItemTypes.TREE_SEED].sizePercentage) }, new Tool("Axe", (int)GameActivity.IDs.AXE, 20), 0.08, new string[] { "dirt" }, 1) };
+        public static List<StructureType> structureTypeList = new List<StructureType> { new StructureType("tree", (int)GameActivity.IDs.TREE, 1, new Item[] { new Item(itemTypeList[(int)ItemTypes.STICK].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), new Item(itemTypeList[(int)ItemTypes.TREE_SEED].name, itemTypeList[(int)ItemTypes.TREE_SEED].id, itemTypeList[(int)ItemTypes.TREE_SEED].sizePercentage) }, new Tool("Axe", (int)GameActivity.IDs.AXE, 20), 0.08, new string[] { "dirt" }, 1),
+                                                                                        new StructureType("Dirt Hole", (int)GameActivity.IDs.DIRT_HOLE, 1, (Item)null, new Item(itemTypeList[(int)ItemTypes.TREE_SEED]), 0, new string[]{ }, 0)};
         public MapDraw(Context context) : base(context)
         {
             this.context = context;
@@ -59,7 +61,6 @@ namespace Automation_Game
             GenerateItems();
             Generator.GetTerrain()[(int)Player.GetX() - 1, (int)Player.GetY()].BuildStructure(new StructureBlueprint(new CraftingStation(context), new Delivery[] { new Delivery(new Item(itemTypeList[(int)ItemTypes.STICK].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), 1) }, Generator.GetTerrain()[(int)Player.GetX() - 1, (int)Player.GetY()]));
             CurrentlyBuilding = null;
-            Player.GiveItem(new Tool("Shovel", (int)GameActivity.IDs.SHOVEL, 3));
         }
         public MapDraw(Context context, MapGenerator gen, Player p) : base(context)
         {
@@ -131,6 +132,7 @@ namespace Automation_Game
                     else if (terrain[x, y].GetStructure() != null)
                     {
                         int id = terrain[x, y].GetStructureId();
+                        float SizePercentage = terrain[x, y].GetStructure().SizePercentage;
                         src.Left = spriteSheetSignleWidth * (id % spriteSheetColoumnCount);
                         src.Top = spriteSheetSignleWidth * (id / spriteSheetColoumnCount);
                         src.Right = spriteSheetSignleWidth * (id % spriteSheetColoumnCount) + spriteSheetSignleWidth;
@@ -139,10 +141,10 @@ namespace Automation_Game
                         dst.Top = posY * Terrain.Size;
                         dst.Right = posX * Terrain.Size + Terrain.Size;
                         dst.Bottom = posY * Terrain.Size + Terrain.Size;
-                        dst.Left = dst.Left + Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2;
-                        dst.Top = dst.Top + Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2;
-                        dst.Right = dst.Right - Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2;
-                        dst.Bottom = dst.Bottom - Math.Abs(1 - terrain[x, y].GetStructure().SizePercentage) * Terrain.Size / 2;
+                        dst.Left = dst.Left + Math.Abs(1 - SizePercentage) * Terrain.Size / 2;
+                        dst.Top = dst.Top + Math.Abs(1 - SizePercentage) * Terrain.Size / 2;
+                        dst.Right = dst.Right - Math.Abs(1 - SizePercentage) * Terrain.Size / 2;
+                        dst.Bottom = dst.Bottom - Math.Abs(1 - SizePercentage) * Terrain.Size / 2;
                         Paint p = null;
                         if (terrain[x, y].GetStructure() is StructureBlueprint)
                         {
@@ -323,7 +325,16 @@ namespace Automation_Game
                             }
                             if (isSpawnable && rng.NextDouble() < structureTypeList[i].SpawnChance)
                             {
-                                terrain[x, y].BuildStructure(new Structure(structureTypeList[i].Name, structureTypeList[i].Id, structureTypeList[i].SizePercentage, structureTypeList[i].UseableItem, structureTypeList[i].DropItem, structureTypeList[i].Hardness));
+                                Structure build;
+                                if (i == (int)StructureTypes.TREE)
+                                {
+                                    build = new Plant(1.0f / 60 / 10, 2, structureTypeList[i], false, 2);
+                                }
+                                else
+                                {
+                                    build = new Structure(structureTypeList[i]);
+                                }
+                                terrain[x, y].BuildStructure(build);
                             }
                         }
                     }

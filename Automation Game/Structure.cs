@@ -12,13 +12,13 @@ namespace Automation_Game
 
         public float SizePercentage { get; }
 
-        readonly List<Item> dropItems;
+        protected readonly List<Item> dropItems;
 
         readonly Item useableTool;
 
         public int Hardness { get; }
 
-        public bool Walkable { get; }
+        public bool Walkable { get; protected set; }
 
         public virtual bool IsBuildable(Terrain t)
         {
@@ -51,6 +51,18 @@ namespace Automation_Game
             this.Walkable = Walkable;
         }
 
+        public Structure(StructureType type, bool Walkable = false)
+        {
+            Name = type.Name;
+            Id = type.Id;
+            SizePercentage = type.SizePercentage;
+            useableTool = type.UseableItem;
+            Hardness = type.Hardness;
+            this.Walkable = Walkable;
+            this.dropItems = new List<Item>();
+            dropItems.AddRange(type.DropItem);
+        }
+
         public virtual bool Destory(Player p)
         {
             if (p != null)
@@ -72,7 +84,7 @@ namespace Automation_Game
             return null;
         }
 
-        public Item[] GetDropItems()
+        public virtual Item[] GetDropItems()
         {
             return dropItems.ToArray();
         }

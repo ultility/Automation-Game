@@ -25,6 +25,13 @@ namespace Automation_Game
             sizePercentage = other.sizePercentage;
         }
 
+        public Item(ItemType type)
+        {
+            name = type.name;
+            id = type.id;
+            sizePercentage = type.sizePercentage;
+        }
+
         public Item(Byte[] bytes)
         {
             int offset = 0;

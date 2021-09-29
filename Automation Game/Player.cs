@@ -60,66 +60,96 @@ namespace Automation_Game
             {
                 return Task.Run(() =>
                 {
-                    if (MovementPath.Count > 0)
+                    try
                     {
-                        if (i == frames || j == frames)
+                        if (MovementPath != null && MovementPath.Count > 0)
                         {
-                            if (MovementPath[0].X != x && MovementPath[0].Y != y)
+                            if (i == frames || j == frames)
                             {
-                                if (rng.Next(2) == 0)
+                                if (dx != 0 && dy != y)
+                                {
+                                    if (rng.Next(2) == 0)
+                                    {
+                                        i = 0;
+                                    }
+                                    else
+                                    {
+                                        j = 0;
+                                    }
+                                }
+                                else if (i == frames && dx != 0)
                                 {
                                     i = 0;
                                 }
-                                else
+                                else if (j == frames && dy != y)
                                 {
                                     j = 0;
                                 }
                             }
-                            else if (i == frames && MovementPath[0].X != x)
+                            if (i < frames)
                             {
-                                i = 0;
+                                i++;
+                                Move((float)dx / frames, 0);
+                                if (i == frames)
+                                {
+                                    x = (int)Math.Round(x);
+                                    if (MovementPath.Count > 0 && x == MovementPath[0].X && y == MovementPath[0].Y)
+                                    {
+                                        MovementPath.RemoveAt(0);
+                                    }
+                                    if (MovementPath.Count > 0)
+                                    {
+                                        UpdateDX(MovementPath[0].X);
+                                        UpdateDY(MovementPath[0].Y);
+                                    }
+                                    else
+                                    {
+                                        UpdateDX(packet.targetX);
+                                        UpdateDY(packet.targetY);
+                                    }
+                                    if (dx == 0 && dy == 0 || MovementPath.Count == 0)
+                                    {
+                                        TryUsing(parent.Generator.TerrainMap[packet.targetX, packet.targetY]);
+                                        packet.targetX = (int)x;
+                                        packet.targetY = (int)y;
+                                    }
+                                }
                             }
-                            else if (j == frames && MovementPath[0].Y != y)
+                            else if (j < frames)
                             {
-                                j = 0;
+                                j++;
+                                Move(0, (float)dy / frames);
+                                if (j == frames)
+                                {
+                                    y = (int)Math.Round(y);
+                                    if (MovementPath.Count > 0 && x == MovementPath[0].X && y == MovementPath[0].Y)
+                                    {
+                                        MovementPath.RemoveAt(0);
+                                    }
+                                    if (MovementPath.Count > 0)
+                                    {
+                                        UpdateDX(MovementPath[0].X);
+                                        UpdateDY(MovementPath[0].Y);
+                                    }
+                                    else
+                                    {
+                                        UpdateDX(packet.targetX);
+                                        UpdateDY(packet.targetY);
+                                    }
+                                    if (dx == 0 && dy == 0 || MovementPath.Count == 0)
+                                    {
+                                        TryUsing(parent.Generator.TerrainMap[packet.targetX, packet.targetY]);
+                                        packet.targetX = (int)x;
+                                        packet.targetY = (int)y;
+                                    }
+                                }
                             }
                         }
-                        if (i < frames)
-                        {
-                            i++;
-                            Move((float)dx / frames, 0);
-                            if (i == frames)
-                            {
-                                x = (int)Math.Round(x);
-                                UpdateDX(packet.targetX);
-                                if (dx == 0 || (MovementPath.Count == 1 && Terrain.IsWalkable(parent.Generator.TerrainMap[MovementPath[0].X, MovementPath[0].Y])))
-                                {
-                                    TryUsing(parent.Generator.TerrainMap[MovementPath[0].X, MovementPath[0].Y]);
-                                }
-                                if (x == MovementPath[0].X && y == MovementPath[0].Y)
-                                {
-                                    MovementPath.RemoveAt(0);
-                                }
-                            }
-                        }
-                        else if (j < frames)
-                        {
-                            j++;
-                            Move(0, (float)dy / frames);
-                            if (j == frames)
-                            {
-                                y = (int)Math.Round(y);
-                                UpdateDY(packet.targetY);
-                                if (dy == 0 || (MovementPath.Count == 1 && Terrain.IsWalkable(parent.Generator.TerrainMap[MovementPath[0].X, MovementPath[0].Y])))
-                                {
-                                    TryUsing(parent.Generator.TerrainMap[MovementPath[0].X, MovementPath[0].Y]);
-                                }
-                                if (x == MovementPath[0].X && y == MovementPath[0].Y)
-                                {
-                                    MovementPath.RemoveAt(0);
-                                }
-                            }
-                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine(e.StackTrace);
                     }
                 });
             }
@@ -133,20 +163,27 @@ namespace Automation_Game
             {
                 packet = new MovementPacket(this, (int)x, (int)y);
             }
-            if (packet.targetX != targetX || packet.targetY != targetY)
+            if (packet.targetX != targetX || packet.targetY != targetY || MovementPath.Count == 0)
             {
                 packet.targetX = targetX;
                 packet.targetY = targetY;
-                MovementPath = AStar.GetPath((int)x,(int)y,targetX,targetY, parent.Generator.TerrainMap);
+                MovementPath = AStar.GetPath((int)x, (int)y, targetX, targetY, parent.Generator.TerrainMap);
                 int oldDX = dx;
                 int oldDY = dy;
-                UpdateDX(targetX);
-                UpdateDY(targetY);
-                if (dx != oldDX && i == frames)
+                if (MovementPath.Count > 0)
+                {
+                    UpdateDX(MovementPath[0].X);
+                    UpdateDY(MovementPath[0].Y);
+                    if (MovementPath.Count > 1)
+                    {
+                        MovementPath.RemoveAt(0);
+                    }
+                }
+                if (dx != oldDX && i != frames)
                 {
                     i = -i;
                 }
-                if (dy != oldDY && j == frames)
+                if (dy != oldDY && j != frames)
                 {
                     j = -j;
                 }
@@ -169,6 +206,10 @@ namespace Automation_Game
                             inv.RemoveItem(-1, false);
                         }
                     }
+                }
+                else
+                {
+                    PickUp();
                 }
             }
 
@@ -200,34 +241,6 @@ namespace Automation_Game
             else if (y > targetY)
             {
                 dy = -1;
-            }
-            else
-            {
-                dy = 0;
-            }
-        }
-
-        private void Update(ref int dx, ref int dy, MovementPacket packet)
-        {
-            if (packet.moving.GetX() > packet.targetX)
-            {
-                dx = -1;
-            }
-            else if (packet.moving.GetX() < packet.targetX)
-            {
-                dx = 1;
-            }
-            else
-            {
-                dx = 0;
-            }
-            if (packet.moving.GetY() > packet.targetY)
-            {
-                dy = -1;
-            }
-            else if (packet.moving.GetY() < packet.targetY)
-            {
-                dy = 1;
             }
             else
             {

@@ -12,7 +12,7 @@ namespace Automation_Game
         readonly CraftingRecipe[] recipes;
         readonly Context c;
         Player p;
-        public CraftingStation(Context context, string name = "CraftingStation", int id = 9, int size = 1, Item useableItem = null, Item droppedItem = null) : base(name, id, size, useableItem, droppedItem, 0)
+        public CraftingStation(Context context, string name = "CraftingStation", int id = (int)GameActivity.IDs.CRAFTING_STATION, int size = 1, Item useableItem = null, Item droppedItem = null) : base(name, id, size, useableItem, droppedItem, 0)
         {
             recipes = new CraftingRecipe[3];
             Delivery[] axeRecipe = new Delivery[2];

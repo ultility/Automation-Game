@@ -35,10 +35,13 @@ namespace Automation_Game
         bool IsMinimapShown;
 
         public StructureBlueprint UsedBlueprint;
+        public Structure hole;
 
         Timer timer;
         const int MAX_FPS = 60;
         public List<IUpdateable> Updateables;
+
+        bool updating;
 
         public enum IDs
         {
@@ -51,13 +54,13 @@ namespace Automation_Game
             STONE,
             STICK,
             TREE,
-            CRAFTING_STATION,
-            AXE,
-            PICKAXE,
+            PICKAXE = TREE + 3,
             SHOVEL,
             ROCK,
             TREE_SEED,
-            DIRT_HOLE
+            DIRT_HOLE,
+            CRAFTING_STATION,
+            AXE,
         };
 
         protected override void OnStop()
@@ -82,6 +85,7 @@ namespace Automation_Game
             timer = new Timer(1000 / MAX_FPS);
             timer.Elapsed += Tick;
             Updateables = new List<IUpdateable>();
+            updating = false;
             if (Intent.GetBooleanExtra("create", true))
             {
                 Map = new MapDraw(this);
@@ -134,17 +138,40 @@ namespace Automation_Game
             timer.Start();
         }
 
-        private async void Tick(object sender, System.Timers.ElapsedEventArgs e)
+        public void StartClock()
+        {
+            timer.Start();
+        }
+
+        public void StopClock()
         {
             timer.Stop();
-            List<Task> tasks = new List<Task>();
-            foreach (IUpdateable updateable in Updateables)
+        }
+
+        private async void Tick(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (!updating)
             {
-                tasks.Add(updateable.Update());
+                updating = true;
+                List<Task> tasks = new List<Task>();
+                foreach (IUpdateable updateable in Updateables)
+                {
+                    tasks.Add(updateable.Update());
+                }
+                await Task.WhenAll(tasks);
+                for (int i = Updateables.Count - 1; i >= 0; i--)
+                {
+                    if (Updateables[i] is Plant p)
+                    {
+                        if (p.IsFullyGrown())
+                        {
+                            Updateables.RemoveAt(i);
+                        }
+                    }
+                }
+                Map.Invalidate();
+                updating = false;
             }
-            await Task.WhenAll(tasks);
-            Map.Invalidate();
-            timer.Start();
         }
 
         private void FocusChange(object sender, View.FocusChangeEventArgs e)
@@ -186,7 +213,7 @@ namespace Automation_Game
                 craftingStation.SetHeight(height);
                 Bitmap bs = Bitmap.CreateBitmap(width / 8, height, Bitmap.Config.Argb8888);
                 Canvas c = new Canvas(bs);
-                Rect src = new Rect(((int)IDs.CRAFTING_STATION % MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount) * spriteSheet.Height / 2, (9 % MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount);
+                Rect src = new Rect(((int)IDs.CRAFTING_STATION % MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount) * spriteSheet.Height / 2, ((int)IDs.CRAFTING_STATION % MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount);
                 Rect dst = new Rect(0, 0, c.Width, c.Height);
                 Paint p = new Paint();
                 Color color = Color.CadetBlue;
@@ -314,7 +341,9 @@ namespace Automation_Game
                 slots[8].Click += DeEquip;
             }
             press.SetBlueprint(UsedBlueprint);
+            press.SetStructure(hole);
             UsedBlueprint = null;
+            hole = null;
             Item[] inv = Map.Player.GetInvetory();
             int iconSize = spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
             Bitmap icon;

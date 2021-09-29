@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using Automation_Game.PathFinding;
 
 namespace Automation_Game.Map
 {
@@ -117,6 +118,30 @@ namespace Automation_Game.Map
                         TerrainMap[x, y].SetActivity(activity);
                     }
                     map.SetPixel(x, y, c);
+                }
+            }
+            if (scale == DEFAULT_SCALE)
+            {
+                bool ImpossibleMap = true;
+                int CenterX = mapWidth / 2;
+                int CenterY = mapHeight / 2;
+                for (int i = -2; i < 2 && ImpossibleMap; i++)
+                {
+                    if (AStar.GetPath(CenterX, CenterY, CenterX + i, CenterY, TerrainMap).Count > 0)
+                    {
+                        ImpossibleMap = false;
+                    }
+                }
+                for (int j = -2; j < 2 && ImpossibleMap; j++)
+                {
+                    if (AStar.GetPath(CenterX, CenterY, CenterX, CenterY + j, TerrainMap).Count > 0)
+                    {
+                        ImpossibleMap = false;
+                    }
+                }
+                if (ImpossibleMap)
+                {
+                    return GenerateMap(activity);
                 }
             }
             return map;

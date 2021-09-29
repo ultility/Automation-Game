@@ -74,12 +74,26 @@ namespace Automation_Game
 
         public int GetStructureId()
         {
+            if (structure != null)
+            {
+                if (structure is Plant p)
+                {
+                    return p.Id + p.GrowthStage;
+                }
+            }
             return structure.Id;
         }
 
         public bool BuildStructure(Structure structure)
         {
-            if (this.structure == null && structure != null && structure.IsBuildable(this) && items.Count == 0)
+            if (this.structure == null)
+            {
+                if (structure != null && structure.IsBuildable(this) && items.Count == 0)
+                this.structure = structure;
+                return true;
+            }
+            else if (this.structure.Name.Equals(MapDraw.structureTypeList[(int)MapDraw.StructureTypes.DIRT_HOLE].Name) && 
+                     structure.Name.Equals(MapDraw.structureTypeList[(int)MapDraw.StructureTypes.TREE].Name))
             {
                 this.structure = structure;
                 return true;
@@ -121,11 +135,24 @@ namespace Automation_Game
                         {
                             if (Type.Equals("dirt"))
                             {
-                                structure = new Structure("Dirt hole", (int)GameActivity.IDs.DIRT_HOLE, 1, new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.TREE_SEED].name, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.TREE_SEED].id, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.TREE_SEED].sizePercentage), (Item)null, 0, true);
+                                structure = new Structure(MapDraw.structureTypeList[(int)MapDraw.StructureTypes.DIRT_HOLE], true);
                                 p.GetEquippedItem().Use(1);
                                 return true;
                             }
                         }
+                    }
+                }
+                else if (structure.Name.Equals(MapDraw.structureTypeList[(int)MapDraw.StructureTypes.DIRT_HOLE].Name))
+                {
+                    if (activity != null)
+                    {
+                        Handler handle = new Handler(Looper.MainLooper);
+                        handle.Post(() =>
+                        {
+                            activity.hole = structure;
+                            activity.DisplayInventory_Click(null, null);
+                        });
+                        return true;
                     }
                 }
             }
@@ -151,8 +178,23 @@ namespace Automation_Game
                         }
                         else
                         {
-                            items.AddRange(structure.GetDropItems());
-                            structure = null;
+                            if (structure is Plant plant)
+                            {
+                                if (plant.IsFullyGrown())
+                                {
+                                    items.AddRange(structure.GetDropItems());
+                                    structure = null;
+                                }
+                                else
+                                {
+                                    structure = null;
+                                }
+                            }
+                            else
+                            {
+                                items.AddRange(structure.GetDropItems());
+                                structure = null;
+                            }
                             return true;
                         }
                     }
@@ -175,7 +217,7 @@ namespace Automation_Game
 
         public static bool IsWalkable(Terrain t)
         {
-            return !t.Type.Equals("water") || t.structure == null || t.structure.Walkable;
+            return !t.Type.Equals("water") && (t.structure == null || t.structure.Walkable);
         }
     }
 }

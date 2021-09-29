@@ -52,7 +52,6 @@ namespace Automation_Game.PathFinding
                         if (tile == null)
                         {
                             path.Reverse();
-                            path.RemoveAt(0);
                             return path;
                         }
                     }
