@@ -9,6 +9,9 @@ namespace Automation_Game
 {
     class CraftingStation : Structure
     {
+        public const int AXE_DURABILITY = 20;
+        public const int PICKAXE_DURABILITY = 20;
+        public const int SHOVEL_DURABILITY = 20;
         readonly CraftingRecipe[] recipes;
         readonly Context c;
         Player p;
@@ -18,9 +21,9 @@ namespace Automation_Game
             Delivery[] axeRecipe = new Delivery[2];
             axeRecipe[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].name, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].id, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].sizePercentage), 1);
             axeRecipe[1] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].name, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].id, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].sizePercentage), 1);
-            recipes[0] = new CraftingRecipe(new Tool("Axe", (int)GameActivity.IDs.AXE, 20), axeRecipe);
-            recipes[1] = new CraftingRecipe(new Tool("Pickaxe", (int)GameActivity.IDs.PICKAXE, 20), axeRecipe);
-            recipes[2] = new CraftingRecipe(new Tool("Shovel", (int)GameActivity.IDs.SHOVEL, 20), axeRecipe);
+            recipes[0] = new CraftingRecipe(new Tool("Axe", (int)GameActivity.IDs.AXE, AXE_DURABILITY), axeRecipe);
+            recipes[1] = new CraftingRecipe(new Tool("Pickaxe", (int)GameActivity.IDs.PICKAXE, PICKAXE_DURABILITY), axeRecipe);
+            recipes[2] = new CraftingRecipe(new Tool("Shovel", (int)GameActivity.IDs.SHOVEL, SHOVEL_DURABILITY), axeRecipe);
             c = context;
         }
 

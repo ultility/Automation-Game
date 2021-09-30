@@ -362,6 +362,37 @@ namespace Automation_Game
                     Bitmap item = Bitmap.CreateBitmap(spriteSheet, src.Left, src.Top, src.Right - src.Left, src.Bottom - src.Top);
                     Bitmap scaled = Bitmap.CreateScaledBitmap(item, right - left, bottom - top, false);
                     c.DrawBitmap(scaled, null, dst, null);
+                    if (inv[i] is Tool tool)
+                    {
+                        Paint p = new Paint();
+                        p.SetStyle(Paint.Style.FillAndStroke);
+                        double percentage = 1;
+                        if (tool.name.Equals("axe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            percentage = (double)tool.durability / CraftingStation.AXE_DURABILITY;
+                        }
+                        else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            percentage = (double)tool.durability / CraftingStation.PICKAXE_DURABILITY;
+                        }
+                        else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            percentage = (double)tool.durability / CraftingStation.SHOVEL_DURABILITY;
+                        }
+                        if (percentage > .50)
+                        {
+                            p.Color = Color.Green;
+                        }
+                        else if (percentage > .20)
+                        {
+                            p.Color = Color.Orange;
+                        }
+                        else
+                        {
+                            p.Color = Color.Red;
+                        }
+                        c.DrawRect(left, top * 9, (float)(right * percentage), bottom, p);
+                    }
                 }
                 slots[i].Background = new BitmapDrawable(Resources, icon);
                 icon.Dispose();
@@ -370,6 +401,7 @@ namespace Automation_Game
             icon = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("inventory_slot_border", "drawable", PackageName)).Copy(Bitmap.Config.Argb8888, true);
             if (equipment != null)
             {
+                Tool tool = (Tool)equipment;
                 Canvas c = new Canvas(icon);
                 Rect src = new Rect((equipment.id % MapDraw.spriteSheetColoumnCount) * iconSize, (equipment.id / MapDraw.spriteSheetColoumnCount) * iconSize, (equipment.id % MapDraw.spriteSheetColoumnCount + 1) * iconSize, (equipment.id / MapDraw.spriteSheetColoumnCount + 1) * iconSize);
                 int left = c.Width / 11;
@@ -380,6 +412,34 @@ namespace Automation_Game
                 Bitmap item = Bitmap.CreateBitmap(spriteSheet, src.Left, src.Top, src.Right - src.Left, src.Bottom - src.Top);
                 Bitmap scaled = Bitmap.CreateScaledBitmap(item, right - left, bottom - top, false);
                 c.DrawBitmap(scaled, null, dst, null);
+                Paint p = new Paint();
+                p.SetStyle(Paint.Style.FillAndStroke);
+                double percentage = 1;
+                if (tool.name.Equals("axe", StringComparison.OrdinalIgnoreCase))
+                {
+                    percentage = (double)tool.durability / CraftingStation.AXE_DURABILITY;
+                }
+                else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
+                {
+                    percentage = (double)tool.durability / CraftingStation.PICKAXE_DURABILITY;
+                }
+                else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
+                {
+                    percentage = (double)tool.durability / CraftingStation.SHOVEL_DURABILITY;
+                }
+                if (percentage > .50)
+                {
+                    p.Color = Color.Green;
+                }
+                else if (percentage > .20)
+                {
+                    p.Color = Color.Orange;
+                }
+                else
+                {
+                    p.Color = Color.Red;
+                }
+                c.DrawRect(left, top * 9, (float)(right * percentage), bottom, p);
             }
             slots[8].Background = new BitmapDrawable(Resources, icon);
             icon.Dispose();

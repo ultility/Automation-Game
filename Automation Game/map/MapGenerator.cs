@@ -13,7 +13,7 @@ namespace Automation_Game.Map
     {
         readonly int mapWidth;
         readonly int mapHeight;
-        readonly int seed;
+        int seed;
         readonly int octaves;
         readonly float scale;
         readonly float persistence;
@@ -141,6 +141,7 @@ namespace Automation_Game.Map
                 }
                 if (ImpossibleMap)
                 {
+                    seed = new Random(seed).Next();
                     return GenerateMap(activity);
                 }
             }

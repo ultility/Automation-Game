@@ -5,7 +5,7 @@ namespace Automation_Game
 {
     public class Tool : Item
     {
-        int durability;
+        public int durability { get; private set; }
         public Tool(string name, int id, int durability) : base(name, id, 1)
         {
             this.durability = durability;
