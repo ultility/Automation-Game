@@ -125,18 +125,22 @@ namespace Automation_Game.Map
                 bool ImpossibleMap = true;
                 int CenterX = mapWidth / 2;
                 int CenterY = mapHeight / 2;
-                for (int i = -2; i < 2 && ImpossibleMap; i++)
+                if (!TerrainMap[CenterX, CenterY].Type.Equals("water"))
                 {
-                    if (AStar.GetPath(CenterX, CenterY, CenterX + i, CenterY, TerrainMap).Count > 0)
+
+                    for (int i = -2; i < 2 && ImpossibleMap; i++)
                     {
-                        ImpossibleMap = false;
+                        if (AStar.GetPath(CenterX, CenterY, CenterX + i, CenterY, TerrainMap).Count > 0)
+                        {
+                            ImpossibleMap = false;
+                        }
                     }
-                }
-                for (int j = -2; j < 2 && ImpossibleMap; j++)
-                {
-                    if (AStar.GetPath(CenterX, CenterY, CenterX, CenterY + j, TerrainMap).Count > 0)
+                    for (int j = -2; j < 2 && ImpossibleMap; j++)
                     {
-                        ImpossibleMap = false;
+                        if (AStar.GetPath(CenterX, CenterY, CenterX, CenterY + j, TerrainMap).Count > 0)
+                        {
+                            ImpossibleMap = false;
+                        }
                     }
                 }
                 if (ImpossibleMap)

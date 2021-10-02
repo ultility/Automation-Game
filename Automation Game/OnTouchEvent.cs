@@ -14,6 +14,11 @@ namespace Automation_Game
         bool finished;
         StructureBlueprint blueprint;
         Structure hole;
+
+        public OnTouchEvent()
+        {
+
+        }
         public OnTouchEvent(GameActivity activity)
         {
             this.activity = activity;
@@ -23,6 +28,12 @@ namespace Automation_Game
 
         public bool OnTouch(View v, MotionEvent e)
         {
+            if (activity == null)
+            {
+                int height = v.Height;
+                int width = v.Width;
+                return true;
+            }
             if (blueprint == null)
             {
                 if (hole == null)
@@ -95,6 +106,7 @@ namespace Automation_Game
                         if (blueprint.AddItem(item))
                         {
                             activity.Map.Player.DropItem(int.Parse(v.Tag.ToString()) - 1);
+                            activity.UsedBlueprint = blueprint;
                             activity.Invalidate();
                         }
                         break;

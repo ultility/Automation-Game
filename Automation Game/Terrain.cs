@@ -127,6 +127,18 @@ namespace Automation_Game
                     }
 
                 }
+                else if (structure is StorageChest sc)
+                {
+                    if (packet.moving is Player p)
+                    {
+                        Handler handle = new Handler(Looper.MainLooper);
+                        handle.Post(() =>
+                        {
+                            activity.Trade(sc, p);
+                        });
+                        return true;
+                    }
+                }
                 else if (structure ==  null)
                 {
                     if (packet.moving is Player p)
@@ -162,40 +174,43 @@ namespace Automation_Game
 
         public bool DestroyStructure(Player p)
         {
-            if (Math.Abs(p.GetX() - x) <= 1 && Math.Abs(p.GetY() - y) <= 1)
+            if (p != null)
             {
-                if (structure != null)
+                if (Math.Abs(p.GetX() - x) <= 1 && Math.Abs(p.GetY() - y) <= 1)
                 {
-                    if (structure.Destory(p))
+                    if (structure != null)
                     {
-                        if (structure.Name.Equals("Rock"))
+                        if (structure.Destory(p))
                         {
-                            if (!p.IsInventoryFull())
+                            if (structure.Name.Equals("Rock"))
                             {
-                                p.GiveItem(structure.GetDropItem(0));
-                                return true;
-                            }
-                        }
-                        else
-                        {
-                            if (structure is Plant plant)
-                            {
-                                if (plant.IsFullyGrown())
+                                if (!p.IsInventoryFull())
                                 {
-                                    items.AddRange(structure.GetDropItems());
-                                    structure = null;
-                                }
-                                else
-                                {
-                                    structure = null;
+                                    p.GiveItem(structure.GetDropItem(0));
+                                    return true;
                                 }
                             }
                             else
                             {
-                                items.AddRange(structure.GetDropItems());
-                                structure = null;
+                                if (structure is Plant plant)
+                                {
+                                    if (plant.IsFullyGrown())
+                                    {
+                                        items.AddRange(structure.GetDropItems());
+                                        structure = null;
+                                    }
+                                    else
+                                    {
+                                        structure = null;
+                                    }
+                                }
+                                else
+                                {
+                                    items.AddRange(structure.GetDropItems());
+                                    structure = null;
+                                }
+                                return true;
                             }
-                            return true;
                         }
                     }
                 }

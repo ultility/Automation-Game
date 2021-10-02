@@ -61,11 +61,12 @@ namespace Automation_Game
             DIRT_HOLE,
             CRAFTING_STATION,
             AXE,
+            STORAGE_BOX,
         };
 
         protected override void OnStop()
         {
-            Map.Save();
+            //Map.Save();
             base.OnStop();
         }
         protected override void OnCreate(Bundle savedInstanceState)
@@ -191,6 +192,63 @@ namespace Automation_Game
             }
 
         }
+
+        public void Trade(StorageChest storage, Player p)
+        {
+            Dialog d = new Dialog(this);
+            LinearLayout ll1 = new LinearLayout(this);
+            d.SetContentView(ll1);
+            int WindowWidth = (int)(Window.DecorView.Width * 0.8);
+            int WindowHeight = (int)(Window.DecorView.Height * 0.8);
+            d.Window.SetLayout(WindowWidth, WindowHeight);
+            ScrollView left = new ScrollView(this);
+            ScrollView right = new ScrollView(this);
+            ImageView divider = new ImageView(this);
+            left.LayoutParameters = new FrameLayout.LayoutParams(WindowWidth / 11 * 5, ViewGroup.LayoutParams.WrapContent);
+            right.LayoutParameters = new FrameLayout.LayoutParams(WindowWidth / 11 * 5, WindowHeight);
+            divider.LayoutParameters = new ViewGroup.LayoutParams(WindowWidth / 11, WindowHeight);
+            ll1.AddView(left);
+            ll1.AddView(divider);
+            ll1.AddView(right);
+            divider.Background = new ColorDrawable(Color.Black);
+            right.Background = new ColorDrawable(Color.Blue);
+
+            Item[] player_inventory = p.GetInvetory();
+            Item[] storage_inventory = storage.GetInventory();
+            LinearLayout.LayoutParams LayoutParam = new LinearLayout.LayoutParams(left.LayoutParameters.Width / 7 * 5, (int)(left.LayoutParameters.Width / 7 * (4.0 / 3)));
+            LayoutParam.LeftMargin = left.LayoutParameters.Width / 7;
+            LayoutParam.TopMargin = left.LayoutParameters.Width / 14;
+            LinearLayout.LayoutParams ButtonParams = new LinearLayout.LayoutParams((int)(left.LayoutParameters.Width / 7 * (4.0 / 3)), (int)(left.LayoutParameters.Width / 7 * (4.0 / 3)));
+            LinearLayout ItemLine = null;
+            LinearLayout LeftMain = new LinearLayout(this);
+            LeftMain.Orientation = Orientation.Vertical;
+            LeftMain.LayoutParameters = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MatchParent, ButtonParams.Height * (int)Math.Ceiling(storage_inventory.Length / 2.0));
+            left.AddView(LeftMain);
+            for (int i = 0; i < player_inventory.Length; i++)
+            {
+                Button item = new Button(this);
+                if (i % 3 == 0)
+                {
+                    ItemLine = new LinearLayout(this);
+                    ItemLine.LayoutParameters = LayoutParam;
+                    ButtonParams.LeftMargin = 0;
+                    LeftMain.AddView(ItemLine);
+                }
+                else
+                {
+                    ButtonParams.LeftMargin = left.LayoutParameters.Width / 7;
+                }
+                item.LayoutParameters = ButtonParams;
+                item.Background = GetDrawable(Resources.GetIdentifier("inventory_slot_border", "drawable", PackageName));
+                if (i < 2)
+                {
+                    item.Background = new ColorDrawable(Color.Black);
+                }
+                ItemLine.AddView(item);
+            }
+
+            d.Show();
+        }
         private void DisplayCraftingUI_Click(object sender, EventArgs e)
         {
             if (craftingUI == null)
@@ -213,7 +271,7 @@ namespace Automation_Game
                 craftingStation.SetHeight(height);
                 Bitmap bs = Bitmap.CreateBitmap(width / 8, height, Bitmap.Config.Argb8888);
                 Canvas c = new Canvas(bs);
-                Rect src = new Rect(((int)IDs.CRAFTING_STATION % MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount) * spriteSheet.Height / 2, ((int)IDs.CRAFTING_STATION % MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount);
+                Rect src = new Rect(((int)IDs.CRAFTING_STATION % MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION % MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount);
                 Rect dst = new Rect(0, 0, c.Width, c.Height);
                 Paint p = new Paint();
                 Color color = Color.CadetBlue;
@@ -223,8 +281,19 @@ namespace Automation_Game
                 c.DrawBitmap(spriteSheet, src, dst, p);
                 craftingStation.Background = new BitmapDrawable(Resources, bs);
                 craftingStation.Click += CraftingStation_Click;
+                bs = Bitmap.CreateBitmap(width / 8, height, Bitmap.Config.Argb8888);
+                Button StorageBox = new Button(this);
+                c = new Canvas(bs);
+                c.DrawColor(color);
+                src = new Rect(((int)IDs.STORAGE_BOX % MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.STORAGE_BOX / MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.STORAGE_BOX % MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.STORAGE_BOX / MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount);
+                c.DrawBitmap(spriteSheet, src, dst, p);
+                StorageBox.Background = new BitmapDrawable(Resources, bs);
+                StorageBox.Click += StorageBox_Click;
+                StorageBox.SetWidth(width / 8);
+                craftingStation.SetHeight(height);
                 craftingUI.AddView(close);
                 craftingUI.AddView(craftingStation);
+                craftingUI.AddView(StorageBox);
                 frame.AddView(craftingUI);
             }
             craftingUI.Visibility = ViewStates.Visible;
@@ -234,11 +303,19 @@ namespace Automation_Game
 
         }
 
+        private void StorageBox_Click(object sender, EventArgs e)
+        {
+            Structure s = new StorageChest(this);
+            Delivery[] d = new Delivery[1];
+            d[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK]), 4);
+            Map.CurrentlyBuilding = new StructureBlueprint(s, d, null);
+        }
+
         private void CraftingStation_Click(object sender, EventArgs e)
         {
             Structure s = new CraftingStation(this);
             Delivery[] d = new Delivery[1];
-            d[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].name, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].id, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].sizePercentage), 1);
+            d[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK]), 1);
             Map.CurrentlyBuilding = new StructureBlueprint(s, d, null);
         }
 

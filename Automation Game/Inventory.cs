@@ -7,7 +7,7 @@ namespace Automation_Game
     {
         readonly Item[] items;
         Tool equipped;
-        readonly int size;
+        public int size { get; }
         int itemsStored;
 
         public Inventory(int inventorySize)

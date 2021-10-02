@@ -157,9 +157,9 @@ namespace Automation_Game
                     }
                 }
             }
-            if (Player.GetX() >= camera.X - renderDistance.X / 2 && Player.GetX() <= camera.X + renderDistance.X / 2)
+            if (Player.GetX() >= Math.Floor(camera.X - renderDistance.X / 2) && Player.GetX() <= Math.Ceiling(camera.X + renderDistance.X / 2))
             {
-                if (Player.GetY() >= camera.Y - renderDistance.Y / 2 && Player.GetY() <= camera.Y + renderDistance.Y / 2)
+                if (Player.GetY() >= Math.Floor(camera.Y - renderDistance.Y / 2) && Player.GetY() <= Math.Ceiling(camera.Y + renderDistance.Y / 2))
                 {
                     int spriteSheetSignleWidth = GameActivity.spriteSheet.GetScaledWidth(canvas) / spriteSheetColoumnCount;
                     float PlayerDrawY = Player.GetY() - (int)(camera.Y - renderDistance.Y / 2);
