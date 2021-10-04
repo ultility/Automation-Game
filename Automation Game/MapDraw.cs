@@ -252,6 +252,7 @@ namespace Automation_Game
                 CorrectCamera();
                 Invalidate();
             }
+            ((GameActivity)context).OnTouchEvent(e);
             return true;
         }
 

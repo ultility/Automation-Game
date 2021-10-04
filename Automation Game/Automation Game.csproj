@@ -85,6 +85,7 @@
     <Compile Include="PathFinding\Tile.cs" />
     <Compile Include="Plant.cs" />
     <Compile Include="Point.cs" />
+    <Compile Include="ScrollView.cs" />
     <Compile Include="StorageChest.cs" />
     <Compile Include="StructureType.cs" />
     <Compile Include="OnTouchEvent.cs" />

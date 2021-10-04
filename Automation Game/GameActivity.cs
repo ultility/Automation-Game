@@ -204,14 +204,13 @@ namespace Automation_Game
             ScrollView left = new ScrollView(this);
             ScrollView right = new ScrollView(this);
             ImageView divider = new ImageView(this);
-            left.LayoutParameters = new FrameLayout.LayoutParams(WindowWidth / 11 * 5, ViewGroup.LayoutParams.WrapContent);
-            right.LayoutParameters = new FrameLayout.LayoutParams(WindowWidth / 11 * 5, WindowHeight);
-            divider.LayoutParameters = new ViewGroup.LayoutParams(WindowWidth / 11, WindowHeight);
+            left.LayoutParameters = new LinearLayout.LayoutParams(WindowWidth / 11 * 5, ViewGroup.LayoutParams.MatchParent);
+            right.LayoutParameters = new LinearLayout.LayoutParams(WindowWidth / 11 * 5, WindowHeight);
+            divider.LayoutParameters = new LinearLayout.LayoutParams(WindowWidth / 11, WindowHeight);
             ll1.AddView(left);
             ll1.AddView(divider);
             ll1.AddView(right);
             divider.Background = new ColorDrawable(Color.Black);
-            right.Background = new ColorDrawable(Color.Blue);
 
             Item[] player_inventory = p.GetInvetory();
             Item[] storage_inventory = storage.GetInventory();
@@ -222,12 +221,16 @@ namespace Automation_Game
             LinearLayout ItemLine = null;
             LinearLayout LeftMain = new LinearLayout(this);
             LeftMain.Orientation = Orientation.Vertical;
-            LeftMain.LayoutParameters = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MatchParent, ButtonParams.Height * (int)Math.Ceiling(storage_inventory.Length / 2.0));
+            LeftMain.LayoutParameters = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MatchParent, ButtonParams.Height * (int)Math.Ceiling(storage_inventory.Length / 2.0) + LayoutParam.TopMargin * (int)Math.Ceiling(storage_inventory.Length / 2.0));
+            LinearLayout RightMain = new LinearLayout(this);
+            RightMain.Orientation = Orientation.Vertical;
+            RightMain.LayoutParameters = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MatchParent, ButtonParams.Height * (int)Math.Ceiling(player_inventory.Length / 2.0) + LayoutParam.TopMargin * (int)Math.Ceiling(player_inventory.Length / 2.0));
             left.AddView(LeftMain);
-            for (int i = 0; i < player_inventory.Length; i++)
+            right.AddView(RightMain);
+            for (int i = 0; i < storage_inventory.Length; i++)
             {
                 Button item = new Button(this);
-                if (i % 3 == 0)
+                if (i % 2 == 0)
                 {
                     ItemLine = new LinearLayout(this);
                     ItemLine.LayoutParameters = LayoutParam;
@@ -239,11 +242,120 @@ namespace Automation_Game
                     ButtonParams.LeftMargin = left.LayoutParameters.Width / 7;
                 }
                 item.LayoutParameters = ButtonParams;
-                item.Background = GetDrawable(Resources.GetIdentifier("inventory_slot_border", "drawable", PackageName));
-                if (i < 2)
+                Bitmap icon = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("inventory_slot_border", "drawable", PackageName)).Copy(Bitmap.Config.Argb8888, true);
+                int iconSize = spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
+                if (storage_inventory[i] != null)
                 {
-                    item.Background = new ColorDrawable(Color.Black);
+                    Canvas c = new Canvas(icon);
+                    Rect src = new Rect((storage_inventory[i].id % MapDraw.spriteSheetColoumnCount) * iconSize, (storage_inventory[i].id / MapDraw.spriteSheetColoumnCount) * iconSize, (storage_inventory[i].id % MapDraw.spriteSheetColoumnCount + 1) * iconSize, (storage_inventory[i].id / MapDraw.spriteSheetColoumnCount + 1) * iconSize);
+                    int rectleft = c.Width / 11;
+                    int rectright = c.Width / 11 * 10;
+                    int recttop = c.Height / 11;
+                    int rectbottom = c.Height / 11 * 10;
+                    Rect dst = new Rect(rectleft, recttop, rectright, rectbottom);
+                    Bitmap itemIcon = Bitmap.CreateBitmap(spriteSheet, src.Left, src.Top, src.Right - src.Left, src.Bottom - src.Top);
+                    Bitmap scaled = Bitmap.CreateScaledBitmap(itemIcon, rectright - rectleft, rectbottom - recttop, false);
+                    c.DrawBitmap(scaled, null, dst, null);
+                    if (storage_inventory[i] is Tool tool)
+                    {
+                        Paint paint = new Paint();
+                        paint.SetStyle(Paint.Style.FillAndStroke);
+                        double percentage = 1;
+                        if (tool.name.Equals("axe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            percentage = (double)tool.durability / CraftingStation.AXE_DURABILITY;
+                        }
+                        else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            percentage = (double)tool.durability / CraftingStation.PICKAXE_DURABILITY;
+                        }
+                        else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            percentage = (double)tool.durability / CraftingStation.SHOVEL_DURABILITY;
+                        }
+                        if (percentage > .50)
+                        {
+                            paint.Color = Color.Green;
+                        }
+                        else if (percentage > .20)
+                        {
+                            paint.Color = Color.Orange;
+                        }
+                        else
+                        {
+                            paint.Color = Color.Red;
+                        }
+                        c.DrawRect(rectleft, recttop * 9, (float)(rectright * percentage), rectbottom, paint);
+                    }
                 }
+                item.Background = new BitmapDrawable(Resources, icon);
+                icon.Dispose();
+                ItemLine.AddView(item);
+            }
+
+            for (int i = 0; i < player_inventory.Length; i++)
+            {
+                Button item = new Button(this);
+                if (i % 2 == 0)
+                {
+                    ItemLine = new LinearLayout(this);
+                    ItemLine.LayoutParameters = LayoutParam;
+                    ButtonParams.LeftMargin = 0;
+                    RightMain.AddView(ItemLine);
+                }
+                else
+                {
+                    ButtonParams.LeftMargin = left.LayoutParameters.Width / 7;
+                }
+                item.LayoutParameters = ButtonParams;
+                Bitmap icon = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("inventory_slot_border", "drawable", PackageName)).Copy(Bitmap.Config.Argb8888, true);
+                int iconSize = spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
+                if (player_inventory[i] != null)
+                {
+                    Canvas c = new Canvas(icon);
+                    Rect src = new Rect((player_inventory[i].id % MapDraw.spriteSheetColoumnCount) * iconSize, (player_inventory[i].id / MapDraw.spriteSheetColoumnCount) * iconSize, (player_inventory[i].id % MapDraw.spriteSheetColoumnCount + 1) * iconSize, (player_inventory[i].id / MapDraw.spriteSheetColoumnCount + 1) * iconSize);
+                    int rectleft = c.Width / 11;
+                    int rectright = c.Width / 11 * 10;
+                    int recttop = c.Height / 11;
+                    int rectbottom = c.Height / 11 * 10;
+                    Rect dst = new Rect(rectleft, recttop, rectright, rectbottom);
+                    Bitmap itemIcon = Bitmap.CreateBitmap(spriteSheet, src.Left, src.Top, src.Right - src.Left, src.Bottom - src.Top);
+                    Bitmap scaled = Bitmap.CreateScaledBitmap(itemIcon, rectright - rectleft, rectbottom - recttop, false);
+                    c.DrawBitmap(scaled, null, dst, null);
+                    if (storage_inventory[i] is Tool tool)
+                    {
+                        Paint paint = new Paint();
+                        paint.SetStyle(Paint.Style.FillAndStroke);
+                        double percentage = 1;
+                        if (tool.name.Equals("axe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            percentage = (double)tool.durability / CraftingStation.AXE_DURABILITY;
+                        }
+                        else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            percentage = (double)tool.durability / CraftingStation.PICKAXE_DURABILITY;
+                        }
+                        else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            percentage = (double)tool.durability / CraftingStation.SHOVEL_DURABILITY;
+                        }
+                        if (percentage > .50)
+                        {
+                            paint.Color = Color.Green;
+                        }
+                        else if (percentage > .20)
+                        {
+                            paint.Color = Color.Orange;
+                        }
+                        else
+                        {
+                            paint.Color = Color.Red;
+                        }
+                        c.DrawRect(rectleft, recttop * 9, (float)(rectright * percentage), rectbottom, paint);
+                    }
+                }
+                item.Background = new BitmapDrawable(Resources, icon);
+                icon.Dispose();
                 ItemLine.AddView(item);
             }
 
@@ -527,6 +639,19 @@ namespace Automation_Game
         {
             Map.Player.DeEquip();
             Invalidate();
+        }
+
+        public override bool OnTouchEvent(MotionEvent e)
+        {
+            if (e.Action == MotionEventActions.Down)
+            {
+                RelativeLayout rl = (RelativeLayout)FindViewById(Resource.Id.relativeLayout1);
+                rl.BringChildToFront(displayInventory);
+                rl.BringChildToFront(displayMap);
+                rl.BringChildToFront(DisplayCraftingUI);
+
+            }
+            return base.OnTouchEvent(e);
         }
     }
 }
