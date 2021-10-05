@@ -289,6 +289,19 @@ namespace Automation_Game
                     }
                 }
                 item.Background = new BitmapDrawable(Resources, icon);
+                item.Click += (object sender, EventArgs e) =>
+                {
+                    int index = (int)((View)sender).Tag;
+                    if (storage_inventory[index] != null)
+                    {
+                        if (p.GiveItem(storage_inventory[index]))
+                        {
+                            storage.RemoveItem(index);
+                            d.Cancel();
+                            Trade(storage, p);
+                        }
+                    }
+                };
                 icon.Dispose();
                 ItemLine.AddView(item);
             }
@@ -355,12 +368,32 @@ namespace Automation_Game
                     }
                 }
                 item.Background = new BitmapDrawable(Resources, icon);
+                item.Tag = i;
+                item.Click += (object sender, EventArgs e) =>
+                {
+                    int index = (int)((View)sender).Tag;
+                    if (player_inventory[index] != null)
+                    {
+                        if (storage.AddItem(player_inventory[index]))
+                        {
+                            p.DropItem(index);
+                            d.Cancel();
+                            Trade(storage, p);
+                        }
+                    }
+                };
                 icon.Dispose();
                 ItemLine.AddView(item);
             }
 
             d.Show();
         }
+
+        private void Item_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         private void DisplayCraftingUI_Click(object sender, EventArgs e)
         {
             if (craftingUI == null)
