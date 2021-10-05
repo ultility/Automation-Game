@@ -43,10 +43,6 @@ namespace Automation_Game
                         float after = v.GetY();
                         Invalidate();
                     }
-                    if (!CanScroll1 && CanScroll)
-                    {
-                        child.SetY(-Math.Abs(child.Height - Height));
-                    }
                 }
             }
             return true;
