@@ -43,6 +43,8 @@ namespace Automation_Game
 
         bool updating;
 
+        bool debug = true;
+
         public enum IDs
         {
             DIRT,
@@ -62,6 +64,7 @@ namespace Automation_Game
             CRAFTING_STATION,
             AXE,
             STORAGE_BOX,
+            AMOUNT
         };
 
         protected override void OnStop()
@@ -561,6 +564,15 @@ namespace Automation_Game
                 slots[7].SetOnTouchListener(press);
                 slots[8] = (Button)inventory.FindViewById(Resource.Id.slotEquip);
                 slots[8].Click += DeEquip;
+                Button debug = (Button)inventory.FindViewById(Resource.Id.debug);
+                if (!this.debug)
+                {
+                    debug.Visibility = ViewStates.Gone;
+                }
+                else
+                {
+                    debug.Click += Debug_Click;
+                }
             }
             press.SetBlueprint(UsedBlueprint);
             press.SetStructure(hole);
@@ -571,19 +583,9 @@ namespace Automation_Game
             Bitmap icon;
             for (int i = 0; i < inv.Length; i++)
             {
-                icon = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("inventory_slot_border", "drawable", PackageName)).Copy(Bitmap.Config.Argb8888, true);
                 if (inv[i] != null)
                 {
-                    Canvas c = new Canvas(icon);
-                    Rect src = new Rect((inv[i].id % MapDraw.spriteSheetColoumnCount) * iconSize, (inv[i].id / MapDraw.spriteSheetColoumnCount) * iconSize, (inv[i].id % MapDraw.spriteSheetColoumnCount + 1) * iconSize, (inv[i].id / MapDraw.spriteSheetColoumnCount + 1) * iconSize);
-                    int left = c.Width / 11;
-                    int right = c.Width / 11 * 10;
-                    int top = c.Height / 11;
-                    int bottom = c.Height / 11 * 10;
-                    Rect dst = new Rect(left, top, right, bottom);
-                    Bitmap item = Bitmap.CreateBitmap(spriteSheet, src.Left, src.Top, src.Right - src.Left, src.Bottom - src.Top);
-                    Bitmap scaled = Bitmap.CreateScaledBitmap(item, right - left, bottom - top, false);
-                    c.DrawBitmap(scaled, null, dst, null);
+                    icon = GetIcon(inv[i].id);
                     if (inv[i] is Tool tool)
                     {
                         Paint p = new Paint();
@@ -613,8 +615,17 @@ namespace Automation_Game
                         {
                             p.Color = Color.Red;
                         }
+                        Canvas c = new Canvas(icon);
+                        int left = c.Width / 11;
+                        int right = c.Width / 11 * 10;
+                        int top = c.Height / 11;
+                        int bottom = c.Height / 11 * 10;
                         c.DrawRect(left, top * 9, (float)(right * percentage), bottom, p);
                     }
+                }
+                else
+                {
+                    icon = GetIcon(-1);
                 }
                 slots[i].Background = new BitmapDrawable(Resources, icon);
                 icon.Dispose();
@@ -666,6 +677,113 @@ namespace Automation_Game
             slots[8].Background = new BitmapDrawable(Resources, icon);
             icon.Dispose();
             inventory.Show();
+        }
+
+        private void Debug_Click(object sender, EventArgs e)
+        {
+            LinearLayout.LayoutParams lines = (LinearLayout.LayoutParams)inventory.FindViewById(Resource.Id.slotsLayout1).LayoutParameters;
+            LinearLayout.LayoutParams buttons = (LinearLayout.LayoutParams)inventory.FindViewById(Resource.Id.slot2).LayoutParameters;
+            LinearLayout.LayoutParams firstButton = (LinearLayout.LayoutParams)inventory.FindViewById(Resource.Id.slot1).LayoutParameters;
+
+            Dialog d = new Dialog(this);
+            ScrollView main = new ScrollView(this);
+            main.LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
+            d.SetContentView(main);
+            LinearLayout l1 = null;
+            for (int i = 0, y = 0; i < (int)IDs.AMOUNT; i++)
+            {
+                if (IsItem(i))
+                {
+                    Button Item = new Button(this);
+                    if (y % 4 == 0)
+                    {
+                        l1 = new LinearLayout(this);
+                        l1.LayoutParameters = lines;
+                        main.AddView(l1);
+                        Item.LayoutParameters = firstButton;
+                    }
+                    else
+                    {
+                        Item.LayoutParameters = buttons;
+                    }
+                    Item.Tag = i;
+                    Item.Background = new BitmapDrawable(Resources, GetIcon((int)Item.Tag));
+                    Item.Click += GiveItem_Click;
+                    l1.AddView(Item);
+                    y++;
+                }
+            }
+            d.Show();
+            d.CancelEvent += Debug_CancelEvent;
+        }
+
+        private void Debug_CancelEvent(object sender, EventArgs e)
+        {
+            displayInventory.CallOnClick();
+        }
+
+        private bool IsItem(int id)
+        {
+            bool IsItem = false;
+            switch (id)
+            {
+                case (int)IDs.STONE:
+                case (int)IDs.STICK:
+                case (int)IDs.PICKAXE:
+                case (int)IDs.SHOVEL:
+                case (int)IDs.TREE_SEED:
+                case (int)IDs.AXE:
+                    IsItem = true;
+                    break;
+            }
+            return IsItem;
+        }
+
+        private void GiveItem_Click(object sender, EventArgs e)
+        {
+            int id = (int)((View)sender).Tag;
+            switch (id)
+            {
+                case (int)IDs.STONE:
+                    Map.Player.GiveItem(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE]));
+                    break;
+                case (int)IDs.STICK:
+                    Map.Player.GiveItem(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK]));
+                    break;
+                case (int)IDs.PICKAXE:
+                    Map.Player.GiveItem(new Tool("Pickaxe", id, CraftingStation.PICKAXE_DURABILITY));
+                    break;
+                case (int)IDs.SHOVEL:
+                    Map.Player.GiveItem(new Tool("Pickaxe", id, CraftingStation.SHOVEL_DURABILITY));
+                    break;
+                case (int)IDs.TREE_SEED:
+                    Map.Player.GiveItem(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.TREE_SEED]));
+                    break;
+                case (int)IDs.AXE:
+                    Map.Player.GiveItem(new Tool("Pickaxe", id, CraftingStation.AXE_DURABILITY));
+                    break;
+            }
+        }
+
+        private Bitmap GetIcon(int id)
+        {
+            int iconSize = spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
+            Bitmap icon = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("inventory_slot_border", "drawable", PackageName)).Copy(Bitmap.Config.Argb8888, true);
+            if (id < 0)
+            {
+                return icon;
+            }
+            Canvas c = new Canvas(icon);
+            Rect src = new Rect((id % MapDraw.spriteSheetColoumnCount) * iconSize, (id / MapDraw.spriteSheetColoumnCount) * iconSize, (id % MapDraw.spriteSheetColoumnCount + 1) * iconSize, (id / MapDraw.spriteSheetColoumnCount + 1) * iconSize);
+            int left = c.Width / 11;
+            int right = c.Width / 11 * 10;
+            int top = c.Height / 11;
+            int bottom = c.Height / 11 * 10;
+            Rect dst = new Rect(left, top, right, bottom);
+            Bitmap item = Bitmap.CreateBitmap(spriteSheet, src.Left, src.Top, src.Right - src.Left, src.Bottom - src.Top);
+            Bitmap scaled = Bitmap.CreateScaledBitmap(item, right - left, bottom - top, false);
+            c.DrawBitmap(scaled, null, dst, null);
+            return icon;
         }
 
         private void DeEquip(object sender, EventArgs e)
