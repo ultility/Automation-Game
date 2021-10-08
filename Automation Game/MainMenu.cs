@@ -72,6 +72,7 @@ namespace Automation_Game
 
         private void Start_Click(object sender, EventArgs e)
         {
+            this.t.Stop();
             Intent t = new Intent(this, typeof(GameActivity));
             t.PutExtra("create", true);
             StartActivity(t);
@@ -79,6 +80,7 @@ namespace Automation_Game
 
         private void Load_Click(object sender, EventArgs e)
         {
+            this.t.Stop();
             Intent t = new Intent(this, typeof(GameActivity));
             t.PutExtra("create", false);
             StartActivity(t);
