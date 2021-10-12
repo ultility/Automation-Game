@@ -295,6 +295,10 @@ namespace Automation_Game
             {
                 for (int y = 0; y < Generator.GetHeight(); y++)
                 {
+                    if (x == Generator.GetHeight() / 2 && y == Generator.GetWidth() / 2)
+                    {
+                        continue;
+                    }
                     if (terrain[x, y].GetStructure() == null && terrain[x, y].GetItem() == null)
                     {
                         for (int i = 0; i < itemTypeList.Count && terrain[x, y].GetItem() == null; i++)

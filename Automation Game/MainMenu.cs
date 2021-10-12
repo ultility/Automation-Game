@@ -25,6 +25,7 @@ namespace Automation_Game
         double dx;
         double left;
         double right;
+        bool TimerRun;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -47,10 +48,16 @@ namespace Automation_Game
             draw.DrawBitmap(FullBackground, src, dst, null);
             t = new Timer(1000 / 30.0);
             t.Elapsed += T_Elapsed;
-            t.Enabled = true;
             dx = Math.Abs(FullBackground.Width - background.Width);
             dx = dx / (60 * 30);
            backdrop.Background = new BitmapDrawable(Resources, background);
+        }
+
+        protected override void OnResume()
+        {
+            base.OnResume();
+            t.Enabled = true;
+            TimerRun = true;
         }
 
         private void T_Elapsed(object sender, ElapsedEventArgs e)
@@ -67,12 +74,12 @@ namespace Automation_Game
             Canvas draw = new Canvas(background);
             draw.DrawBitmap(FullBackground, src, dst, null);
             backdrop.Background = new BitmapDrawable(Resources, background);
-            t.Enabled = true;
+            t.Enabled = TimerRun;
         }
 
         private void Start_Click(object sender, EventArgs e)
         {
-            this.t.Stop();
+            TimerRun = false;
             Intent t = new Intent(this, typeof(GameActivity));
             t.PutExtra("create", true);
             StartActivity(t);
@@ -80,7 +87,7 @@ namespace Automation_Game
 
         private void Load_Click(object sender, EventArgs e)
         {
-            this.t.Stop();
+            TimerRun = false;
             Intent t = new Intent(this, typeof(GameActivity));
             t.PutExtra("create", false);
             StartActivity(t);
