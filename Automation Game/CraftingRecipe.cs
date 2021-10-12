@@ -11,7 +11,7 @@
             Recipe = recipe;
         }
 
-        public void Craft(Player p)
+        public bool Craft(Player p)
         {
             Item[] inv = p.GetInvetory();
             bool hasRequirments = true;
@@ -54,9 +54,9 @@
                 {
                     p.GiveItem(new Item(Result));
                 }
+                return true;
             }
-
-
+            return false;
         }
     }
 }

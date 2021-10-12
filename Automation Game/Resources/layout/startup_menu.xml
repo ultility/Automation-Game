@@ -12,6 +12,7 @@
             android:layout_height="100dp"
             android:id="@+id/start"
             android:text="@string/start"
+        android:textSize="25dp"
         android:textColor="@android:color/white"
             android:background="@drawable/inventory_slot_border"
         />
@@ -19,6 +20,7 @@
         android:layout_marginLeft="20dp"
             android:layout_width="150dp"
             android:layout_height="100dp"
+        android:textSize="25dp"
             android:id="@+id/last"
             android:text="@string/load"
         android:textColor="@android:color/white"
