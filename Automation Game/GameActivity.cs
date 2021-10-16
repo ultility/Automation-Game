@@ -64,6 +64,7 @@ namespace Automation_Game
             CRAFTING_STATION,
             AXE,
             STORAGE_BOX,
+            WOOD_LOG,
             AMOUNT
         };
 
@@ -733,6 +734,7 @@ namespace Automation_Game
                 case (int)IDs.SHOVEL:
                 case (int)IDs.TREE_SEED:
                 case (int)IDs.AXE:
+                case (int)IDs.WOOD_LOG:
                     IsItem = true;
                     break;
             }
@@ -761,6 +763,9 @@ namespace Automation_Game
                     break;
                 case (int)IDs.AXE:
                     Map.Player.GiveItem(new Tool("Pickaxe", id, CraftingStation.AXE_DURABILITY));
+                    break;
+                case (int)IDs.WOOD_LOG:
+                    Map.Player.GiveItem(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.LOG]));
                     break;
             }
         }

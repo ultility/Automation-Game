@@ -16,7 +16,8 @@ namespace Automation_Game
         {
             STICK,
             STONE,
-            TREE_SEED
+            TREE_SEED,
+            LOG
         };
         public enum StructureTypes
         {
@@ -42,8 +43,9 @@ namespace Automation_Game
 
         public static List<ItemType> itemTypeList = new List<ItemType> { new ItemType("Stick", 0.05, (int)GameActivity.IDs.STICK, 1, new string[] { "dirt" }),
                                                     new ItemType("Stone", 0.05, (int)GameActivity.IDs.STONE, 1, new string[] { "dirt" }),
-                                                    new ItemType("Tree Seed", 0,(int)GameActivity.IDs.TREE_SEED,1,new string[] { }) };
-        public static List<StructureType> structureTypeList = new List<StructureType> { new StructureType("tree", (int)GameActivity.IDs.TREE, 1, new Item[] { new Item(itemTypeList[(int)ItemTypes.STICK].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), new Item(itemTypeList[(int)ItemTypes.TREE_SEED].name, itemTypeList[(int)ItemTypes.TREE_SEED].id, itemTypeList[(int)ItemTypes.TREE_SEED].sizePercentage) }, new Tool("Axe", (int)GameActivity.IDs.AXE, 20), 0.08, new string[] { "dirt" }, 1),
+                                                    new ItemType("Tree Seed", 0,(int)GameActivity.IDs.TREE_SEED,1,new string[] { }),
+                                                    new ItemType("Log", 0, (int)GameActivity.IDs.WOOD_LOG, 1, new string[]{ })};
+        public static List<StructureType> structureTypeList = new List<StructureType> { new StructureType("tree", (int)GameActivity.IDs.TREE, 1, new Item[] { new Item(itemTypeList[(int)ItemTypes.LOG].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), new Item(itemTypeList[(int)ItemTypes.TREE_SEED])}, new Tool("Axe", (int)GameActivity.IDs.AXE, 20), 0.08, new string[] { "dirt" }, 1),
                                                                                         new StructureType("Dirt Hole", (int)GameActivity.IDs.DIRT_HOLE, 1, (Item)null, new Item(itemTypeList[(int)ItemTypes.TREE_SEED]), 0, new string[]{ }, 0)};
         public MapDraw(Context context) : base(context)
         {

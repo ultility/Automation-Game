@@ -145,7 +145,7 @@ namespace Automation_Game
                     {
                         if (p.GetEquippedItem() != null && p.GetEquippedItem().name.Equals("Shovel"))
                         {
-                            if (Type.Equals("dirt"))
+                            if (Type.Equals("dirt") && items.Count == 0)
                             {
                                 structure = new Structure(MapDraw.structureTypeList[(int)MapDraw.StructureTypes.DIRT_HOLE], true);
                                 p.GetEquippedItem().Use(1);
