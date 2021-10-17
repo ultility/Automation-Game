@@ -453,6 +453,25 @@ namespace Automation_Game
 
         }
 
+        private Button GetCraftingUIButton(int id, int width, int height)
+        {
+            Button btn = new Button(this);
+            btn.SetWidth(width / 8);
+            btn.SetHeight(height);
+            Bitmap bs = Bitmap.CreateBitmap(width / 8, height, Bitmap.Config.Argb8888);
+            Canvas c = new Canvas(bs);
+            Rect src = new Rect(((int)IDs.CRAFTING_STATION % MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION % MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount);
+            Rect dst = new Rect(0, 0, c.Width, c.Height);
+            Paint p = new Paint();
+            Color color = Color.CadetBlue;
+            c.DrawColor(color);
+            PorterDuffColorFilter cf = new PorterDuffColorFilter(color, PorterDuff.Mode.Multiply);
+            p.SetColorFilter(cf);
+            c.DrawBitmap(spriteSheet, src, dst, p);
+            btn.Background = new BitmapDrawable(Resources, bs);
+            return btn;
+        }
+
         private void StorageBox_Click(object sender, EventArgs e)
         {
             Structure s = new StorageChest(this);
