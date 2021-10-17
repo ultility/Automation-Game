@@ -65,6 +65,7 @@ namespace Automation_Game
             AXE,
             STORAGE_BOX,
             WOOD_LOG,
+            SAWING_TABLE,
             AMOUNT
         };
 
