@@ -59,7 +59,7 @@ namespace Automation_Game
                                 {
                                     int x = (int)activity.Map.Player.GetX();
                                     int y = (int)activity.Map.Player.GetY();
-                                    if (activity.Map.Generator.TerrainMap[x, y].GetItem() == null)
+                                    if (activity.Map.Generator.TerrainMap[x, y].GetItem() == null && activity.Map.Generator.TerrainMap[x,y].GetStructure() == null)
                                     {
                                         Item i = activity.Map.Player.DropItem(int.Parse(lastView.Tag.ToString()) - 1);
                                         if (i is Tool)

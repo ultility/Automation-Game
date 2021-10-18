@@ -73,6 +73,7 @@
     <Compile Include="Item.cs" />
     <Compile Include="ItemType.cs" />
     <Compile Include="IUpdateable.cs" />
+    <Compile Include="IUseable.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="MapDraw.cs" />
     <Compile Include="map\FastNoiseLite.cs" />

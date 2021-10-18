@@ -43,7 +43,7 @@ namespace Automation_Game
 
         bool updating;
 
-        bool debug = true;
+        public static bool debug = true;
 
         public enum IDs
         {
@@ -198,202 +198,6 @@ namespace Automation_Game
 
         }
 
-        public void Trade(StorageChest storage, Player p)
-        {
-            Dialog d = new Dialog(this);
-            LinearLayout ll1 = new LinearLayout(this);
-            d.SetContentView(ll1);
-            int WindowWidth = (int)(Window.DecorView.Width * 0.8);
-            int WindowHeight = (int)(Window.DecorView.Height * 0.8);
-            d.Window.SetLayout(WindowWidth, WindowHeight);
-            ScrollView left = new ScrollView(this);
-            ScrollView right = new ScrollView(this);
-            ImageView divider = new ImageView(this);
-            left.LayoutParameters = new LinearLayout.LayoutParams(WindowWidth / 11 * 5, ViewGroup.LayoutParams.MatchParent);
-            right.LayoutParameters = new LinearLayout.LayoutParams(WindowWidth / 11 * 5, WindowHeight);
-            divider.LayoutParameters = new LinearLayout.LayoutParams(WindowWidth / 11, WindowHeight);
-            ll1.AddView(left);
-            ll1.AddView(divider);
-            ll1.AddView(right);
-            divider.Background = new ColorDrawable(Color.Black);
-
-            Item[] player_inventory = p.GetInvetory();
-            Item[] storage_inventory = storage.GetInventory();
-            LinearLayout.LayoutParams LayoutParam = new LinearLayout.LayoutParams(left.LayoutParameters.Width / 7 * 5, (int)(left.LayoutParameters.Width / 7 * (4.0 / 3)));
-            LayoutParam.LeftMargin = left.LayoutParameters.Width / 7;
-            LayoutParam.TopMargin = left.LayoutParameters.Width / 14;
-            LinearLayout.LayoutParams ButtonParams = new LinearLayout.LayoutParams((int)(left.LayoutParameters.Width / 7 * (4.0 / 3)), (int)(left.LayoutParameters.Width / 7 * (4.0 / 3)));
-            LinearLayout ItemLine = null;
-            LinearLayout LeftMain = new LinearLayout(this);
-            LeftMain.Orientation = Orientation.Vertical;
-            LeftMain.LayoutParameters = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MatchParent, ButtonParams.Height * (int)Math.Ceiling(storage_inventory.Length / 2.0) + LayoutParam.TopMargin * (int)Math.Ceiling(storage_inventory.Length / 2.0));
-            LinearLayout RightMain = new LinearLayout(this);
-            RightMain.Orientation = Orientation.Vertical;
-            RightMain.LayoutParameters = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MatchParent, ButtonParams.Height * (int)Math.Ceiling(player_inventory.Length / 2.0) + LayoutParam.TopMargin * (int)Math.Ceiling(player_inventory.Length / 2.0));
-            left.AddView(LeftMain);
-            right.AddView(RightMain);
-            for (int i = 0; i < storage_inventory.Length; i++)
-            {
-                Button item = new Button(this);
-                if (i % 2 == 0)
-                {
-                    ItemLine = new LinearLayout(this);
-                    ItemLine.LayoutParameters = LayoutParam;
-                    ButtonParams.LeftMargin = 0;
-                    LeftMain.AddView(ItemLine);
-                }
-                else
-                {
-                    ButtonParams.LeftMargin = left.LayoutParameters.Width / 7;
-                }
-                item.LayoutParameters = ButtonParams;
-                Bitmap icon = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("inventory_slot_border", "drawable", PackageName)).Copy(Bitmap.Config.Argb8888, true);
-                int iconSize = spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
-                if (storage_inventory[i] != null)
-                {
-                    Canvas c = new Canvas(icon);
-                    Rect src = new Rect((storage_inventory[i].id % MapDraw.spriteSheetColoumnCount) * iconSize, (storage_inventory[i].id / MapDraw.spriteSheetColoumnCount) * iconSize, (storage_inventory[i].id % MapDraw.spriteSheetColoumnCount + 1) * iconSize, (storage_inventory[i].id / MapDraw.spriteSheetColoumnCount + 1) * iconSize);
-                    int rectleft = c.Width / 11;
-                    int rectright = c.Width / 11 * 10;
-                    int recttop = c.Height / 11;
-                    int rectbottom = c.Height / 11 * 10;
-                    Rect dst = new Rect(rectleft, recttop, rectright, rectbottom);
-                    Bitmap itemIcon = Bitmap.CreateBitmap(spriteSheet, src.Left, src.Top, src.Right - src.Left, src.Bottom - src.Top);
-                    Bitmap scaled = Bitmap.CreateScaledBitmap(itemIcon, rectright - rectleft, rectbottom - recttop, false);
-                    c.DrawBitmap(scaled, null, dst, null);
-                    if (storage_inventory[i] is Tool tool)
-                    {
-                        Paint paint = new Paint();
-                        paint.SetStyle(Paint.Style.FillAndStroke);
-                        double percentage = 1;
-                        if (tool.name.Equals("axe", StringComparison.OrdinalIgnoreCase))
-                        {
-                            percentage = (double)tool.durability / CraftingStation.AXE_DURABILITY;
-                        }
-                        else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
-                        {
-                            percentage = (double)tool.durability / CraftingStation.PICKAXE_DURABILITY;
-                        }
-                        else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
-                        {
-                            percentage = (double)tool.durability / CraftingStation.SHOVEL_DURABILITY;
-                        }
-                        if (percentage > .50)
-                        {
-                            paint.Color = Color.Green;
-                        }
-                        else if (percentage > .20)
-                        {
-                            paint.Color = Color.Orange;
-                        }
-                        else
-                        {
-                            paint.Color = Color.Red;
-                        }
-                        c.DrawRect(rectleft, recttop * 9, (float)(rectright * percentage), rectbottom, paint);
-                    }
-                }
-                item.Background = new BitmapDrawable(Resources, icon);
-                item.Click += (object sender, EventArgs e) =>
-                {
-                    int index = (int)((View)sender).Tag;
-                    if (storage_inventory[index] != null)
-                    {
-                        if (p.GiveItem(storage_inventory[index]))
-                        {
-                            storage.RemoveItem(index);
-                            d.Cancel();
-                            Trade(storage, p);
-                        }
-                    }
-                };
-                icon.Dispose();
-                ItemLine.AddView(item);
-            }
-
-            for (int i = 0; i < player_inventory.Length; i++)
-            {
-                Button item = new Button(this);
-                if (i % 2 == 0)
-                {
-                    ItemLine = new LinearLayout(this);
-                    ItemLine.LayoutParameters = LayoutParam;
-                    ButtonParams.LeftMargin = 0;
-                    RightMain.AddView(ItemLine);
-                }
-                else
-                {
-                    ButtonParams.LeftMargin = left.LayoutParameters.Width / 7;
-                }
-                item.LayoutParameters = ButtonParams;
-                Bitmap icon = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("inventory_slot_border", "drawable", PackageName)).Copy(Bitmap.Config.Argb8888, true);
-                int iconSize = spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
-                if (player_inventory[i] != null)
-                {
-                    Canvas c = new Canvas(icon);
-                    Rect src = new Rect((player_inventory[i].id % MapDraw.spriteSheetColoumnCount) * iconSize, (player_inventory[i].id / MapDraw.spriteSheetColoumnCount) * iconSize, (player_inventory[i].id % MapDraw.spriteSheetColoumnCount + 1) * iconSize, (player_inventory[i].id / MapDraw.spriteSheetColoumnCount + 1) * iconSize);
-                    int rectleft = c.Width / 11;
-                    int rectright = c.Width / 11 * 10;
-                    int recttop = c.Height / 11;
-                    int rectbottom = c.Height / 11 * 10;
-                    Rect dst = new Rect(rectleft, recttop, rectright, rectbottom);
-                    Bitmap itemIcon = Bitmap.CreateBitmap(spriteSheet, src.Left, src.Top, src.Right - src.Left, src.Bottom - src.Top);
-                    Bitmap scaled = Bitmap.CreateScaledBitmap(itemIcon, rectright - rectleft, rectbottom - recttop, false);
-                    c.DrawBitmap(scaled, null, dst, null);
-                    if (storage_inventory[i] is Tool tool)
-                    {
-                        Paint paint = new Paint();
-                        paint.SetStyle(Paint.Style.FillAndStroke);
-                        double percentage = 1;
-                        if (tool.name.Equals("axe", StringComparison.OrdinalIgnoreCase))
-                        {
-                            percentage = (double)tool.durability / CraftingStation.AXE_DURABILITY;
-                        }
-                        else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
-                        {
-                            percentage = (double)tool.durability / CraftingStation.PICKAXE_DURABILITY;
-                        }
-                        else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
-                        {
-                            percentage = (double)tool.durability / CraftingStation.SHOVEL_DURABILITY;
-                        }
-                        if (percentage > .50)
-                        {
-                            paint.Color = Color.Green;
-                        }
-                        else if (percentage > .20)
-                        {
-                            paint.Color = Color.Orange;
-                        }
-                        else
-                        {
-                            paint.Color = Color.Red;
-                        }
-                        c.DrawRect(rectleft, recttop * 9, (float)(rectright * percentage), rectbottom, paint);
-                    }
-                }
-                item.Background = new BitmapDrawable(Resources, icon);
-                item.Tag = i;
-                item.Click += (object sender, EventArgs e) =>
-                {
-                    int index = (int)((View)sender).Tag;
-                    if (player_inventory[index] != null)
-                    {
-                        if (storage.AddItem(player_inventory[index]))
-                        {
-                            p.DropItem(index);
-                            d.Cancel();
-                            Trade(storage, p);
-                        }
-                    }
-                };
-                icon.Dispose();
-                ItemLine.AddView(item);
-            }
-
-            d.Show();
-        }
-
         private void Item_Click(object sender, EventArgs e)
         {
             throw new NotImplementedException();
@@ -416,34 +220,16 @@ namespace Automation_Game
                 close.SetBackgroundColor(Color.Red);
                 close.Background.Alpha = 150;
                 close.Click += Close_Click;
-                Button craftingStation = new Button(this);
-                craftingStation.SetWidth(width / 8);
-                craftingStation.SetHeight(height);
-                Bitmap bs = Bitmap.CreateBitmap(width / 8, height, Bitmap.Config.Argb8888);
-                Canvas c = new Canvas(bs);
-                Rect src = new Rect(((int)IDs.CRAFTING_STATION % MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION % MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount);
-                Rect dst = new Rect(0, 0, c.Width, c.Height);
-                Paint p = new Paint();
-                Color color = Color.CadetBlue;
-                c.DrawColor(color);
-                PorterDuffColorFilter cf = new PorterDuffColorFilter(color, PorterDuff.Mode.Multiply);
-                p.SetColorFilter(cf);
-                c.DrawBitmap(spriteSheet, src, dst, p);
-                craftingStation.Background = new BitmapDrawable(Resources, bs);
+                Button craftingStation = GetCraftingUIButton((int)IDs.CRAFTING_STATION, width / 8, height);
                 craftingStation.Click += CraftingStation_Click;
-                bs = Bitmap.CreateBitmap(width / 8, height, Bitmap.Config.Argb8888);
-                Button StorageBox = new Button(this);
-                c = new Canvas(bs);
-                c.DrawColor(color);
-                src = new Rect(((int)IDs.STORAGE_BOX % MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.STORAGE_BOX / MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.STORAGE_BOX % MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.STORAGE_BOX / MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount);
-                c.DrawBitmap(spriteSheet, src, dst, p);
-                StorageBox.Background = new BitmapDrawable(Resources, bs);
+                Button StorageBox = GetCraftingUIButton((int)IDs.STORAGE_BOX, width / 8, height);
                 StorageBox.Click += StorageBox_Click;
-                StorageBox.SetWidth(width / 8);
-                craftingStation.SetHeight(height);
+                Button SawingTable = GetCraftingUIButton((int)IDs.SAWING_TABLE, width / 8, height);
+                SawingTable.Click += SawingTable_Click;
                 craftingUI.AddView(close);
                 craftingUI.AddView(craftingStation);
                 craftingUI.AddView(StorageBox);
+                craftingUI.AddView(SawingTable);
                 frame.AddView(craftingUI);
             }
             craftingUI.Visibility = ViewStates.Visible;
@@ -453,6 +239,15 @@ namespace Automation_Game
 
         }
 
+        private void SawingTable_Click(object sender, EventArgs e)
+        {
+            Structure s = new SawingTable(this);
+            Delivery[] d = new Delivery[2];
+            d[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.LOG]), 2);
+            d[1] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE]), 1);
+            Map.CurrentlyBuilding = new StructureBlueprint(s, d, null);
+        }
+
         private Button GetCraftingUIButton(int id, int width, int height)
         {
             Button btn = new Button(this);
@@ -460,7 +255,7 @@ namespace Automation_Game
             btn.SetHeight(height);
             Bitmap bs = Bitmap.CreateBitmap(width / 8, height, Bitmap.Config.Argb8888);
             Canvas c = new Canvas(bs);
-            Rect src = new Rect(((int)IDs.CRAFTING_STATION % MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION % MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, ((int)IDs.CRAFTING_STATION / MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount);
+            Rect src = new Rect((id % MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, (id / MapDraw.spriteSheetColoumnCount) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, (id % MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount, (id / MapDraw.spriteSheetColoumnCount + 1) * spriteSheet.Width / MapDraw.spriteSheetColoumnCount);
             Rect dst = new Rect(0, 0, c.Width, c.Height);
             Paint p = new Paint();
             Color color = Color.CadetBlue;
@@ -586,7 +381,7 @@ namespace Automation_Game
                 slots[8] = (Button)inventory.FindViewById(Resource.Id.slotEquip);
                 slots[8].Click += DeEquip;
                 Button debug = (Button)inventory.FindViewById(Resource.Id.debug);
-                if (!this.debug)
+                if (!GameActivity.debug)
                 {
                     debug.Visibility = ViewStates.Gone;
                 }
@@ -606,7 +401,7 @@ namespace Automation_Game
             {
                 if (inv[i] != null)
                 {
-                    icon = GetIcon(inv[i].id);
+                    icon = GetIcon(inv[i].id, this);
                     if (inv[i] is Tool tool)
                     {
                         Paint p = new Paint();
@@ -646,7 +441,7 @@ namespace Automation_Game
                 }
                 else
                 {
-                    icon = GetIcon(-1);
+                    icon = GetIcon(-1, this);
                 }
                 slots[i].Background = new BitmapDrawable(Resources, icon);
                 icon.Dispose();
@@ -700,7 +495,7 @@ namespace Automation_Game
             inventory.Show();
         }
 
-        private void Debug_Click(object sender, EventArgs e)
+        public void Debug_Click(object sender, EventArgs e)
         {
             LinearLayout.LayoutParams lines = (LinearLayout.LayoutParams)inventory.FindViewById(Resource.Id.slotsLayout1).LayoutParameters;
             LinearLayout.LayoutParams buttons = (LinearLayout.LayoutParams)inventory.FindViewById(Resource.Id.slot2).LayoutParameters;
@@ -728,7 +523,7 @@ namespace Automation_Game
                         Item.LayoutParameters = buttons;
                     }
                     Item.Tag = i;
-                    Item.Background = new BitmapDrawable(Resources, GetIcon((int)Item.Tag));
+                    Item.Background = new BitmapDrawable(Resources, GetIcon((int)Item.Tag, this));
                     Item.Click += GiveItem_Click;
                     l1.AddView(Item);
                     y++;
@@ -790,10 +585,10 @@ namespace Automation_Game
             }
         }
 
-        private Bitmap GetIcon(int id)
+        public static Bitmap GetIcon(int id, Context C)
         {
             int iconSize = spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
-            Bitmap icon = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("inventory_slot_border", "drawable", PackageName)).Copy(Bitmap.Config.Argb8888, true);
+            Bitmap icon = BitmapFactory.DecodeResource(C.Resources, C.Resources.GetIdentifier("inventory_slot_border", "drawable", C.PackageName)).Copy(Bitmap.Config.Argb8888, true);
             if (id < 0)
             {
                 return icon;

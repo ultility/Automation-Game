@@ -13,6 +13,7 @@ namespace Automation_Game
             Result = structure;
             this.Recipe = recipe.ToList();
             this.Parent = parent;
+            Walkable = true;
         }
 
         public void SetTerrain(Terrain t)

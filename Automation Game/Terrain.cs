@@ -105,11 +105,11 @@ namespace Automation_Game
         {
             if (Math.Abs(packet.moving.GetX() - x) <= 1 && Math.Abs(packet.moving.GetY() - y) <= 1)
             {
-                if (structure is CraftingStation cs)
+                if (structure is IUseable useable)
                 {
                     if (packet.moving is Player p)
                     {
-                        cs.Use(p);
+                        useable.Use(p);
                         return true;
                     }
                 }
@@ -126,18 +126,6 @@ namespace Automation_Game
                         return true;
                     }
 
-                }
-                else if (structure is StorageChest sc)
-                {
-                    if (packet.moving is Player p)
-                    {
-                        Handler handle = new Handler(Looper.MainLooper);
-                        handle.Post(() =>
-                        {
-                            activity.Trade(sc, p);
-                        });
-                        return true;
-                    }
                 }
                 else if (structure ==  null)
                 {

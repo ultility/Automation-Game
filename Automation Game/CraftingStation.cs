@@ -8,7 +8,7 @@ using System;
 
 namespace Automation_Game
 {
-    class CraftingStation : Structure
+    class CraftingStation : Structure, IUseable
     {
         public const int AXE_DURABILITY = 20;
         public const int PICKAXE_DURABILITY = 20;
@@ -16,6 +16,7 @@ namespace Automation_Game
         readonly CraftingRecipe[] recipes;
         readonly Context c;
         Player p;
+        Dialog d;
         public CraftingStation(Context context, string name = "CraftingStation", int id = (int)GameActivity.IDs.CRAFTING_STATION, int size = 1, Item useableItem = null, Item droppedItem = null) : base(name, id, size, useableItem, droppedItem, 0)
         {
             recipes = new CraftingRecipe[3];
@@ -26,6 +27,7 @@ namespace Automation_Game
             recipes[1] = new CraftingRecipe(new Tool("Pickaxe", (int)GameActivity.IDs.PICKAXE, PICKAXE_DURABILITY), axeRecipe);
             recipes[2] = new CraftingRecipe(new Tool("Shovel", (int)GameActivity.IDs.SHOVEL, SHOVEL_DURABILITY), axeRecipe);
             c = context;
+            d = new Dialog(c);
         }
 
         public void Use(Player p)
@@ -33,44 +35,8 @@ namespace Automation_Game
             this.p = p;
             ((Activity)c).RunOnUiThread(DisplayMenu);
         }
-
         private void DisplayMenu()
         {
-            bool trial = true;
-            if (trial)
-            {
-                displaymenu();
-            }
-            else
-            {
-                AlertDialog d;
-                AlertDialog.Builder build = new AlertDialog.Builder(c);
-                build.SetCancelable(true);
-                LinearLayout l1 = new LinearLayout(c)
-                {
-                    LayoutParameters = new LinearLayout.LayoutParams(((Activity)c).Window.DecorView.Width * 8 / 10, ((Activity)c).Window.DecorView.Height * 8 / 10)
-                };
-                build.SetView(l1);
-                for (int i = 0; i < recipes.Length; i++)
-                {
-                    Button tool = new Button(c);
-                    Bitmap spriteSheet = BitmapFactory.DecodeResource(c.Resources, c.Resources.GetIdentifier("sprite_sheet", "drawable", c.PackageName));
-                    int iconSize = spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
-                    Bitmap icon = Bitmap.CreateBitmap(spriteSheet, iconSize * (recipes[i].Result.id % MapDraw.spriteSheetColoumnCount), iconSize * (recipes[i].Result.id / MapDraw.spriteSheetColoumnCount), iconSize, iconSize);
-                    tool.Background = new BitmapDrawable(c.Resources, icon);
-                    tool.Click += Axe_Click;
-                    tool.Tag = i;
-                    l1.AddView(tool);
-                    spriteSheet.Dispose();
-                }
-                d = build.Create();
-                d.Show();
-                d.Window.SetLayout(((Activity)c).Window.DecorView.Width * 8 / 10, ((Activity)c).Window.DecorView.Height * 8 / 10);
-            }
-        }
-        private void displaymenu()
-        {
-            Dialog d = new Dialog(c);
             LinearLayout ll1 = new LinearLayout(c);
             d.SetContentView(ll1);
             Window Window = ((GameActivity)c).Window;
@@ -134,6 +100,7 @@ namespace Automation_Game
                     c.DrawBitmap(scaled, null, dst, null);
                 }
                 item.Background = new BitmapDrawable(Resources, icon);
+                item.Tag = i;
                 item.Click += Axe_Click;
                 icon.Dispose();
                 ItemLine.AddView(item);
@@ -210,9 +177,10 @@ namespace Automation_Game
 
         private void Axe_Click(object sender, EventArgs e)
         {
-            if (recipes[(int)((Button)sender).Tag].Craft(p))
+            int tool = (int)((Button)sender).Tag;
+            if (recipes[tool].Craft(p))
             {
-                displaymenu();
+                DisplayMenu();
             }
         }
     }
