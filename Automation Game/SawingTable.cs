@@ -21,12 +21,13 @@ namespace Automation_Game
         Button[] slots;
         Button Input;
         Button Output;
+        ProccessBar bar;
         public SawingTable(Context context, string name = "SawingTable", int id = (int)GameActivity.IDs.SAWING_TABLE, int size = 1, Item useableItem = null, Item droppedItem = null) : base(name, id, size, useableItem, droppedItem, 0)
         {
             C = context;
             slots = new Button[8];
             d = new Dialog(C);
-            d.SetContentView(Resource.Layout.inventory_layout);
+            d.SetContentView(Resource.Layout.proccessing_layout);
             d.SetCancelable(true);
             d.Window.SetLayout((int)(((Activity)C).Window.DecorView.Width * 0.8), (int)(((Activity)C).Window.DecorView.Height * 0.8));
             slots[0] = (Button)d.FindViewById(Resource.Id.slot1);
@@ -37,14 +38,19 @@ namespace Automation_Game
             slots[5] = (Button)d.FindViewById(Resource.Id.slot6);
             slots[6] = (Button)d.FindViewById(Resource.Id.slot7);
             slots[7] = (Button)d.FindViewById(Resource.Id.slot8);
-            Output = (Button)d.FindViewById(Resource.Id.slotEquip);
-            Input = (Button)d.FindViewById(Resource.Id.debug);
+            Output = (Button)d.FindViewById(Resource.Id.output);
+            Input = (Button)d.FindViewById(Resource.Id.input);
+            bar = new ProccessBar(C);
+            ViewGroup parent = (ViewGroup)Output.Parent;
+            parent.AddView(bar, parent.ChildCount - 2);
         }
 
         public void Use(Player p)
         {
             ((Activity)C).RunOnUiThread(() =>
             {
+                ViewGroup parent = (ViewGroup)Output.Parent;
+                bar.LayoutParameters = new LinearLayout.LayoutParams(parent.Width - Output.Width - Input.Width, parent.Height - Input.Height - Output.Height);
                 Item[] inv = p.GetInvetory();
                 int iconSize = GameActivity.spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
                 Bitmap icon;

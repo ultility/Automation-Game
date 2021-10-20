@@ -86,6 +86,7 @@
     <Compile Include="PathFinding\Tile.cs" />
     <Compile Include="Plant.cs" />
     <Compile Include="Point.cs" />
+    <Compile Include="ProccessBar.cs" />
     <Compile Include="SawingTable.cs" />
     <Compile Include="ScrollView.cs" />
     <Compile Include="StorageChest.cs" />
@@ -176,6 +177,17 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\mainmenu_background.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\proccessing_layout.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\proccess_bar_empty.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\proccess_bar_filled.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
