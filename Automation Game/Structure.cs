@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Automation_Game
 {
-    public class Structure
+    public class Structure : IRotateable
     {
         public string Name { get; }
         public int Id { get; }
@@ -19,13 +19,32 @@ namespace Automation_Game
         public int Hardness { get; }
 
         public bool Walkable { get; protected set; }
+        private int rotation { get; set; }
+        public int Rotation 
+        {
+            get { return rotation; }
+            set
+            {
+                rotation = value;
+                if (rotation < 0)
+                {
+                    rotation = -rotation;
+                    rotation %= 360;
+                    rotation = 359 - rotation;
+                }
+                else if (rotation > 360)
+                {
+                    rotation %= 360;
+                }
+            }
+        }
 
         public virtual bool IsBuildable(Terrain t)
         {
             return !t.Type.Equals("water");
         }
 
-        public Structure(string name, int id, float size, Item useableTool, IEnumerable<Item> droppedItems, int Hardness, bool Walkable = false)
+        public Structure(string name, int id, float size, Item useableTool, IEnumerable<Item> droppedItems, int Hardness, bool Walkable = false, int Rotation = 0)
         {
             this.dropItems = new List<Item>();
             this.dropItems.AddRange(droppedItems);
@@ -35,9 +54,10 @@ namespace Automation_Game
             this.useableTool = useableTool;
             this.Hardness = Hardness;
             this.Walkable = Walkable;
+            this.Rotation = Rotation;
         }
 
-        public Structure(string name, int id, float size, Item useableTool, Item droppedItem, int Hardness, bool Walkable = false)
+        public Structure(string name, int id, float size, Item useableTool, Item droppedItem, int Hardness, bool Walkable = false, int Rotation = 0)
         {
             this.dropItems = new List<Item>
             {
@@ -49,18 +69,20 @@ namespace Automation_Game
             this.useableTool = useableTool;
             this.Hardness = Hardness;
             this.Walkable = Walkable;
+            this.Rotation = Rotation;
         }
 
-        public Structure(StructureType type, bool Walkable = false)
+        public Structure(StructureType type, int Rotation = 0)
         {
             Name = type.Name;
             Id = type.Id;
             SizePercentage = type.SizePercentage;
             useableTool = type.UseableItem;
             Hardness = type.Hardness;
-            this.Walkable = Walkable;
+            this.Walkable = type.Walkable;
             this.dropItems = new List<Item>();
             dropItems.AddRange(type.DropItem);
+            this.Rotation = Rotation;
         }
 
         public virtual bool Destory(Player p)

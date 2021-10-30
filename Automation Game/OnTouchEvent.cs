@@ -12,7 +12,7 @@ namespace Automation_Game
         readonly GameActivity activity;
         View lastView;
         bool finished;
-        StructureBlueprint blueprint;
+        public StructureBlueprint blueprint { get; private set; }
         Structure hole;
 
         public OnTouchEvent()
@@ -79,7 +79,7 @@ namespace Automation_Game
                             if (item.name.Equals(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.TREE_SEED].name))
                             {
                                 activity.Map.Player.DropItem(int.Parse(v.Tag.ToString()) - 1);
-                                Plant p = new Plant(1f / 60 / 10, 2, MapDraw.structureTypeList[(int)MapDraw.StructureTypes.TREE], true);
+                                Plant p = new Plant(1f / 60 / 10, 2, MapDraw.structureTypeList[(int)MapDraw.StructureTypes.TREE]);
                                 activity.Map.Generator.TerrainMap[(int)activity.Map.Player.GetX(), (int)activity.Map.Player.GetY()].BuildStructure(p);
                                 activity.Updateables.Add(p);
                                 activity.Invalidate();

@@ -17,19 +17,21 @@ namespace Automation_Game
             STICK,
             STONE,
             TREE_SEED,
-            LOG
+            LOG,
         };
         public enum StructureTypes
         {
             TREE,
-            DIRT_HOLE
+            DIRT_HOLE,
+            WOOD_FLOOR,
+            WOOD_WALL,
         };
         public MapGenerator Generator { get; }
         readonly Context context;
 
         Vector2 renderDistance;
         Vector2 camera;
-        Vector2 LastPoint;
+        public Vector2 LastPoint;
         public Player Player { get; }
 
         bool tap;
@@ -46,7 +48,9 @@ namespace Automation_Game
                                                     new ItemType("Tree Seed", 0,(int)GameActivity.IDs.TREE_SEED,1,new string[] { }),
                                                     new ItemType("Log", 0, (int)GameActivity.IDs.WOOD_LOG, 1, new string[]{ })};
         public static List<StructureType> structureTypeList = new List<StructureType> { new StructureType("tree", (int)GameActivity.IDs.TREE, 1, new Item[] { new Item(itemTypeList[(int)ItemTypes.LOG].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), new Item(itemTypeList[(int)ItemTypes.TREE_SEED])}, new Tool("Axe", (int)GameActivity.IDs.AXE, 20), 0.08, new string[] { "dirt" }, 1),
-                                                                                        new StructureType("Dirt Hole", (int)GameActivity.IDs.DIRT_HOLE, 1, (Item)null, new Item(itemTypeList[(int)ItemTypes.TREE_SEED]), 0, new string[]{ }, 0)};
+                                                                                        new StructureType("Dirt Hole", (int)GameActivity.IDs.DIRT_HOLE, 1, (Item)null, new Item(itemTypeList[(int)ItemTypes.TREE_SEED]), 0, new string[]{ }, 0, true),
+                                                                                        new StructureType("Wood Floor", (int)GameActivity.IDs.WOOD_FLOOR, 1, (Item)null, (Item)null, 0, new string[]{ }, 0, true),
+                                                                                        new StructureType("Wood Wall", (int)GameActivity.IDs.WOOD_WALL, 1, (Item)null, (Item)null, 0, new string[]{ }, 0)};
         public MapDraw(Context context) : base(context)
         {
             this.context = context;
@@ -104,6 +108,7 @@ namespace Automation_Game
             Terrain[,] terrain = Generator.GetTerrain();
             Rect src = new Rect();
             RectF dst = new RectF();
+            Matrix matrix = new Matrix();
             for (int x = (int)(camera.X - renderDistance.X / 2), posX = 0; x <= camera.X + renderDistance.X / 2; x++, posX++)
             {
                 for (int y = (int)(camera.Y - renderDistance.Y / 2), posY = 0; y <= camera.Y + renderDistance.Y / 2; y++, posY++)
@@ -147,6 +152,29 @@ namespace Automation_Game
                         dst.Top = dst.Top + Math.Abs(1 - SizePercentage) * Terrain.Size / 2;
                         dst.Right = dst.Right - Math.Abs(1 - SizePercentage) * Terrain.Size / 2;
                         dst.Bottom = dst.Bottom - Math.Abs(1 - SizePercentage) * Terrain.Size / 2;
+                        if (terrain[x, y].GetStructure().Rotation != 0)
+                        {
+                            Console.WriteLine("turn");
+                        }
+                        Bitmap bm = Bitmap.CreateBitmap(GameActivity.spriteSheet, src.Left, src.Top, src.Width(), src.Height());
+                        matrix.SetRotate(terrain[x,y].GetStructure().Rotation);
+                        matrix.PostScale(SizePercentage, SizePercentage);
+                        if (terrain[x,y].GetStructure().Rotation == 90)
+                        {
+                            matrix.PostTranslate(dst.Left + bm.Width, dst.Top);
+                        }
+                        else if (terrain[x, y].GetStructure().Rotation == 180)
+                        {
+                            matrix.PostTranslate(dst.Left + bm.Width, dst.Top + bm.Height);
+                        }
+                        else if (terrain[x, y].GetStructure().Rotation == 270)
+                        {
+                            matrix.PostTranslate((float)(dst.Left), dst.Top + bm.Height);
+                        }
+                        else
+                        {
+                            matrix.PostTranslate(dst.Left, dst.Top);
+                        }
                         Paint p = null;
                         if (terrain[x, y].GetStructure() is StructureBlueprint)
                         {
@@ -155,7 +183,8 @@ namespace Automation_Game
                                 Alpha = 100
                             };
                         }
-                        canvas.DrawBitmap(GameActivity.spriteSheet, src, dst, p);
+                        
+                        canvas.DrawBitmap(bm, matrix, p);
                     }
                 }
             }
@@ -335,7 +364,7 @@ namespace Automation_Game
                                 Structure build;
                                 if (i == (int)StructureTypes.TREE)
                                 {
-                                    build = new Plant(1.0f / 60 / 10, 2, structureTypeList[i], false, 2);
+                                    build = new Plant(1.0f / 60 / 10, 2, structureTypeList[i], 2);
                                 }
                                 else
                                 {

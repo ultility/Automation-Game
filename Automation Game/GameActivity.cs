@@ -66,6 +66,8 @@ namespace Automation_Game
             STORAGE_BOX,
             WOOD_LOG,
             SAWING_TABLE,
+            WOOD_FLOOR,
+            WOOD_WALL,
             AMOUNT
         };
 
@@ -214,6 +216,8 @@ namespace Automation_Game
                 craftingUI.LayoutParameters = param;
                 craftingUI.SetBackgroundColor(Color.White);
                 craftingUI.SetY(frame.Height - craftingUI.LayoutParameters.Height);
+                ScrollView Structures = new ScrollView(this, Orientation.Horizontal);
+                Structures.LayoutParameters = new LinearLayout.LayoutParams(5 * width / 8, height);
                 Button close = new Button(this);
                 close.SetWidth(width / 8);
                 close.SetHeight(height);
@@ -226,10 +230,22 @@ namespace Automation_Game
                 StorageBox.Click += StorageBox_Click;
                 Button SawingTable = GetCraftingUIButton((int)IDs.SAWING_TABLE, width / 8, height);
                 SawingTable.Click += SawingTable_Click;
+                Button WoodWall = GetCraftingUIButton((int)IDs.WOOD_WALL, width / 8, height);
+                WoodWall.Click += WoodWall_Click;
+                Button WoodFloor = GetCraftingUIButton((int)IDs.WOOD_FLOOR, width / 8, height);
+                WoodFloor.Click += WoodFloor_Click;
                 craftingUI.AddView(close);
-                craftingUI.AddView(craftingStation);
-                craftingUI.AddView(StorageBox);
-                craftingUI.AddView(SawingTable);
+                craftingUI.AddView(Structures);
+                Structures.AddView(craftingStation);
+                Structures.AddView(StorageBox);
+                Structures.AddView(SawingTable);
+                Structures.AddView(WoodWall);
+                Structures.AddView(WoodFloor);
+                Button turn90Right = new Button(this);
+                turn90Right.LayoutParameters = new ViewGroup.LayoutParams(width / 8, height);
+                turn90Right.Background = new BitmapDrawable(Resources, BitmapFactory.DecodeResource(Resources, Resource.Drawable.turn_right));
+                craftingUI.AddView(turn90Right);
+                turn90Right.Click += Turn90Right_Click;
                 frame.AddView(craftingUI);
             }
             craftingUI.Visibility = ViewStates.Visible;
@@ -237,6 +253,32 @@ namespace Automation_Game
             displayInventory.Visibility = ViewStates.Invisible;
             Map.editMode = true;
 
+        }
+
+        private void Turn90Right_Click(object sender, EventArgs e)
+        {
+            Structure s = Map.Generator.TerrainMap[(int)Map.LastPoint.X, (int)Map.LastPoint.Y].GetStructure();
+            if (s != null)
+            {
+                s.Rotation += 90;
+                Map.Invalidate();
+            }
+        }
+
+        private void WoodFloor_Click(object sender, EventArgs e)
+        {
+            Structure s = new Structure(MapDraw.structureTypeList[(int)MapDraw.StructureTypes.WOOD_FLOOR]);
+            Delivery[] d = new Delivery[1];
+            d[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.LOG]), 2);
+            Map.CurrentlyBuilding = new StructureBlueprint(s, d, null);
+        }
+
+        private void WoodWall_Click(object sender, EventArgs e)
+        {
+            Structure s = new Structure(MapDraw.structureTypeList[(int)MapDraw.StructureTypes.WOOD_WALL]);
+            Delivery[] d = new Delivery[1];
+            d[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.LOG]), 2);
+            Map.CurrentlyBuilding = new StructureBlueprint(s, d, null);
         }
 
         private void SawingTable_Click(object sender, EventArgs e)
@@ -502,7 +544,7 @@ namespace Automation_Game
             LinearLayout.LayoutParams firstButton = (LinearLayout.LayoutParams)inventory.FindViewById(Resource.Id.slot1).LayoutParameters;
 
             Dialog d = new Dialog(this);
-            ScrollView main = new ScrollView(this);
+            ScrollView main = new ScrollView(this, Orientation.Vertical);
             main.LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
             d.SetContentView(main);
             LinearLayout l1 = null;

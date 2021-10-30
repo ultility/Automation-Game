@@ -45,8 +45,8 @@ namespace Automation_Game
                 int WindowWidth = (int)(((Activity)context).Window.DecorView.Width * 0.8);
                 int WindowHeight = (int)(((Activity)context).Window.DecorView.Height * 0.8);
                 d.Window.SetLayout(WindowWidth, WindowHeight);
-                ScrollView left = new ScrollView(context);
-                ScrollView right = new ScrollView(context);
+                ScrollView left = new ScrollView(context, Orientation.Vertical);
+                ScrollView right = new ScrollView(context, Orientation.Vertical);
                 ImageView divider = new ImageView(context);
                 left.LayoutParameters = new LinearLayout.LayoutParams(WindowWidth / 11 * 5, ViewGroup.LayoutParams.MatchParent);
                 right.LayoutParameters = new LinearLayout.LayoutParams(WindowWidth / 11 * 5, WindowHeight);

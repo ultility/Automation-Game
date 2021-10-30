@@ -70,6 +70,7 @@
     <Compile Include="Delivery.cs" />
     <Compile Include="GameActivity.cs" />
     <Compile Include="Inventory.cs" />
+    <Compile Include="IRotateable.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="ItemType.cs" />
     <Compile Include="IUpdateable.cs" />
@@ -188,6 +189,9 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\proccess_bar_filled.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\turn_right.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

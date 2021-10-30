@@ -34,7 +34,7 @@ namespace Automation_Game
             }
         }
 
-        public Plant(float GrowthChance, int MaxGrowthStage, StructureType type, bool Walkable, int GrowthStage = 0) : base(type, Walkable)
+        public Plant(float GrowthChance, int MaxGrowthStage, StructureType type, int GrowthStage = 0) : base(type)
         {
             this.GrowthStage = GrowthStage;
             this.MaxGrowthStage = MaxGrowthStage;

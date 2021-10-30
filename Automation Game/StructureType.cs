@@ -12,8 +12,9 @@ namespace Automation_Game
         public double SpawnChance { get; }
         public string[] SpawnableTerrain { get; }
         public int Hardness { get; }
+        public bool Walkable { get; }
 
-        public StructureType(string name, int id, int size, Item DropItem, Item UseableItem, double spawnChance, string[] SpawnableTerrain, int Hardness)
+        public StructureType(string name, int id, int size, Item DropItem, Item UseableItem, double spawnChance, string[] SpawnableTerrain, int Hardness, bool Walkable = true)
         {
             this.Name = name;
             this.Id = id;
@@ -26,9 +27,10 @@ namespace Automation_Game
             this.SpawnChance = spawnChance;
             this.SpawnableTerrain = SpawnableTerrain;
             this.Hardness = Hardness;
+            this.Walkable = Walkable;
         }
 
-        public StructureType(string name, int id, int size, IEnumerable<Item> DropItem, Item UseableItem, double spawnChance, string[] SpawnableTerrain, int Hardness)
+        public StructureType(string name, int id, int size, IEnumerable<Item> DropItem, Item UseableItem, double spawnChance, string[] SpawnableTerrain, int Hardness, bool Walkable = false)
         {
             this.Name = name;
             this.Id = id;
@@ -39,6 +41,7 @@ namespace Automation_Game
             this.SpawnChance = spawnChance;
             this.SpawnableTerrain = SpawnableTerrain;
             this.Hardness = Hardness;
+            this.Walkable = Walkable;
         }
     }
 }

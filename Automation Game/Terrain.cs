@@ -135,7 +135,7 @@ namespace Automation_Game
                         {
                             if (Type.Equals("dirt") && items.Count == 0)
                             {
-                                structure = new Structure(MapDraw.structureTypeList[(int)MapDraw.StructureTypes.DIRT_HOLE], true);
+                                structure = new Structure(MapDraw.structureTypeList[(int)MapDraw.StructureTypes.DIRT_HOLE]);
                                 p.GetEquippedItem().Use(1);
                                 return true;
                             }

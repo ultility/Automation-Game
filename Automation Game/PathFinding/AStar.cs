@@ -105,13 +105,10 @@ namespace Automation_Game.PathFinding
             var maxX = terrains.GetLength(0);
             var maxY = terrains.GetLength(1);
 
-            var end = possibleTiles.Where(tile => tile.X >= 0 && tile.X <= maxX);
-            var endView = end.ToList();
-            end = end.Where(tile => tile.Y >= 0 && tile.Y <= maxY);
-            endView = end.ToList();
-            end = end.Where(tile => Terrain.IsWalkable(terrains[tile.X,tile.Y]) || (tile.X == targetTile.X &&  tile.Y == targetTile.Y));
-            endView = end.ToList();
-            return endView;
+            var end = possibleTiles.Where(tile => tile.X >= 0 && tile.X <= maxX)
+                .Where(tile => tile.Y >= 0 && tile.Y <= maxY)
+                .Where(tile => Terrain.IsWalkable(terrains[tile.X,tile.Y]) || (tile.X == targetTile.X &&  tile.Y == targetTile.Y));
+            return end.ToList();
         }
 
     }
