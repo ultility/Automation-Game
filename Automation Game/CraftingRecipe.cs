@@ -3,12 +3,19 @@
     class CraftingRecipe
     {
         public Item Result { get; }
-        readonly Delivery[] Recipe;
+        public Delivery[] Recipe { get; }
 
         public CraftingRecipe(Item result, Delivery[] recipe)
         {
             this.Result = result;
             Recipe = recipe;
+        }
+
+        public CraftingRecipe(Item result, Delivery recipe)
+        {
+            Result = result;
+            Recipe = new Delivery[1];
+            Recipe[0] = recipe;
         }
 
         public bool Craft(Player p)

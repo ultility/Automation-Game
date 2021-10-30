@@ -28,12 +28,6 @@ namespace Automation_Game
 
         public bool OnTouch(View v, MotionEvent e)
         {
-            if (activity == null)
-            {
-                int height = v.Height;
-                int width = v.Width;
-                return true;
-            }
             if (blueprint == null)
             {
                 if (hole == null)

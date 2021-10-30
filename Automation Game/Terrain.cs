@@ -213,6 +213,10 @@ namespace Automation_Game
                 if (sb == sender)
                 {
                     structure = sb.Result;
+                    if (structure is IUpdateable updateable)
+                    {
+                        activity.Updateables.Add(updateable);
+                    }
                     activity.Map.Invalidate();
                 }
             }
