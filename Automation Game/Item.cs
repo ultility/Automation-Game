@@ -69,5 +69,21 @@ namespace Automation_Game
         {
             return HashCode.Combine(name);
         }
+
+        public static bool IsItem(int id)
+        {
+            switch (id)
+            {
+                case (int)GameActivity.IDs.STONE:
+                case (int)GameActivity.IDs.STICK:
+                case (int)GameActivity.IDs.AXE:
+                case (int)GameActivity.IDs.PICKAXE:
+                case (int)GameActivity.IDs.SHOVEL:
+                case (int)GameActivity.IDs.TREE_SEED:
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 }

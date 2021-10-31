@@ -118,5 +118,23 @@ namespace Automation_Game
             bytes.AddRange(Encoding.ASCII.GetBytes(Name));
             return bytes.ToArray();
         }
+
+        public static bool IsStructure(int id)
+        {
+            switch (id)
+            {
+                case (int)GameActivity.IDs.TREE:
+                case (int)GameActivity.IDs.ROCK:
+                case (int)GameActivity.IDs.DIRT_HOLE:
+                case (int)GameActivity.IDs.CRAFTING_STATION:
+                case (int)GameActivity.IDs.STORAGE_BOX:
+                case (int)GameActivity.IDs.SAWING_TABLE:
+                case (int)GameActivity.IDs.WOOD_FLOOR:
+                case (int)GameActivity.IDs.WOOD_WALL:
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 }

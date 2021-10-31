@@ -23,8 +23,8 @@ namespace Automation_Game
         Button Input;
         Button Output;
         ProccessBar bar;
-        Item InputItem;
-        Item OutputItem;
+        public Item InputItem { get; private set; }
+        public Item OutputItem { get; private set; }
         public SawingTable(Context context, string name = "SawingTable", int id = (int)GameActivity.IDs.SAWING_TABLE, int size = 1, Item useableItem = null, Item droppedItem = null) : base(name, id, size, useableItem, droppedItem, 0)
         {
             Recipes = new List<CraftingRecipe>();

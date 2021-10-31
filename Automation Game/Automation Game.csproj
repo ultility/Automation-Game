@@ -77,6 +77,7 @@
     <Compile Include="IUseable.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="MapDraw.cs" />
+    <Compile Include="MapSaveManager.cs" />
     <Compile Include="map\FastNoiseLite.cs" />
     <Compile Include="map\MapGenerator.cs" />
     <Compile Include="map\NoiseMaker.cs" />

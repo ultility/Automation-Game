@@ -6,7 +6,7 @@ namespace Automation_Game
     public class StructureBlueprint : Structure
     {
         public Structure Result { get; }
-        readonly List<Delivery> Recipe;
+        public readonly List<Delivery> Recipe;
         Terrain Parent;
         public StructureBlueprint(Structure structure, Delivery[] recipe, Terrain parent) : base(structure.Name + "blueprint", structure.Id, structure.SizePercentage, null, (Item)null, 0)
         {
