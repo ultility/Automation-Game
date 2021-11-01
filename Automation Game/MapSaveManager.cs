@@ -81,13 +81,22 @@ namespace Automation_Game
             offset += 4;
             if (Item.IsItem(id))
             {
-                // switch for each item type (use item types);
+                RestoreItem(bytes);
             }
             else if (Structure.IsStructure(id))
             {
-                // switch for each Strucutre type (use Strucutre types);
+                RestoreStructure(bytes);
             }
             return restored;
+        }
+
+        private static Item RestoreItem(IEnumerable<Byte> bytes)
+        {
+            throw new NotImplementedException();
+        }
+        private static Item RestoreStructure(IEnumerable<Byte> bytes)
+        {
+            throw new NotImplementedException();
         }
     }
 }

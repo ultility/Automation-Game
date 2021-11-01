@@ -106,16 +106,16 @@ namespace Automation_Game
                             paint.SetStyle(Paint.Style.FillAndStroke);
                             double percentage = 1;
                             if (tool.name.Equals("axe", StringComparison.OrdinalIgnoreCase))
-                            {
-                                percentage = (double)tool.durability / CraftingStation.AXE_DURABILITY;
-                            }
-                            else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
-                            {
-                                percentage = (double)tool.durability / CraftingStation.PICKAXE_DURABILITY;
-                            }
-                            else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
-                            {
-                                percentage = (double)tool.durability / CraftingStation.SHOVEL_DURABILITY;
+                        {
+                            percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.AXE].durability;
+                        }
+                        else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.PICKAXE].durability;
+                        }
+                        else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.SHOVEL].durability;
                             }
                             if (percentage > .50)
                             {
@@ -185,15 +185,15 @@ namespace Automation_Game
                             double percentage = 1;
                             if (tool.name.Equals("axe", StringComparison.OrdinalIgnoreCase))
                             {
-                                percentage = (double)tool.durability / CraftingStation.AXE_DURABILITY;
+                                percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.AXE].durability;
                             }
                             else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
                             {
-                                percentage = (double)tool.durability / CraftingStation.PICKAXE_DURABILITY;
+                                percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.PICKAXE].durability;
                             }
                             else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
                             {
-                                percentage = (double)tool.durability / CraftingStation.SHOVEL_DURABILITY;
+                                percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.SHOVEL].durability;
                             }
                             if (percentage > .50)
                             {

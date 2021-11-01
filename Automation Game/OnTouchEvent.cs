@@ -76,10 +76,10 @@ namespace Automation_Game
                     {
                         case MotionEventActions.Down:
                             Item item = activity.Map.Player.GetInvetory()[int.Parse(v.Tag.ToString()) - 1];
-                            if (item.name.Equals(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.TREE_SEED].name))
+                            if (item.name.Equals(ItemType.itemTypeList[(int)ItemType.ItemTypes.TREE_SEED].name))
                             {
                                 activity.Map.Player.DropItem(int.Parse(v.Tag.ToString()) - 1);
-                                Plant p = new Plant(1f / 60 / 10, 2, MapDraw.structureTypeList[(int)MapDraw.StructureTypes.TREE]);
+                                Plant p = new Plant(1f / 60 / 10, 2, StructureType.structureTypeList[(int)StructureType.StructureTypes.TREE]);
                                 activity.Map.Generator.TerrainMap[(int)activity.Map.Player.GetX(), (int)activity.Map.Player.GetY()].BuildStructure(p);
                                 activity.Updateables.Add(p);
                                 activity.Invalidate();

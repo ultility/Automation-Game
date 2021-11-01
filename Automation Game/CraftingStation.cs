@@ -10,9 +10,6 @@ namespace Automation_Game
 {
     class CraftingStation : Structure, IUseable
     {
-        public const int AXE_DURABILITY = 20;
-        public const int PICKAXE_DURABILITY = 20;
-        public const int SHOVEL_DURABILITY = 20;
         readonly CraftingRecipe[] recipes;
         readonly Context c;
         Player p;
@@ -21,11 +18,11 @@ namespace Automation_Game
         {
             recipes = new CraftingRecipe[3];
             Delivery[] axeRecipe = new Delivery[2];
-            axeRecipe[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].name, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].id, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].sizePercentage), 1);
-            axeRecipe[1] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].name, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].id, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].sizePercentage), 1);
-            recipes[0] = new CraftingRecipe(new Tool("Axe", (int)GameActivity.IDs.AXE, AXE_DURABILITY), axeRecipe);
-            recipes[1] = new CraftingRecipe(new Tool("Pickaxe", (int)GameActivity.IDs.PICKAXE, PICKAXE_DURABILITY), axeRecipe);
-            recipes[2] = new CraftingRecipe(new Tool("Shovel", (int)GameActivity.IDs.SHOVEL, SHOVEL_DURABILITY), axeRecipe);
+            axeRecipe[0] = new Delivery(ItemType.Create((int)ItemType.ItemTypes.STICK), 1);
+            axeRecipe[1] = new Delivery(ItemType.Create((int)ItemType.ItemTypes.STONE), 1);
+            recipes[0] = new CraftingRecipe((Tool)ItemType.Create((int)ItemType.ItemTypes.AXE), axeRecipe);
+            recipes[1] = new CraftingRecipe((Tool)ItemType.Create((int)ItemType.ItemTypes.PICKAXE), axeRecipe);
+            recipes[2] = new CraftingRecipe((Tool)ItemType.Create((int)ItemType.ItemTypes.SHOVEL), axeRecipe);
             c = context;
             d = new Dialog(c);
         }
@@ -142,15 +139,15 @@ namespace Automation_Game
                         double percentage = 1;
                         if (tool.name.Equals("axe", StringComparison.OrdinalIgnoreCase))
                         {
-                            percentage = (double)tool.durability / CraftingStation.AXE_DURABILITY;
+                            percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.AXE].durability;
                         }
                         else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
                         {
-                            percentage = (double)tool.durability / CraftingStation.PICKAXE_DURABILITY;
+                            percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.PICKAXE].durability;
                         }
                         else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
                         {
-                            percentage = (double)tool.durability / CraftingStation.SHOVEL_DURABILITY;
+                            percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.SHOVEL].durability;
                         }
                         if (percentage > .50)
                         {

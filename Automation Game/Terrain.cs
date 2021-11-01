@@ -92,8 +92,8 @@ namespace Automation_Game
                 this.structure = structure;
                 return true;
             }
-            else if (this.structure.Name.Equals(MapDraw.structureTypeList[(int)MapDraw.StructureTypes.DIRT_HOLE].Name) && 
-                     structure.Name.Equals(MapDraw.structureTypeList[(int)MapDraw.StructureTypes.TREE].Name))
+            else if (this.structure.Name.Equals(StructureType.structureTypeList[(int)StructureType.StructureTypes.DIRT_HOLE].Name) && 
+                     structure.Name.Equals(StructureType.structureTypeList[(int)StructureType.StructureTypes.TREE].Name))
             {
                 this.structure = structure;
                 return true;
@@ -135,14 +135,14 @@ namespace Automation_Game
                         {
                             if (Type.Equals("dirt") && items.Count == 0)
                             {
-                                structure = new Structure(MapDraw.structureTypeList[(int)MapDraw.StructureTypes.DIRT_HOLE]);
+                                structure = StructureType.Create((int)StructureType.StructureTypes.DIRT_HOLE);
                                 p.GetEquippedItem().Use(1);
                                 return true;
                             }
                         }
                     }
                 }
-                else if (structure.Name.Equals(MapDraw.structureTypeList[(int)MapDraw.StructureTypes.DIRT_HOLE].Name))
+                else if (structure.Name.Equals(StructureType.structureTypeList[(int)StructureType.StructureTypes.DIRT_HOLE].Name))
                 {
                     if (activity != null)
                     {

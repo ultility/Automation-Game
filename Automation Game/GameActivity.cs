@@ -267,17 +267,17 @@ namespace Automation_Game
 
         private void WoodFloor_Click(object sender, EventArgs e)
         {
-            Structure s = new Structure(MapDraw.structureTypeList[(int)MapDraw.StructureTypes.WOOD_FLOOR]);
+            Structure s = StructureType.Create((int)StructureType.StructureTypes.WOOD_FLOOR);
             Delivery[] d = new Delivery[1];
-            d[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.LOG]), 2);
+            d[0] = new Delivery(ItemType.Create((int)ItemType.ItemTypes.LOG), 2);
             Map.CurrentlyBuilding = new StructureBlueprint(s, d, null);
         }
 
         private void WoodWall_Click(object sender, EventArgs e)
         {
-            Structure s = new Structure(MapDraw.structureTypeList[(int)MapDraw.StructureTypes.WOOD_WALL]);
+            Structure s = StructureType.Create((int)StructureType.StructureTypes.WOOD_WALL);
             Delivery[] d = new Delivery[1];
-            d[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.LOG]), 2);
+            d[0] = new Delivery(ItemType.Create((int)ItemType.ItemTypes.LOG), 2);
             Map.CurrentlyBuilding = new StructureBlueprint(s, d, null);
         }
 
@@ -285,8 +285,8 @@ namespace Automation_Game
         {
             Structure s = new SawingTable(this);
             Delivery[] d = new Delivery[2];
-            d[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.LOG]), 2);
-            d[1] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE]), 1);
+            d[0] = new Delivery(ItemType.Create((int)ItemType.ItemTypes.LOG), 2);
+            d[1] = new Delivery(ItemType.Create((int)ItemType.ItemTypes.STONE), 1);
             Map.CurrentlyBuilding = new StructureBlueprint(s, d, null);
         }
 
@@ -313,7 +313,7 @@ namespace Automation_Game
         {
             Structure s = new StorageChest(this);
             Delivery[] d = new Delivery[1];
-            d[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK]), 4);
+            d[0] = new Delivery(ItemType.Create((int)ItemType.ItemTypes.STICK), 4);
             Map.CurrentlyBuilding = new StructureBlueprint(s, d, null);
         }
 
@@ -321,7 +321,7 @@ namespace Automation_Game
         {
             Structure s = new CraftingStation(this);
             Delivery[] d = new Delivery[1];
-            d[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK]), 1);
+            d[0] = new Delivery(ItemType.Create((int)ItemType.ItemTypes.STICK), 1);
             Map.CurrentlyBuilding = new StructureBlueprint(s, d, null);
         }
 
@@ -451,15 +451,15 @@ namespace Automation_Game
                         double percentage = 1;
                         if (tool.name.Equals("axe", StringComparison.OrdinalIgnoreCase))
                         {
-                            percentage = (double)tool.durability / CraftingStation.AXE_DURABILITY;
+                            percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.AXE].durability;
                         }
                         else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
                         {
-                            percentage = (double)tool.durability / CraftingStation.PICKAXE_DURABILITY;
+                            percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.PICKAXE].durability;
                         }
                         else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
                         {
-                            percentage = (double)tool.durability / CraftingStation.SHOVEL_DURABILITY;
+                            percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.SHOVEL].durability;
                         }
                         if (percentage > .50)
                         {
@@ -508,15 +508,15 @@ namespace Automation_Game
                 double percentage = 1;
                 if (tool.name.Equals("axe", StringComparison.OrdinalIgnoreCase))
                 {
-                    percentage = (double)tool.durability / CraftingStation.AXE_DURABILITY;
+                    percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.AXE].durability;
                 }
                 else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
                 {
-                    percentage = (double)tool.durability / CraftingStation.PICKAXE_DURABILITY;
+                    percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.PICKAXE].durability;
                 }
                 else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
                 {
-                    percentage = (double)tool.durability / CraftingStation.SHOVEL_DURABILITY;
+                    percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.SHOVEL].durability;
                 }
                 if (percentage > .50)
                 {
@@ -604,25 +604,13 @@ namespace Automation_Game
             switch (id)
             {
                 case (int)IDs.STONE:
-                    Map.Player.GiveItem(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE]));
-                    break;
                 case (int)IDs.STICK:
-                    Map.Player.GiveItem(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK]));
-                    break;
                 case (int)IDs.PICKAXE:
-                    Map.Player.GiveItem(new Tool("Pickaxe", id, CraftingStation.PICKAXE_DURABILITY));
-                    break;
                 case (int)IDs.SHOVEL:
-                    Map.Player.GiveItem(new Tool("Pickaxe", id, CraftingStation.SHOVEL_DURABILITY));
-                    break;
                 case (int)IDs.TREE_SEED:
-                    Map.Player.GiveItem(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.TREE_SEED]));
-                    break;
                 case (int)IDs.AXE:
-                    Map.Player.GiveItem(new Tool("Pickaxe", id, CraftingStation.AXE_DURABILITY));
-                    break;
                 case (int)IDs.WOOD_LOG:
-                    Map.Player.GiveItem(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.LOG]));
+                    Map.Player.GiveItem(ItemType.Create(id));
                     break;
             }
         }

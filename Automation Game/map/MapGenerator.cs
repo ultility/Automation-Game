@@ -101,7 +101,7 @@ namespace Automation_Game.Map
                             TerrainMap[x, y] = new Terrain("dirt", 0, x, y);
                             if (mapNoise[x, y] > .63 && mapNoise[x, y] < .64)
                             {
-                                TerrainMap[x, y].BuildStructure(new Structure("Rock", 13, .85f, new Tool("Pickaxe", 11, 0), new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].name, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].id, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STONE].sizePercentage), 2));
+                                TerrainMap[x, y].BuildStructure(new Structure("Rock", 13, .85f, (Tool)ItemType.Create((int)ItemType.ItemTypes.PICKAXE), ItemType.Create((int)ItemType.ItemTypes.STONE), 2));
                             }   
                         }
                     }
@@ -282,11 +282,10 @@ namespace Automation_Game.Map
                                 case "CraftingStation":
                                     structure = new CraftingStation(context);
                                     deliveries = new Delivery[1];
-                                    deliveries[0] = new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].name, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].id, MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK].sizePercentage), 1);
+                                    deliveries[0] = new Delivery(ItemType.Create((int)ItemType.ItemTypes.STICK), 1);
                                     break;
                                 case "tree":
-                                    StructureType st = MapDraw.structureTypeList[(int)MapDraw.StructureTypes.TREE];
-                                    structure = new Structure(st.Name, st.Id, st.SizePercentage, st.UseableItem, st.DropItem, st.Hardness);
+                                    structure = StructureType.Create((int)StructureType.StructureTypes.TREE);
                                     break;
                                 default:
                                     structure = null;

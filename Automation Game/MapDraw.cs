@@ -12,20 +12,7 @@ namespace Automation_Game
 {
     public class MapDraw : View
     {
-        public enum ItemTypes
-        {
-            STICK,
-            STONE,
-            TREE_SEED,
-            LOG,
-        };
-        public enum StructureTypes
-        {
-            TREE,
-            DIRT_HOLE,
-            WOOD_FLOOR,
-            WOOD_WALL,
-        };
+        
         public MapGenerator Generator { get; }
         readonly Context context;
 
@@ -42,15 +29,6 @@ namespace Automation_Game
 
         public bool editMode;
         public StructureBlueprint CurrentlyBuilding;
-
-        public static List<ItemType> itemTypeList = new List<ItemType> { new ItemType("Stick", 0.05, (int)GameActivity.IDs.STICK, 1, new string[] { "dirt" }),
-                                                    new ItemType("Stone", 0.05, (int)GameActivity.IDs.STONE, 1, new string[] { "dirt" }),
-                                                    new ItemType("Tree Seed", 0,(int)GameActivity.IDs.TREE_SEED,1,new string[] { }),
-                                                    new ItemType("Log", 0, (int)GameActivity.IDs.WOOD_LOG, 1, new string[]{ })};
-        public static List<StructureType> structureTypeList = new List<StructureType> { new StructureType("tree", (int)GameActivity.IDs.TREE, 1, new Item[] { new Item(itemTypeList[(int)ItemTypes.LOG].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), new Item(itemTypeList[(int)ItemTypes.TREE_SEED])}, new Tool("Axe", (int)GameActivity.IDs.AXE, 20), 0.08, new string[] { "dirt" }, 1),
-                                                                                        new StructureType("Dirt Hole", (int)GameActivity.IDs.DIRT_HOLE, 1, (Item)null, new Item(itemTypeList[(int)ItemTypes.TREE_SEED]), 0, new string[]{ }, 0, true),
-                                                                                        new StructureType("Wood Floor", (int)GameActivity.IDs.WOOD_FLOOR, 1, (Item)null, (Item)null, 0, new string[]{ }, 0, true),
-                                                                                        new StructureType("Wood Wall", (int)GameActivity.IDs.WOOD_WALL, 1, (Item)null, (Item)null, 0, new string[]{ }, 0)};
         public MapDraw(Context context) : base(context)
         {
             this.context = context;
@@ -65,7 +43,7 @@ namespace Automation_Game
             editMode = false;
             Drawn = false;
             GenerateItems();
-            Generator.GetTerrain()[(int)Player.GetX() - 1, (int)Player.GetY()].BuildStructure(new StructureBlueprint(new CraftingStation(context), new Delivery[] { new Delivery(new Item(itemTypeList[(int)ItemTypes.STICK].name, itemTypeList[(int)ItemTypes.STICK].id, itemTypeList[(int)ItemTypes.STICK].sizePercentage), 1) }, Generator.GetTerrain()[(int)Player.GetX() - 1, (int)Player.GetY()]));
+            Generator.GetTerrain()[(int)Player.GetX() - 1, (int)Player.GetY()].BuildStructure(new StructureBlueprint(new CraftingStation(context), new Delivery[] { new Delivery(ItemType.Create((int)ItemType.ItemTypes.STICK), 1) }, Generator.GetTerrain()[(int)Player.GetX() - 1, (int)Player.GetY()]));
             CurrentlyBuilding = null;
         }
         public MapDraw(Context context, MapGenerator gen, Player p) : base(context)
@@ -332,43 +310,43 @@ namespace Automation_Game
                     }
                     if (terrain[x, y].GetStructure() == null && terrain[x, y].GetItem() == null)
                     {
-                        for (int i = 0; i < itemTypeList.Count && terrain[x, y].GetItem() == null; i++)
+                        for (int i = 0; i < ItemType.itemTypeList.Count && terrain[x, y].GetItem() == null; i++)
                         {
                             bool isSpawnable = false;
-                            for (int n = 0; n < itemTypeList[i].spawnableTerrain.Length; n++)
+                            for (int n = 0; n < ItemType.itemTypeList[i].spawnableTerrain.Length; n++)
                             {
-                                if (terrain[x, y].Type.Equals(itemTypeList[i].spawnableTerrain[n]))
+                                if (terrain[x, y].Type.Equals(ItemType.itemTypeList[i].spawnableTerrain[n]))
                                 {
                                     isSpawnable = true;
                                     break;
                                 }
                             }
-                            if (isSpawnable && rng.NextDouble() < itemTypeList[i].spawnChance)
+                            if (isSpawnable && rng.NextDouble() < ItemType.itemTypeList[i].spawnChance)
                             {
-                                terrain[x, y].AddItem(new Item(itemTypeList[i].name, itemTypeList[i].id, itemTypeList[i].sizePercentage));
+                                terrain[x, y].AddItem(ItemType.Create(i));
                             }
                         }
-                        for (int i = 0; i < structureTypeList.Count && terrain[x, y].GetItem() == null; i++)
+                        for (int i = 0; i < StructureType.structureTypeList.Count && terrain[x, y].GetItem() == null; i++)
                         {
                             bool isSpawnable = false;
-                            for (int n = 0; n < structureTypeList[i].SpawnableTerrain.Length; n++)
+                            for (int n = 0; n < StructureType.structureTypeList[i].SpawnableTerrain.Length; n++)
                             {
-                                if (terrain[x, y].Type.Equals(structureTypeList[i].SpawnableTerrain[n]))
+                                if (terrain[x, y].Type.Equals(StructureType.structureTypeList[i].SpawnableTerrain[n]))
                                 {
                                     isSpawnable = true;
                                     break;
                                 }
                             }
-                            if (isSpawnable && rng.NextDouble() < structureTypeList[i].SpawnChance)
+                            if (isSpawnable && rng.NextDouble() < StructureType.structureTypeList[i].SpawnChance)
                             {
                                 Structure build;
-                                if (i == (int)StructureTypes.TREE)
+                                if (i == (int)StructureType.StructureTypes.TREE)
                                 {
-                                    build = new Plant(1.0f / 60 / 10, 2, structureTypeList[i], 2);
+                                    build = new Plant(1.0f / 60 / 10, 2, StructureType.structureTypeList[i], 2);
                                 }
                                 else
                                 {
-                                    build = new Structure(structureTypeList[i]);
+                                    build = new Structure(StructureType.structureTypeList[i]);
                                 }
                                 terrain[x, y].BuildStructure(build);
                             }

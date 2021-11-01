@@ -28,7 +28,7 @@ namespace Automation_Game
         public SawingTable(Context context, string name = "SawingTable", int id = (int)GameActivity.IDs.SAWING_TABLE, int size = 1, Item useableItem = null, Item droppedItem = null) : base(name, id, size, useableItem, droppedItem, 0)
         {
             Recipes = new List<CraftingRecipe>();
-            Recipes.Add(new CraftingRecipe(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.STICK]), new Delivery(new Item(MapDraw.itemTypeList[(int)MapDraw.ItemTypes.LOG]), 1)));
+            Recipes.Add(new CraftingRecipe(ItemType.Create((int)ItemType.ItemTypes.STICK), new Delivery(ItemType.Create((int)ItemType.ItemTypes.LOG), 1)));
             C = context;
             slots = new Button[8];
             d = new Dialog(C);
@@ -156,15 +156,15 @@ namespace Automation_Game
                             double percentage = 1;
                             if (tool.name.Equals("axe", StringComparison.OrdinalIgnoreCase))
                             {
-                                percentage = (double)tool.durability / CraftingStation.AXE_DURABILITY;
+                                percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.AXE].durability;
                             }
                             else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
                             {
-                                percentage = (double)tool.durability / CraftingStation.PICKAXE_DURABILITY;
+                                percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.PICKAXE].durability;
                             }
                             else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
                             {
-                                percentage = (double)tool.durability / CraftingStation.SHOVEL_DURABILITY;
+                                percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.SHOVEL].durability;
                             }
                             if (percentage > .50)
                             {
@@ -217,15 +217,15 @@ namespace Automation_Game
                     double percentage = 1;
                     if (tool.name.Equals("axe", StringComparison.OrdinalIgnoreCase))
                     {
-                        percentage = (double)tool.durability / CraftingStation.AXE_DURABILITY;
+                        percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.AXE].durability;
                     }
                     else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
                     {
-                        percentage = (double)tool.durability / CraftingStation.PICKAXE_DURABILITY;
+                        percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.PICKAXE].durability;
                     }
                     else if (tool.name.Equals("pickaxe", StringComparison.OrdinalIgnoreCase))
                     {
-                        percentage = (double)tool.durability / CraftingStation.SHOVEL_DURABILITY;
+                        percentage = (double)tool.durability / ItemType.itemTypeList[(int)ItemType.ItemTypes.SHOVEL].durability;
                     }
                     if (percentage > .50)
                     {
