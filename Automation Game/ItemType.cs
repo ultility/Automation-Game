@@ -6,6 +6,7 @@ namespace Automation_Game
     {
         public enum ItemTypes
         {
+            FALSE = -1,
             STICK,
             STONE,
             TREE_SEED,

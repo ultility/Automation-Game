@@ -604,13 +604,25 @@ namespace Automation_Game
             switch (id)
             {
                 case (int)IDs.STONE:
+                    Map.Player.GiveItem(ItemType.Create((int)ItemType.ItemTypes.STONE));
+                    break;
                 case (int)IDs.STICK:
+                    Map.Player.GiveItem(ItemType.Create((int)ItemType.ItemTypes.STICK));
+                    break;
                 case (int)IDs.PICKAXE:
+                    Map.Player.GiveItem(ItemType.Create((int)ItemType.ItemTypes.PICKAXE));
+                    break;
                 case (int)IDs.SHOVEL:
+                    Map.Player.GiveItem(ItemType.Create((int)ItemType.ItemTypes.SHOVEL));
+                    break;
                 case (int)IDs.TREE_SEED:
+                    Map.Player.GiveItem(ItemType.Create((int)ItemType.ItemTypes.TREE_SEED));
+                    break;
                 case (int)IDs.AXE:
+                    Map.Player.GiveItem((Tool)ItemType.Create((int)ItemType.ItemTypes.AXE));
+                    break;
                 case (int)IDs.WOOD_LOG:
-                    Map.Player.GiveItem(ItemType.Create(id));
+                    Map.Player.GiveItem(ItemType.Create((int)ItemType.ItemTypes.LOG));
                     break;
             }
         }

@@ -70,16 +70,34 @@ namespace Automation_Game
             return HashCode.Combine(name);
         }
 
-        public static bool IsItem(int id)
+        public static int IsItem(int id)
         {
             switch (id)
             {
                 case (int)GameActivity.IDs.STONE:
+                    return (int)ItemType.ItemTypes.STONE;
                 case (int)GameActivity.IDs.STICK:
+                    return (int)ItemType.ItemTypes.STICK;
+                case (int)GameActivity.IDs.AXE:
+                    return (int)ItemType.ItemTypes.AXE;
+                case (int)GameActivity.IDs.PICKAXE:
+                    return (int)ItemType.ItemTypes.PICKAXE;
+                case (int)GameActivity.IDs.SHOVEL:
+                    return (int)ItemType.ItemTypes.SHOVEL;
+                case (int)GameActivity.IDs.TREE_SEED:
+                    return (int)ItemType.ItemTypes.TREE_SEED;
+                default:
+                    return (int)ItemType.ItemTypes.FALSE;
+            }
+        }
+
+        public static bool IsTool(int id)
+        {
+            switch (id)
+            {
                 case (int)GameActivity.IDs.AXE:
                 case (int)GameActivity.IDs.PICKAXE:
                 case (int)GameActivity.IDs.SHOVEL:
-                case (int)GameActivity.IDs.TREE_SEED:
                     return true;
                 default:
                     return false;

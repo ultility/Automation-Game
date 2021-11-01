@@ -119,21 +119,28 @@ namespace Automation_Game
             return bytes.ToArray();
         }
 
-        public static bool IsStructure(int id)
+        public static int IsStructure(int id)
         {
             switch (id)
             {
                 case (int)GameActivity.IDs.TREE:
+                    return (int)StructureType.StructureTypes.TREE;
                 case (int)GameActivity.IDs.ROCK:
+                    return (int)StructureType.StructureTypes.ROCK;
                 case (int)GameActivity.IDs.DIRT_HOLE:
+                    return (int)StructureType.StructureTypes.DIRT_HOLE;
                 case (int)GameActivity.IDs.CRAFTING_STATION:
+                    return (int)StructureType.StructureTypes.CRAFTING_STATION;
                 case (int)GameActivity.IDs.STORAGE_BOX:
+                    return (int)StructureType.StructureTypes.STORAGE_BOX;
                 case (int)GameActivity.IDs.SAWING_TABLE:
+                    return (int)StructureType.StructureTypes.SAWING_TABLE;
                 case (int)GameActivity.IDs.WOOD_FLOOR:
+                    return (int)StructureType.StructureTypes.WOOD_FLOOR;
                 case (int)GameActivity.IDs.WOOD_WALL:
-                    return true;
+                    return (int)StructureType.StructureTypes.WOOD_WALL;
                 default:
-                    return false;
+                    return (int)StructureType.StructureTypes.FALSE;
             }
         }
     }

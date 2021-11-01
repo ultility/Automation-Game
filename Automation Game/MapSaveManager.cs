@@ -18,9 +18,9 @@ namespace Automation_Game
         {
             List<Byte> bytes = new List<byte>();
             Byte[] temp = BitConverter.GetBytes(s.Id);
-            AddArray(bytes, temp);
+            bytes.AddRange(temp);
             temp = BitConverter.GetBytes(s.Rotation);
-            AddArray(bytes, temp);
+            bytes.AddRange(temp);
             if (s is SawingTable st)
             {
                 temp = SaveItem(st.InputItem).ToArray();
@@ -32,7 +32,7 @@ namespace Automation_Game
             {
                 Item[] inventory = sc.GetInventory();
                 temp = BitConverter.GetBytes(inventory.Length);
-                AddArray(bytes, temp);
+                bytes.AddRange(temp);
                 for (int i = 0; i < inventory.Length && inventory[i] != null; i++)
                 {
                     temp = SaveItem(inventory[i]).ToArray();
@@ -79,24 +79,27 @@ namespace Automation_Game
             int offset = 0;
             int id = BitConverter.ToInt32(bytes.ToArray(), offset);
             offset += 4;
-            if (Item.IsItem(id))
+
+            if (Item.IsItem(id) != -1)
             {
-                RestoreItem(bytes);
+                restored = RestoreItem(bytes, offset, id);
             }
-            else if (Structure.IsStructure(id))
+            else if (Structure.IsStructure(id) != -1)
             {
-                RestoreStructure(bytes);
+                restored = RestoreStructure(bytes, offset, id);
             }
             return restored;
         }
 
-        private static Item RestoreItem(IEnumerable<Byte> bytes)
+        private static Item RestoreItem(IEnumerable<Byte> bytes, int offset, int id)
         {
-            throw new NotImplementedException();
+            Item item = ItemType.Create(Item.IsItem(id));
+            return item;
         }
-        private static Item RestoreStructure(IEnumerable<Byte> bytes)
+        private static Structure RestoreStructure(IEnumerable<Byte> bytes, int offset, int id)
         {
-            throw new NotImplementedException();
+            Structure structure = StructureType.Create(Structure.IsStructure(id));
+            return structure;
         }
     }
 }

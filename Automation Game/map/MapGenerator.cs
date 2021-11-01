@@ -101,7 +101,7 @@ namespace Automation_Game.Map
                             TerrainMap[x, y] = new Terrain("dirt", 0, x, y);
                             if (mapNoise[x, y] > .63 && mapNoise[x, y] < .64)
                             {
-                                TerrainMap[x, y].BuildStructure(new Structure("Rock", 13, .85f, (Tool)ItemType.Create((int)ItemType.ItemTypes.PICKAXE), ItemType.Create((int)ItemType.ItemTypes.STONE), 2));
+                                TerrainMap[x, y].BuildStructure(StructureType.Create((int)StructureType.StructureTypes.ROCK));
                             }   
                         }
                     }
