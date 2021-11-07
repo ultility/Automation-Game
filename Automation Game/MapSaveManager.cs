@@ -9,11 +9,27 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Automation_Game.Map;
 
 namespace Automation_Game
 {
     public class MapSaveManager
     {
+        private static MapGenerator RestoreGenerator(IEnumerable<Byte> bytes, GameActivity activity) 
+        {
+            int offset = 0;
+            int MapWidth = BitConverter.ToInt32(bytes.ToArray(), offset);
+            offset += 4;
+            int MapHeight = BitConverter.ToInt32(bytes.ToArray(), offset);
+            offset += 4;
+            int seed = BitConverter.ToInt32(bytes.ToArray(), offset);
+            offset += 4;
+            return new MapGenerator(MapWidth, MapHeight, seed, activity);
+        }
+
+        private static Player RestorePlayer(IEnumerable<Byte> bytes)
+        {
+        }
         public static List<Byte> SaveStructure(Structure s)
         {
             List<Byte> bytes = new List<byte>();
@@ -73,9 +89,9 @@ namespace Automation_Game
             bytes.AddRange(arr);
         }
 
-        public static Object Restore(IEnumerable<Byte> bytes)
+        public static MapDraw Restore(IEnumerable<Byte> bytes, Context context, Map.MapGenerator gen, Player p)
         {
-            Object restored = null;
+            MapDraw restoredMap = new MapDraw(context, gen, p);
             int offset = 0;
             int id = BitConverter.ToInt32(bytes.ToArray(), offset);
             offset += 4;
