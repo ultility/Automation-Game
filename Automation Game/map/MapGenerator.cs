@@ -168,6 +168,11 @@ namespace Automation_Game.Map
             return mapHeight;
         }
 
+        public int GetSeed()
+        {
+            return seed;
+        }
+
         public float GetScale()
         {
             return scale;

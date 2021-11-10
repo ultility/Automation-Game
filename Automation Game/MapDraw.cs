@@ -87,6 +87,7 @@ namespace Automation_Game
             Rect src = new Rect();
             RectF dst = new RectF();
             Matrix matrix = new Matrix();
+            Console.WriteLine(canvas.ToString());
             for (int x = (int)(camera.X - renderDistance.X / 2), posX = 0; x <= camera.X + renderDistance.X / 2; x++, posX++)
             {
                 for (int y = (int)(camera.Y - renderDistance.Y / 2), posY = 0; y <= camera.Y + renderDistance.Y / 2; y++, posY++)
@@ -371,15 +372,12 @@ namespace Automation_Game
         {
             try
             {
-                using Stream stream = context.OpenFileOutput("world.txt", Android.Content.FileCreationMode.Private);
+                using Stream stream = context.OpenFileOutput("world.txt", FileCreationMode.Private);
                 try
                 {
-                    Byte[] generation = Generator.GetBytes();
-                    stream.Write(BitConverter.GetBytes(generation.Length));
-                    stream.Write(generation);
-                    Byte[] Player = this.Player.ToByte();
-                    stream.Write(BitConverter.GetBytes(Player.Length));
-                    stream.Write(Player);
+                    Byte[] map = MapSaveManager.Save(this).ToArray();
+                    stream.Write(BitConverter.GetBytes(map.Length));
+                    stream.Write(map);
                     stream.Close();
                 }
                 catch (Java.IO.IOException e)

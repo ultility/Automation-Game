@@ -17,7 +17,7 @@ namespace Automation_Game
         List<Point> MovementPath;
         Random rng = new Random();
         bool updating;
-        public Player(int x, int y, MapDraw parent)
+        public Player(int x, int y, MapDraw parent = null)
         {
             this.x = x;
             this.y = y;

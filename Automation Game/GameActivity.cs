@@ -73,7 +73,7 @@ namespace Automation_Game
 
         protected override void OnStop()
         {
-            //Map.Save();
+            Map.Save();
             base.OnStop();
         }
         protected override void OnCreate(Bundle savedInstanceState)
@@ -111,19 +111,7 @@ namespace Automation_Game
                         offset += 4;
                         Byte[] buffer = new Byte[BitConverter.ToInt32(readSize)];
                         stream.Read(buffer, 0, buffer.Length);
-                        offset += buffer.Length;
-                        Map.MapGenerator gen = new Map.MapGenerator(buffer, this);
-                        stream.Read(readSize, 0, 4);
-                        offset += 4;
-                        buffer = new Byte[BitConverter.ToInt32(readSize)];
-                        stream.Read(buffer, 0, buffer.Length);
-                        Player p = new Player(buffer);
-                        offset += buffer.Length;
-                        stream.Read(readSize, 0, 4);
-                        offset += 4;
-                        buffer = new Byte[BitConverter.ToInt32(readSize)];
-                        stream.Read(buffer, 0, buffer.Length);
-                        Map = new MapDraw(this, gen, p);
+                        Map = MapSaveManager.Restore(buffer, this);
                     }
                     catch (Java.IO.IOException e)
                     {

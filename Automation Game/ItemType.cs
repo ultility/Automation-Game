@@ -55,7 +55,7 @@ namespace Automation_Game
 
         public static Item Create(int id)
         {
-            if (id < (int)ItemTypes.AMOUNT)
+            if (id < (int)ItemTypes.AMOUNT && id > 0)
             {
                 return itemTypeList[id].Create();
             }

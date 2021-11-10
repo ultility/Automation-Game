@@ -35,8 +35,18 @@ namespace Automation_Game
             start = (Button)FindViewById(Resource.Id.start);
             load.Click += Load_Click;
             start.Click += Start_Click;
-            int width = Window.WindowManager.CurrentWindowMetrics.Bounds.Width();
-            int height = Window.WindowManager.CurrentWindowMetrics.Bounds.Height();
+            int width = 0;
+            int height = 0;
+            try
+            {
+                width = Window.WindowManager.CurrentWindowMetrics.Bounds.Width();
+                height = Window.WindowManager.CurrentWindowMetrics.Bounds.Height();
+            }
+            catch (Exception e)
+            {
+                width = Window.WindowManager.DefaultDisplay.Width;
+                height = Window.WindowManager.DefaultDisplay.Height;
+            }
             background = Bitmap.CreateBitmap(width, height, Bitmap.Config.Argb8888);
             backdrop = (LinearLayout)FindViewById(Resource.Id.backdrop);
             Canvas draw = new Canvas(background);

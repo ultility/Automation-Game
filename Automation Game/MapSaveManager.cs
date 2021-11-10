@@ -15,21 +15,62 @@ namespace Automation_Game
 {
     public class MapSaveManager
     {
+        static private int offset;
         private static MapGenerator RestoreGenerator(IEnumerable<Byte> bytes, GameActivity activity) 
         {
-            int offset = 0;
             int MapWidth = BitConverter.ToInt32(bytes.ToArray(), offset);
             offset += 4;
             int MapHeight = BitConverter.ToInt32(bytes.ToArray(), offset);
             offset += 4;
             int seed = BitConverter.ToInt32(bytes.ToArray(), offset);
-            offset += 4;
             return new MapGenerator(MapWidth, MapHeight, seed, activity);
+        }
+
+        public  static List<Byte> SaveGenerator(MapGenerator gen)
+        {
+            List<Byte> bytes = new List<byte>();
+            bytes.AddRange(BitConverter.GetBytes(gen.GetWidth()));
+            bytes.AddRange(BitConverter.GetBytes(gen.GetHeight()));
+            bytes.AddRange(BitConverter.GetBytes(gen.GetSeed()));
+            return bytes;
         }
 
         private static Player RestorePlayer(IEnumerable<Byte> bytes)
         {
+            int x = BitConverter.ToInt32(bytes.ToArray(), offset);
+            offset += 4;
+            int y = BitConverter.ToInt32(bytes.ToArray(), offset);
+            Player p = new Player(x,y);
+            offset += 4;
+            while (bytes.Count() > offset)
+            {
+                int id = BitConverter.ToInt32(bytes.ToArray(), offset);
+                offset += 4;
+                Item i = RestoreItem(bytes, id);
+                if (i is Tool)
+                {
+                    offset += 4;
+                }
+            }
+            return p;
         }
+
+        public static List<Byte> SavePlayer(Player p)
+        {
+            List<Byte> bytes = new List<byte>();
+            bytes.AddRange(BitConverter.GetBytes(p.GetX()));
+            bytes.AddRange(BitConverter.GetBytes(p.GetY()));
+            Item[] inventory = p.GetInvetory();
+            for (int i = 0; i < inventory.Length; i++)
+            {
+                if (inventory[i] != null)
+                {
+                    bytes.AddRange(SaveItem(inventory[i]));
+                }
+            }
+            return bytes;
+        }
+
         public static List<Byte> SaveStructure(Structure s)
         {
             List<Byte> bytes = new List<byte>();
@@ -89,30 +130,44 @@ namespace Automation_Game
             bytes.AddRange(arr);
         }
 
-        public static MapDraw Restore(IEnumerable<Byte> bytes, Context context, Map.MapGenerator gen, Player p)
+        public static MapDraw Restore(IEnumerable<Byte> bytes, Context context)
         {
-            MapDraw restoredMap = new MapDraw(context, gen, p);
-            int offset = 0;
+            offset = 0;
+            MapDraw restoredMap = new MapDraw(context, RestoreGenerator(bytes, (GameActivity)context), RestorePlayer(bytes));
             int id = BitConverter.ToInt32(bytes.ToArray(), offset);
             offset += 4;
 
             if (Item.IsItem(id) != -1)
             {
-                restored = RestoreItem(bytes, offset, id);
+                //restored = RestoreItem(bytes, offset, id);
             }
             else if (Structure.IsStructure(id) != -1)
             {
-                restored = RestoreStructure(bytes, offset, id);
+                //restored = RestoreStructure(bytes, offset, id);
             }
-            return restored;
+            restoredMap.Player.SetParent(restoredMap);
+            return restoredMap;
         }
 
-        private static Item RestoreItem(IEnumerable<Byte> bytes, int offset, int id)
+        public static List<Byte> Save(MapDraw d)
+        {
+            offset = 0;
+            List<Byte> bytes = new List<byte>();
+            bytes.AddRange(SaveGenerator(d.Generator));
+            bytes.AddRange(SavePlayer(d.Player));
+            return bytes;
+        } 
+
+        private static Item RestoreItem(IEnumerable<Byte> bytes, int id)
         {
             Item item = ItemType.Create(Item.IsItem(id));
+            if (item is Tool t)
+            {
+                t.durability = BitConverter.ToInt32(bytes.ToArray(), offset);
+            }
             return item;
         }
-        private static Structure RestoreStructure(IEnumerable<Byte> bytes, int offset, int id)
+        private static Structure RestoreStructure(IEnumerable<Byte> bytes, int id)
         {
             Structure structure = StructureType.Create(Structure.IsStructure(id));
             return structure;
