@@ -73,7 +73,7 @@ namespace Automation_Game
 
         protected override void OnStop()
         {
-            Map.Save();
+            //Map.Save(); work in progress
             base.OnStop();
         }
         protected override void OnCreate(Bundle savedInstanceState)

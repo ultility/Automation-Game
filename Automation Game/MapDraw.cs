@@ -324,7 +324,7 @@ namespace Automation_Game
                             }
                             if (isSpawnable && rng.NextDouble() < ItemType.itemTypeList[i].spawnChance)
                             {
-                                terrain[x, y].AddItem(ItemType.Create(i));
+                                terrain[x, y].AddItem(ItemType.itemTypeList[i].Create());
                             }
                         }
                         for (int i = 0; i < StructureType.structureTypeList.Count && terrain[x, y].GetItem() == null; i++)
