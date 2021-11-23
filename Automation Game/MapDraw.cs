@@ -200,8 +200,8 @@ namespace Automation_Game
                 {
                     if (e.Action == MotionEventActions.Down)
                     {
-                        int x = (int)e.GetX() / Terrain.Size;
-                        int y = (int)e.GetY() / Terrain.Size;
+                        int x = (int)Math.Round(e.GetX() / Terrain.Size);
+                        int y = (int)Math.Round(e.GetY() / Terrain.Size);
                         if (x < renderDistance.X / 2)
                         {
                             x--;
@@ -379,7 +379,7 @@ namespace Automation_Game
                     stream.Write(BitConverter.GetBytes(map.Length));
                     stream.Write(map);
                     stream.Close();
-                }
+                }   
                 catch (Java.IO.IOException e)
                 {
                     e.PrintStackTrace();

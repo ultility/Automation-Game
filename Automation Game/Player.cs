@@ -64,7 +64,15 @@ namespace Automation_Game
                     {
                         if (MovementPath != null && MovementPath.Count > 0)
                         {
-                            if (i == frames || j == frames)
+                            if (MovementPath.Count == 1)
+                            {
+                                if (parent.Generator.TerrainMap[MovementPath[0].X, MovementPath[0].Y].GetStructure() != null)
+                                {
+                                    TryUsing(parent.Generator.TerrainMap[MovementPath[0].X, MovementPath[0].Y]);
+                                    MovementPath.RemoveAt(0);
+                                }
+                            }
+                            else if (i == frames || j == frames)
                             {
                                 if (dx != 0 && dy != y)
                                 {
