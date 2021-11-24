@@ -22,8 +22,8 @@ namespace Automation_Game
                                                     new ItemType("Tree Seed", 0,(int)GameActivity.IDs.TREE_SEED,1,new string[] { }),
                                                     new ItemType("Log", 0, (int)GameActivity.IDs.WOOD_LOG, 1, new string[]{ }),
                                                     new ItemType("Axe", 0, (int)GameActivity.IDs.AXE, 1, new string[]{ }, 20),
-                                                    new ItemType("Pickaxe", 0, (int)GameActivity.IDs.AXE, 1, new string[]{ }, 20),
-                                                    new ItemType("Shovel", 0, (int)GameActivity.IDs.AXE, 1, new string[]{ }, 20),};
+                                                    new ItemType("Pickaxe", 0, (int)GameActivity.IDs.PICKAXE, 1, new string[]{ }, 20),
+                                                    new ItemType("Shovel", 0, (int)GameActivity.IDs.SHOVEL, 1, new string[]{ }, 20),};
         public string name { get; }
         public double spawnChance { get; }
         public int id { get; }

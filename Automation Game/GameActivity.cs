@@ -44,7 +44,6 @@ namespace Automation_Game
         bool updating;
 
         public static bool debug = true;
-
         public enum IDs
         {
             DIRT,
