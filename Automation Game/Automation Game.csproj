@@ -197,10 +197,10 @@
     <AndroidResource Include="Resources\drawable\turn_right.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\raw\Minecraft Music - Menu 1.mp3" />
+    <AndroidResource Include="Resources\raw\day1.mp3" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\raw\Terraria Soundtrack - 01 - Overworld Day.mp3" />
+    <AndroidResource Include="Resources\raw\menu1.mp3" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

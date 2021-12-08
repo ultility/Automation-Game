@@ -85,8 +85,6 @@ namespace Automation_Game
             displayInventory = (Button)FindViewById(Resource.Id.openInventory);
             displayMap = (Button)FindViewById(Resource.Id.openMap);
             DisplayCraftingUI = (Button)FindViewById(Resource.Id.craftingMenu);
-            displayInventory.FocusChange += FocusChange;
-            displayMap.FocusChange += FocusChange;
             slots = new Button[9];
             IsMinimapShown = false;
             timer = new Timer(1000 / MAX_FPS);
@@ -131,6 +129,9 @@ namespace Automation_Game
 
             spriteSheet = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("sprite_sheet", "drawable", this.PackageName));
             timer.Start();
+            Intent i = new Intent("music");
+            i.PutExtra("music", 1);
+            SendBroadcast(i);
         }
 
         public void StartClock()
@@ -169,14 +170,6 @@ namespace Automation_Game
             }
         }
 
-        private void FocusChange(object sender, View.FocusChangeEventArgs e)
-        {
-            if (e.HasFocus)
-            {
-                Console.WriteLine("has focus\n\n");
-            }
-        }
-
         public void Invalidate()
         {
             if (inventory != null && inventory.IsShowing)
@@ -185,11 +178,6 @@ namespace Automation_Game
                 displayInventory.CallOnClick();
             }
 
-        }
-
-        private void Item_Click(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         private void DisplayCraftingUI_Click(object sender, EventArgs e)

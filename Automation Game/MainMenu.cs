@@ -30,6 +30,8 @@ namespace Automation_Game
         {
             base.OnCreate(savedInstanceState);
             // Create your application here
+            Intent service = new Intent(this, typeof(MusicService));
+            StartService(service);
             SetContentView(Resource.Layout.startup_menu);
             load = (Button)FindViewById(Resource.Id.last);
             start = (Button)FindViewById(Resource.Id.start);
@@ -68,6 +70,9 @@ namespace Automation_Game
             base.OnResume();
             t.Enabled = true;
             TimerRun = true;
+            Intent i = new Intent("music");
+            i.PutExtra("music", 0);
+            SendBroadcast(i);
         }
 
         private void T_Elapsed(object sender, ElapsedEventArgs e)

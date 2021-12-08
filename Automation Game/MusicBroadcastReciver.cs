@@ -15,27 +15,30 @@ namespace Automation_Game
     [BroadcastReceiver]
     public class MusicBroadcastReciver : BroadcastReceiver
     {
-        MediaPlayer menu, game;
-        public MusicBroadcastReciver(MediaPlayer menu, MediaPlayer game)
+        List<MediaPlayer> musics;
+
+        public MusicBroadcastReciver()
         {
-            this.menu = menu;
-            this.game = game;
+        }
+
+        public MusicBroadcastReciver(List<MediaPlayer> music)
+        {
+            musics = new List<MediaPlayer>();
+            musics.AddRange(music);
         }
         public override void OnReceive(Context context, Intent intent)
         {
             int play = intent.GetIntExtra("music", -1);
-            switch (play)
+            if (play >= 0 && play < musics.Count)
             {
-                case 0:
-                    game.Stop();
-                    menu.Start();
-                    break;
-                case 1:
-                    menu.Stop();
-                    game.Start();
-                    break;
-                default:
-                    break;
+                musics[play].Start();
+            }
+            else
+            {
+                foreach (MediaPlayer player in musics)
+                {
+                    player.Stop();
+                }
             }
         }
     }

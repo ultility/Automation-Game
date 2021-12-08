@@ -24,15 +24,17 @@ namespace Automation_Game
         public override void OnCreate()
         {
             base.OnCreate();
-            MediaPlayer menu = MediaPlayer.Create(this, Resource.Raw.Minecraft_Music___Menu_1);
-            MediaPlayer game = MediaPlayer.Create(this, Resource.Raw.Terraria_Soundtrack___01___Overworld_Day);
-            broadcastReciver = new MusicBroadcastReciver(menu, game);
-            IntentFilter f = new IntentFilter();
+            List<MediaPlayer> music = new List<MediaPlayer>();
+            music.Add(MediaPlayer.Create(this, Resource.Raw.menu1));
+            music.Add(MediaPlayer.Create(this, Resource.Raw.day1));
+            broadcastReciver = new MusicBroadcastReciver(music);
+            IntentFilter f = new IntentFilter("music");
             RegisterReceiver(broadcastReciver, f);
         }
 
         public override void OnDestroy()
         {
+            UnregisterReceiver(broadcastReciver);
             base.OnDestroy();
         }
 
