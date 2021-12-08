@@ -30,6 +30,7 @@ namespace Automation_Game
             broadcastReciver = new MusicBroadcastReciver(music);
             IntentFilter f = new IntentFilter("music");
             RegisterReceiver(broadcastReciver, f);
+            Console.WriteLine("\n\nregistered\n\n");
         }
 
         public override void OnDestroy()

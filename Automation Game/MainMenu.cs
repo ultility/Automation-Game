@@ -62,7 +62,7 @@ namespace Automation_Game
             t.Elapsed += T_Elapsed;
             dx = Math.Abs(FullBackground.Width - background.Width);
             dx = dx / (60 * 30);
-           backdrop.Background = new BitmapDrawable(Resources, background);
+            backdrop.Background = new BitmapDrawable(Resources, background);
         }
 
         protected override void OnResume()
@@ -70,9 +70,6 @@ namespace Automation_Game
             base.OnResume();
             t.Enabled = true;
             TimerRun = true;
-            Intent i = new Intent("music");
-            i.PutExtra("music", 0);
-            SendBroadcast(i);
         }
 
         private void T_Elapsed(object sender, ElapsedEventArgs e)
