@@ -65,11 +65,24 @@ namespace Automation_Game
             backdrop.Background = new BitmapDrawable(Resources, background);
         }
 
+        protected override void OnPause()
+        {
+            Intent i = new Intent("music");
+            i.PutExtra("music", -1);
+            SendBroadcast(i);
+            Console.WriteLine("stopped music");
+            base.OnPause();
+        }
+
         protected override void OnResume()
         {
             base.OnResume();
             t.Enabled = true;
             TimerRun = true;
+            Intent i = new Intent("music");
+            i.PutExtra("music", 0);
+            Console.WriteLine("started menu music");
+            SendBroadcast(i);
         }
 
         private void T_Elapsed(object sender, ElapsedEventArgs e)

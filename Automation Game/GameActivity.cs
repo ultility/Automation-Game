@@ -70,9 +70,13 @@ namespace Automation_Game
             AMOUNT
         };
 
-        protected override void OnStop()
+        protected override void OnPause()
         {
-            //Map.Save(); work in progress
+            Map.Save();// work in progress
+            Intent i = new Intent("music");
+            i.PutExtra("music", -1);
+            SendBroadcast(i);
+            Console.WriteLine("stopped music");
             base.OnStop();
         }
         protected override void OnCreate(Bundle savedInstanceState)
@@ -129,9 +133,15 @@ namespace Automation_Game
 
             spriteSheet = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("sprite_sheet", "drawable", this.PackageName));
             timer.Start();
+        }
+
+        protected override void OnResume()
+        {
+            base.OnResume();
             Intent i = new Intent("music");
             i.PutExtra("music", 1);
             SendBroadcast(i);
+            Console.WriteLine("started game music");
         }
 
         public void StartClock()

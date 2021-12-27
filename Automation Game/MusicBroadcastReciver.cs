@@ -9,24 +9,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Android.Media;
+using System.Threading;
 
 namespace Automation_Game
 {
     [BroadcastReceiver]
     public class MusicBroadcastReciver : BroadcastReceiver
     {
-        List<MediaPlayer> musics;
+        List<List<MediaPlayer>> musics;
+        int active = 0;
+        Thread countdownTimer;
 
         public MusicBroadcastReciver()
         {
         }
 
-        public MusicBroadcastReciver(List<MediaPlayer> music)
+        public MusicBroadcastReciver(List<List<MediaPlayer>> music)
         {
-            musics = new List<MediaPlayer>();
+            musics = new List<List<MediaPlayer>>();
             musics.AddRange(music);
             Intent i = new Intent("music");
-            musics[0].Start();
+            musics[0][0].Start();
         }
 
         public override void OnReceive(Context context, Intent intent)
@@ -34,18 +37,26 @@ namespace Automation_Game
             int play = intent.GetIntExtra("music", -1);
             if (play >= 0 && play < musics.Count)
             {
-                musics[play].Start();
-                Console.WriteLine("plays music 1");
-            }
-            else
-            {
-                foreach (MediaPlayer player in musics)
+                active = active ^ play;
+                if (countdownTimer != null && countdownTimer.IsAlive)
                 {
-                    player.Stop();
+                    countdownTimer.Abort();
                 }
+                musics[play][0].Start();
+                Console.WriteLine("plays music" + play);
+                
+            }
+            if (active == 0)
+            {
+                countdownTimer = new Thread(new ThreadStart(Countdown));
+                countdownTimer.Start();
             }
         }
 
+        private void Countdown()
+        {
+
+        }
         
     }
 }

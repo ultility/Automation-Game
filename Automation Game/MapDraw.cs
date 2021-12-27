@@ -32,7 +32,7 @@ namespace Automation_Game
         public MapDraw(Context context) : base(context)
         {
             this.context = context;
-            Generator = new MapGenerator(100, 100, (GameActivity)context);
+            Generator = new MapGenerator(100, 100, 15324, (GameActivity)context);
             renderDistance = new Vector2();
             LastPoint = new Vector2();
             Player = new Player(Generator.GetWidth() / 2, Generator.GetHeight() / 2, this);

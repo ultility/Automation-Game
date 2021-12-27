@@ -134,16 +134,19 @@ namespace Automation_Game
         {
             offset = 0;
             MapDraw restoredMap = new MapDraw(context, RestoreGenerator(bytes, (GameActivity)context), RestorePlayer(bytes));
-            int id = BitConverter.ToInt32(bytes.ToArray(), offset);
-            offset += 4;
+            while (offset < bytes.Count())
+            {
+                int id = BitConverter.ToInt32(bytes.ToArray(), offset);
+                offset += 4;
 
-            if (Item.IsItem(id) != -1)
-            {
-                //restored = RestoreItem(bytes, offset, id);
-            }
-            else if (Structure.IsStructure(id) != -1)
-            {
-                //restored = RestoreStructure(bytes, offset, id);
+                if (Item.IsItem(id) != -1)
+                {
+                    //restored = RestoreItem(bytes, offset, id);
+                }
+                else if (Structure.IsStructure(id) != -1)
+                {
+                    //restored = RestoreStructure(bytes, offset, id);
+                }
             }
             restoredMap.Player.SetParent(restoredMap);
             return restoredMap;
