@@ -18,7 +18,7 @@ namespace Automation_Game
     {
         List<List<MediaPlayer>> musics;
         int active = 0;
-        Thread countdownTimer;
+        
 
         public MusicBroadcastReciver()
         {
@@ -29,6 +29,7 @@ namespace Automation_Game
             musics = new List<List<MediaPlayer>>();
             musics.AddRange(music);
             Intent i = new Intent("music");
+            active = active | 0b1;
             musics[0][0].Start();
         }
 
@@ -37,25 +38,23 @@ namespace Automation_Game
             int play = intent.GetIntExtra("music", -1);
             if (play >= 0 && play < musics.Count)
             {
-                active = active ^ play;
-                if (countdownTimer != null && countdownTimer.IsAlive)
+                active = active ^ (1 << play);
+                if ((active & (1 << play)) == (1 << play))
                 {
-                    countdownTimer.Abort();
+                    musics[play][0].Start();
+                    MusicService.Stop = false;
                 }
-                musics[play][0].Start();
+                else
+                {
+                    musics[play][0].Stop();
+                }
                 Console.WriteLine("plays music" + play);
                 
             }
             if (active == 0)
             {
-                countdownTimer = new Thread(new ThreadStart(Countdown));
-                countdownTimer.Start();
+                MusicService.Stop = true;
             }
-        }
-
-        private void Countdown()
-        {
-
         }
         
     }

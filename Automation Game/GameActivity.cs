@@ -18,6 +18,7 @@ namespace Automation_Game
     {
         FrameLayout frame;
         LinearLayout craftingUI;
+        Intent MusicControl;
 
         public MapDraw Map { get; set; }
 
@@ -72,10 +73,7 @@ namespace Automation_Game
 
         protected override void OnPause()
         {
-            Map.Save();// work in progress
-            Intent i = new Intent("music");
-            i.PutExtra("music", -1);
-            SendBroadcast(i);
+            SendBroadcast(MusicControl);
             Console.WriteLine("stopped music");
             base.OnStop();
         }
@@ -133,14 +131,14 @@ namespace Automation_Game
 
             spriteSheet = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("sprite_sheet", "drawable", this.PackageName));
             timer.Start();
+            MusicControl = new Intent("music");
+            MusicControl.PutExtra("music", 1);
         }
 
         protected override void OnResume()
         {
             base.OnResume();
-            Intent i = new Intent("music");
-            i.PutExtra("music", 1);
-            SendBroadcast(i);
+            SendBroadcast(MusicControl);
             Console.WriteLine("started game music");
         }
 

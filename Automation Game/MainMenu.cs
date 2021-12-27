@@ -14,6 +14,7 @@ namespace Automation_Game
     [Activity(Label = "MainMenu", ScreenOrientation = Android.Content.PM.ScreenOrientation.Landscape, MainLauncher = true)]
     public class MainMenu : Activity
     {
+        Intent MusicControl;
         Button load;
         Button start;
         Bitmap FullBackground;
@@ -63,13 +64,13 @@ namespace Automation_Game
             dx = Math.Abs(FullBackground.Width - background.Width);
             dx = dx / (60 * 30);
             backdrop.Background = new BitmapDrawable(Resources, background);
+            MusicControl = new Intent("music");
+            MusicControl.PutExtra("music", 0);
         }
 
         protected override void OnPause()
         {
-            Intent i = new Intent("music");
-            i.PutExtra("music", -1);
-            SendBroadcast(i);
+            SendBroadcast(MusicControl);
             Console.WriteLine("stopped music");
             base.OnPause();
         }
@@ -79,10 +80,7 @@ namespace Automation_Game
             base.OnResume();
             t.Enabled = true;
             TimerRun = true;
-            Intent i = new Intent("music");
-            i.PutExtra("music", 0);
-            Console.WriteLine("started menu music");
-            SendBroadcast(i);
+            SendBroadcast(MusicControl);
         }
 
         private void T_Elapsed(object sender, ElapsedEventArgs e)
