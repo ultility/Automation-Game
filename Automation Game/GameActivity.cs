@@ -14,7 +14,7 @@ using Timer = System.Timers.Timer;
 namespace Automation_Game
 {
     [Activity(Label = "GameActivity", ScreenOrientation = Android.Content.PM.ScreenOrientation.Landscape)]
-    public class GameActivity : Activity
+    public class GameActivity : Activity, IMenuItemOnMenuItemClickListener
     {
         FrameLayout frame;
         LinearLayout craftingUI;
@@ -388,21 +388,20 @@ namespace Automation_Game
                 press = new OnTouchEvent(this);
                 inventory.Window.SetLayout((int)(Window.DecorView.Width * 0.8), (int)(Window.DecorView.Height * 0.8));
                 slots[0] = (Button)inventory.FindViewById(Resource.Id.slot1);
-                slots[0].SetOnTouchListener(press);
+                
                 slots[1] = (Button)inventory.FindViewById(Resource.Id.slot2);
-                slots[1].SetOnTouchListener(press);
+                
                 slots[2] = (Button)inventory.FindViewById(Resource.Id.slot3);
-                slots[2].SetOnTouchListener(press);
+                
                 slots[3] = (Button)inventory.FindViewById(Resource.Id.slot4);
-                slots[3].SetOnTouchListener(press);
+                
                 slots[4] = (Button)inventory.FindViewById(Resource.Id.slot5);
-                slots[4].SetOnTouchListener(press);
+                
                 slots[5] = (Button)inventory.FindViewById(Resource.Id.slot6);
-                slots[5].SetOnTouchListener(press);
+                
                 slots[6] = (Button)inventory.FindViewById(Resource.Id.slot7);
-                slots[6].SetOnTouchListener(press);
                 slots[7] = (Button)inventory.FindViewById(Resource.Id.slot8);
-                slots[7].SetOnTouchListener(press);
+                
                 slots[8] = (Button)inventory.FindViewById(Resource.Id.slotEquip);
                 slots[8].Click += DeEquip;
                 Button debug = (Button)inventory.FindViewById(Resource.Id.debug);
@@ -426,9 +425,13 @@ namespace Automation_Game
             {
                 if (inv[i] != null)
                 {
+                    slots[i].Tag = 0;
                     icon = GetIcon(inv[i].id, this);
                     if (inv[i] is Tool tool)
                     {
+                        slots[i].Tag = 1;
+                        slots[i].SetTextColor(Color.Argb(0, 0, 0, 0));
+                        slots[i].Text = "" + i;
                         Paint p = new Paint();
                         p.SetStyle(Paint.Style.FillAndStroke);
                         double percentage = 1;
@@ -463,6 +466,7 @@ namespace Automation_Game
                         int bottom = c.Height / 11 * 10;
                         c.DrawRect(left, top * 9, (float)(right * percentage), bottom, p);
                     }
+                    slots[i].Click += ((Object o, EventArgs e) => { OpenContextMenu(slots[i]); });
                 }
                 else
                 {
@@ -475,6 +479,8 @@ namespace Automation_Game
             icon = BitmapFactory.DecodeResource(Resources, Resources.GetIdentifier("inventory_slot_border", "drawable", PackageName)).Copy(Bitmap.Config.Argb8888, true);
             if (equipment != null)
             {
+                slots[^1].Tag = -1;
+                slots[^1].Click += ((Object o, EventArgs e) => { OpenContextMenu(slots[^1]); });
                 Tool tool = (Tool)equipment;
                 Canvas c = new Canvas(icon);
                 Rect src = new Rect((equipment.id % MapDraw.spriteSheetColoumnCount) * iconSize, (equipment.id / MapDraw.spriteSheetColoumnCount) * iconSize, (equipment.id % MapDraw.spriteSheetColoumnCount + 1) * iconSize, (equipment.id / MapDraw.spriteSheetColoumnCount + 1) * iconSize);
@@ -515,7 +521,7 @@ namespace Automation_Game
                 }
                 c.DrawRect(left, top * 9, (float)(right * percentage), bottom, p);
             }
-            slots[8].Background = new BitmapDrawable(Resources, icon);
+            slots[^1].Background = new BitmapDrawable(Resources, icon);
             icon.Dispose();
             inventory.Show();
         }
@@ -648,6 +654,55 @@ namespace Automation_Game
 
             }
             return base.OnTouchEvent(e);
+        }
+
+        public override void OnCreateContextMenu(IContextMenu menu, View v, IContextMenuContextMenuInfo menuInfo)
+        {
+            base.OnCreateContextMenu(menu, v, menuInfo);
+            TextView view = (TextView)v;
+            menu.Add(0,(int)v.Tag, 0, "Drop");
+            int type = (int)v.Tag;
+            if (type > 0)
+            {
+                menu.Add(0, int.Parse(view.Text), 0, "Equip");
+            }
+            else if (type < 0)
+            {
+                menu.Add(0, int.Parse(view.Text), 0, "De-Equip");
+            }
+            for (int i = 0; i < menu.Size(); i++)
+            {
+                menu.GetItem(i).SetOnMenuItemClickListener(this);
+            }
+        }
+        public override bool OnContextItemSelected(IMenuItem item)
+        {
+            string title = item.TitleFormatted.ToString();
+            if (title.Equals("Drop"))
+            {
+                Item drop = Map.Player.DropItem(item.ItemId);
+                if (drop != null)
+                {
+                    Map.Generator.SetItemPointer((int)Map.Player.GetX(), (int)Map.Player.GetY(), drop);
+                }
+                Map.Invalidate();
+            }
+            else if (title.Equals("Equip"))
+            {
+                Map.Player.Equip(item.ItemId);
+            }
+            else if (title.Equals("De-Equip"))
+            {
+                Map.Player.DeEquip();
+            }
+            Invalidate();
+
+            return true;
+        }
+
+        public bool OnMenuItemClick(IMenuItem item)
+        {
+            return OnContextItemSelected(item);
         }
     }
 }
