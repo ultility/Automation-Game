@@ -1,10 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
-  <Class Name="Automation_Game.GameActivity">
-    <Position X="14.5" Y="19.5" Width="6.5" />
-    <Compartments>
-      <Compartment Name="Nested Types" Collapsed="false" />
-    </Compartments>
+  <Class Name="Automation_Game.CraftingRecipe">
+    <Position X="137.75" Y="20.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAAAAAAAAAAAQAAAAAgAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CraftingRecipe.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Automation_Game.CraftingStation">
+    <Position X="93" Y="25.5" Width="11.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAAAgAAAAAAAAAAAEAACEAEAAQAAAAAA=</HashCode>
+      <FileName>CraftingStation.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Automation_Game.Delivery">
+    <Position X="132.25" Y="17" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAQAAAAAAAAAgAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Delivery.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Automation_Game.GameActivity" BaseTypeListCollapsed="true">
+    <Position X="144.25" Y="25.5" Width="6.5" />
     <NestedTypes>
       <Enum Name="Automation_Game.GameActivity.IDs" Collapsed="true">
         <TypeIdentifier>
@@ -16,313 +35,24 @@
       <HashCode>BBYAAHREAJCkEggwDBLAEABIACBAgIAGIAAMARYQQAA=</HashCode>
       <FileName>GameActivity.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="hole" />
-      <Field Name="UsedBlueprint" />
-      <Field Name="press" />
-      <Property Name="Map" />
-    </ShowAsAssociation>
-    <ShowAsCollectionAssociation>
-      <Field Name="Updateables" />
-    </ShowAsCollectionAssociation>
-    <Lollipop Orientation="Right" Position="0.1" Collapsed="true" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="Android.App.Activity" Collapsed="true">
-    <Position X="19.25" Y="18" Width="1.5" />
-    <NestedTypes>
-      <Class Name="Android.App.Activity.InterfaceConsts" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-    </NestedTypes>
-    <TypeIdentifier />
-    <Lollipop Orientation="Right" Position="0.1" Collapsed="true" />
-  </Class>
-  <Class Name="Automation_Game.Structure">
-    <Position X="37.25" Y="10" Width="9" />
+  <Class Name="Automation_Game.Inventory">
+    <Position X="132" Y="19.5" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AgACAAAAAAEAAIAAAACAAAQAAAAAAgAAAAgEAARgAAA=</HashCode>
-      <FileName>Structure.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAEAAAJoQAAAAgAAAAAAsAAAAIAwAAAA=</HashCode>
+      <FileName>Inventory.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="useableTool" />
-    </ShowAsAssociation>
-    <ShowAsCollectionAssociation>
-      <Field Name="dropItems" />
-    </ShowAsCollectionAssociation>
-    <Lollipop Position="0.883" />
-  </Class>
-  <Class Name="Automation_Game.CraftingStation">
-    <Position X="20.25" Y="15" Width="11.25" />
-    <TypeIdentifier>
-      <HashCode>AAAAIAAAAAAAAAAgAAAAAAAAAAAEAACEAEAAQAAAAAA=</HashCode>
-      <FileName>CraftingStation.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="p" />
-    </ShowAsAssociation>
-    <ShowAsCollectionAssociation>
-      <Field Name="recipes" />
-    </ShowAsCollectionAssociation>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Automation_Game.Plant">
-    <Position X="40.5" Y="15" Width="11.5" />
-    <TypeIdentifier>
-      <HashCode>AwQAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAIAAA=</HashCode>
-      <FileName>Plant.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Automation_Game.SawingTable">
-    <Position X="52.75" Y="15" Width="10.5" />
-    <TypeIdentifier>
-      <HashCode>AAQACAAAAAAAIAAQAAAIIAAAEAAEAAAEAIAAgABAAAA=</HashCode>
-      <FileName>SawingTable.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="bar" />
-      <Property Name="InputItem" />
-      <Property Name="OutputItem" />
-    </ShowAsAssociation>
-    <ShowAsCollectionAssociation>
-      <Field Name="Recipes" />
-    </ShowAsCollectionAssociation>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Automation_Game.StorageChest">
-    <Position X="32.25" Y="15" Width="2" />
-    <TypeIdentifier>
-      <HashCode>IAACIAAAAAAAAAAAAAAAAAAAgAAEAAAEAAAAAAAAAAA=</HashCode>
-      <FileName>StorageChest.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="inv" />
-    </ShowAsAssociation>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Automation_Game.StructureBlueprint">
-    <Position X="35" Y="15" Width="4.75" />
-    <TypeIdentifier>
-      <HashCode>AAAAAABAAAAAAAAAAACEQAQAgAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>StructureBlueprint.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="Parent" />
-      <Property Name="Result" />
-    </ShowAsAssociation>
-    <ShowAsCollectionAssociation>
-      <Field Name="Recipe" />
-    </ShowAsCollectionAssociation>
-  </Class>
-  <Class Name="Automation_Game.MapDraw">
-    <Position X="19.5" Y="7.5" Width="3.75" />
-    <TypeIdentifier>
-      <HashCode>AgAOAKgAAgAQAAAAgABAAIAAAAAAgAAAACAAAQgMAAE=</HashCode>
-      <FileName>MapDraw.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="CurrentlyBuilding" />
-      <Property Name="Generator" />
-      <Property Name="Player" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Android.Views.View" Collapsed="true">
-    <Position X="23" Y="6.25" Width="1.5" />
-    <NestedTypes>
-      <Class Name="Android.Views.View.KeyEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Interface Name="Android.Views.View.IOnCapturedPointerListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Class Name="Android.Views.View.FocusChangeEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Class Name="Android.Views.View.MeasureSpec" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Class Name="Android.Views.View.CapturedPointerEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Class Name="Android.Views.View.TouchEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Interface Name="Android.Views.View.IOnFocusChangeListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Delegate Name="Android.Views.View.ApplyWindowInsetsHandler" Collapsed="true">
-        <TypeIdentifier />
-      </Delegate>
-      <Interface Name="Android.Views.View.IOnSystemUiVisibilityChangeListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Interface Name="Android.Views.View.IOnScrollChangeListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Class Name="Android.Views.View.DragEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Class Name="Android.Views.View.LongClickEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Class Name="Android.Views.View.BaseSavedState" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Interface Name="Android.Views.View.IOnDragListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Class Name="Android.Views.View.ViewAttachedToWindowEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Interface Name="Android.Views.View.IOnKeyListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Class Name="Android.Views.View.GenericMotionEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Interface Name="Android.Views.View.IOnClickListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Class Name="Android.Views.View.HoverEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Interface Name="Android.Views.View.IOnAttachStateChangeListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Class Name="Android.Views.View.UnhandledKeyEventEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Interface Name="Android.Views.View.IOnLongClickListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Interface Name="Android.Views.View.IOnTouchListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Class Name="Android.Views.View.DragShadowBuilder" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Interface Name="Android.Views.View.IOnHoverListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Interface Name="Android.Views.View.IOnCreateContextMenuListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Class Name="Android.Views.View.AccessibilityDelegate" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Interface Name="Android.Views.View.IOnUnhandledKeyEventListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Interface Name="Android.Views.View.IOnLayoutChangeListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Class Name="Android.Views.View.LayoutChangeEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Interface Name="Android.Views.View.IOnContextClickListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Class Name="Android.Views.View.SystemUiVisibilityChangeEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Class Name="Android.Views.View.ScrollChangeEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Class Name="Android.Views.View.ContextClickEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Interface Name="Android.Views.View.IOnGenericMotionListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-      <Class Name="Android.Views.View.CreateContextMenuEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Class Name="Android.Views.View.ViewDetachedFromWindowEventArgs" Collapsed="true">
-        <TypeIdentifier />
-      </Class>
-      <Interface Name="Android.Views.View.IOnApplyWindowInsetsListener" Collapsed="true">
-        <TypeIdentifier />
-      </Interface>
-    </NestedTypes>
-    <TypeIdentifier />
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Automation_Game.Map.MapGenerator">
-    <Position X="30.5" Y="5.75" Width="5" />
-    <TypeIdentifier>
-      <HashCode>AEGQAAAAAgAAQAAAAAEAQMBCIAAEAIAAIAQAUEAAAAA=</HashCode>
-      <FileName>map\MapGenerator.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Property Name="TerrainMap" />
-    </ShowAsCollectionAssociation>
-  </Class>
-  <Class Name="Automation_Game.Terrain">
-    <Position X="32.25" Y="18.75" Width="4.25" />
-    <TypeIdentifier>
-      <HashCode>AAACAAAAAEQA1ECgAAgAACAAgABAhAAAQQBgAAIAAAA=</HashCode>
-      <FileName>Terrain.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="activity" />
-      <Field Name="structure" />
-    </ShowAsAssociation>
-    <ShowAsCollectionAssociation>
-      <Field Name="items" />
-    </ShowAsCollectionAssociation>
   </Class>
   <Class Name="Automation_Game.Item">
-    <Position X="14.25" Y="6" Width="3.25" />
+    <Position X="88.25" Y="28.75" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAIAAAAAAAAAAAAAgAAAAAAAAAAEAIAAAUAAAAQAAgA=</HashCode>
       <FileName>Item.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Automation_Game.Tool">
-    <Position X="14.5" Y="10.25" Width="2.75" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAEQAAAAQAAAA=</HashCode>
-      <FileName>Tool.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Automation_Game.CraftingRecipe">
-    <Position X="33.25" Y="12.25" Width="3.25" />
-    <TypeIdentifier>
-      <HashCode>AAAAAABAAAAAAAAAAAAAAAQAAAAAgAAAAAAAAAAAAAA=</HashCode>
-      <FileName>CraftingRecipe.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Result" />
-    </ShowAsAssociation>
-    <ShowAsCollectionAssociation>
-      <Property Name="Recipe" />
-    </ShowAsCollectionAssociation>
-  </Class>
-  <Class Name="Automation_Game.Delivery">
-    <Position X="26.75" Y="11.5" Width="2.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAQAAAAAAAAAgAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Delivery.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="item" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Automation_Game.Inventory">
-    <Position X="26" Y="2" Width="2.75" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAEAAAJoQAAAAgAAAAAAsAAAAIAwAAAA=</HashCode>
-      <FileName>Inventory.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="equipped" />
-    </ShowAsAssociation>
-    <ShowAsCollectionAssociation>
-      <Field Name="items" />
-    </ShowAsCollectionAssociation>
-  </Class>
   <Class Name="Automation_Game.ItemType">
-    <Position X="37" Y="6" Width="6.75" />
+    <Position X="137" Y="15.75" Width="6.75" />
     <NestedTypes>
       <Enum Name="Automation_Game.ItemType.ItemTypes" Collapsed="true">
         <TypeIdentifier>
@@ -334,119 +64,135 @@
       <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAQAAEAEAAMEAAAAAAAgA=</HashCode>
       <FileName>ItemType.cs</FileName>
     </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Field Name="itemTypeList" />
-    </ShowAsCollectionAssociation>
   </Class>
   <Class Name="Automation_Game.MainMenu">
-    <Position X="21.75" Y="19.5" Width="3.5" />
+    <Position X="92" Y="18.5" Width="3.5" />
     <TypeIdentifier>
       <HashCode>EAQAAAAAAIAARAogAABAAAAAACAIAggAAAQCABAApAA=</HashCode>
       <FileName>MainMenu.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="backdrop" />
-      <Field Name="background" />
-    </ShowAsAssociation>
+  </Class>
+  <Class Name="Automation_Game.MapDraw">
+    <Position X="138.75" Y="24.25" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>AgAOAKgAAgAQAAAAgABAAIAAAAAAgAAAACAAAQgMAAE=</HashCode>
+      <FileName>MapDraw.cs</FileName>
+    </TypeIdentifier>
   </Class>
   <Class Name="Automation_Game.MapSaveManager">
-    <Position X="49.25" Y="6" Width="5.25" />
+    <Position X="98.25" Y="15.5" Width="5.25" />
     <TypeIdentifier>
       <HashCode>CADAAIAAAAAAAQAAAgAKAAAAAAAAAQAAAAAAAAAEAAQ=</HashCode>
       <FileName>MapSaveManager.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Automation_Game.Moveable">
-    <Position X="27.5" Y="18" Width="2.75" />
+    <Position X="93.5" Y="28.75" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAIAAAAZAAAAAAAAAAAAIAAAAYABgIAQAAAA=</HashCode>
       <FileName>Moveable.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="packet" />
-      <Field Name="parent" />
-    </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Automation_Game.MovementPacket">
-    <Position X="32" Y="25.5" Width="4" />
+    <Position X="122.25" Y="17.25" Width="4" />
     <TypeIdentifier>
       <HashCode>AAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAA=</HashCode>
       <FileName>MovementPacket.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="moving" />
-    </ShowAsAssociation>
   </Class>
   <Class Name="Automation_Game.MusicBroadcastReciver">
-    <Position X="40.5" Y="23.25" Width="3.75" />
+    <Position X="141.5" Y="20.5" Width="3.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAARAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
       <FileName>MusicBroadcastReciver.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Automation_Game.MusicService">
-    <Position X="39.5" Y="26.5" Width="5.75" />
+    <Position X="145.25" Y="16" Width="5.75" />
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAIIAAAAAQEQAAACAAAAAAIAQAAAAAAAA=</HashCode>
       <FileName>MusicService.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="broadcastReciver" />
-    </ShowAsAssociation>
   </Class>
   <Class Name="Automation_Game.OnTouchEvent" BaseTypeListCollapsed="true">
-    <Position X="23" Y="24.75" Width="3.5" />
+    <Position X="117.5" Y="17.25" Width="3.5" />
     <TypeIdentifier>
       <HashCode>AIAAAAAAAAAABAAAAEAAAAAEAAAIAABkRAQAAAAAAAA=</HashCode>
       <FileName>OnTouchEvent.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="activity" />
-      <Field Name="hole" />
-    </ShowAsAssociation>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
+  <Class Name="Automation_Game.Plant">
+    <Position X="105" Y="25.5" Width="11.5" />
+    <TypeIdentifier>
+      <HashCode>AwQAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>Plant.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
   <Class Name="Automation_Game.Player">
-    <Position X="27.25" Y="21.75" Width="3.25" />
+    <Position X="93.25" Y="33" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAQmLCAEAAAAYAAgAAIIAwAAAAAIAAAgImEBAQQABAA=</HashCode>
       <FileName>Player.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="inv" />
-    </ShowAsAssociation>
-    <ShowAsCollectionAssociation>
-      <Field Name="MovementPath" />
-    </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Automation_Game.Point">
-    <Position X="32.25" Y="28.25" Width="1.5" />
+    <Position X="117.25" Y="32" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYAA=</HashCode>
       <FileName>Point.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Automation_Game.ProccessBar">
-    <Position X="24" Y="7.5" Width="4" />
+    <Position X="100.5" Y="20" Width="4" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAABAAAACAAAAAAAAAIAAAACAAAA=</HashCode>
       <FileName>ProccessBar.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Automation_Game.SawingTable">
+    <Position X="122.75" Y="25.5" Width="10.5" />
+    <TypeIdentifier>
+      <HashCode>AAQACAAAAAAAIAAQAAAIIAAAEAAEAAAEAIAAgABAAAA=</HashCode>
+      <FileName>SawingTable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
   <Class Name="Automation_Game.ScrollView">
-    <Position X="14.25" Y="15.5" Width="3.5" />
+    <Position X="146" Y="21.75" Width="3.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAA=</HashCode>
       <FileName>ScrollView.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Automation_Game.StorageChest">
+    <Position X="90.25" Y="25.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>IAACIAAAAAAAAAAAAAAAAAAAgAAEAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>StorageChest.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Automation_Game.Structure">
+    <Position X="107.25" Y="19.75" Width="9" />
+    <TypeIdentifier>
+      <HashCode>AgACAAAAAAEAAIAAAACAAAQAAAAAAgAAAAgEAARgAAA=</HashCode>
+      <FileName>Structure.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Automation_Game.StructureBlueprint">
+    <Position X="117.25" Y="25.5" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAAAAAAACEQAQAgAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>StructureBlueprint.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="Automation_Game.StructureType">
-    <Position X="10.5" Y="0.5" Width="10.75" />
-    <Compartments>
-      <Compartment Name="Nested Types" Collapsed="false" />
-    </Compartments>
+    <Position X="100.5" Y="32.25" Width="10.75" />
     <NestedTypes>
       <Enum Name="Automation_Game.StructureType.StructureTypes" Collapsed="true">
         <TypeIdentifier>
@@ -458,28 +204,203 @@
       <HashCode>AAACAAAAAAAAAAAAAAAAAAQEAAAiAkAAACgAAIBAAAA=</HashCode>
       <FileName>StructureType.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="UseableItem" />
-    </ShowAsAssociation>
-    <ShowAsCollectionAssociation>
-      <Field Name="structureTypeList" />
-      <Property Name="DropItem" />
-    </ShowAsCollectionAssociation>
   </Class>
-  <Class Name="Android.Widget.LinearLayout" Collapsed="true">
-    <Position X="15.25" Y="14" Width="1.5" />
-    <TypeIdentifier />
+  <Class Name="Automation_Game.Terrain">
+    <Position X="126.75" Y="17.25" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAEQA1ECgAAgAACAAgABAhAAAQQBgAAIAAAA=</HashCode>
+      <FileName>Terrain.cs</FileName>
+    </TypeIdentifier>
   </Class>
-  <Class Name="Android.Graphics.Bitmap" Collapsed="true">
-    <Position X="22.75" Y="13.25" Width="1.5" />
-    <TypeIdentifier />
-    <Lollipop Position="0.2" />
+  <Class Name="Automation_Game.Tool">
+    <Position X="88.5" Y="33" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAEQAAAAQAAAA=</HashCode>
+      <FileName>Tool.cs</FileName>
+    </TypeIdentifier>
   </Class>
+  <Class Name="FastNoiseLite">
+    <Position X="130.75" Y="31.25" Width="10" />
+    <Members>
+      <Method Name="CalculateFractalBounding" Hidden="true" />
+      <Method Name="CubicLerp" Hidden="true" />
+      <Method Name="DomainWarp" Hidden="true" />
+      <Method Name="DomainWarpFractalIndependent" Hidden="true" />
+      <Method Name="DomainWarpFractalProgressive" Hidden="true" />
+      <Method Name="DomainWarpSingle" Hidden="true" />
+      <Method Name="DoSingleDomainWarp" Hidden="true" />
+      <Method Name="FastAbs" Hidden="true" />
+      <Method Name="FastFloor" Hidden="true" />
+      <Method Name="FastMax" Hidden="true" />
+      <Method Name="FastMin" Hidden="true" />
+      <Method Name="FastNoiseLite" Hidden="true" />
+      <Method Name="FastRound" Hidden="true" />
+      <Method Name="FastSqrt" Hidden="true" />
+      <Method Name="GenFractalFBm" Hidden="true" />
+      <Method Name="GenFractalPingPong" Hidden="true" />
+      <Method Name="GenFractalRidged" Hidden="true" />
+      <Method Name="GenNoiseSingle" Hidden="true" />
+      <Method Name="GradCoord" Hidden="true" />
+      <Method Name="GradCoordDual" Hidden="true" />
+      <Method Name="GradCoordOut" Hidden="true" />
+      <Field Name="Gradients2D" Hidden="true" />
+      <Field Name="Gradients3D" Hidden="true" />
+      <Method Name="Hash" Hidden="true" />
+      <Field Name="INLINE" Hidden="true" />
+      <Method Name="InterpHermite" Hidden="true" />
+      <Method Name="InterpQuintic" Hidden="true" />
+      <Method Name="Lerp" Hidden="true" />
+      <Field Name="mCellularDistanceFunction" Hidden="true" />
+      <Field Name="mCellularJitterModifier" Hidden="true" />
+      <Field Name="mCellularReturnType" Hidden="true" />
+      <Field Name="mDomainWarpAmp" Hidden="true" />
+      <Field Name="mDomainWarpType" Hidden="true" />
+      <Field Name="mFractalBounding" Hidden="true" />
+      <Field Name="mFractalType" Hidden="true" />
+      <Field Name="mFrequency" Hidden="true" />
+      <Field Name="mGain" Hidden="true" />
+      <Field Name="mLacunarity" Hidden="true" />
+      <Field Name="mNoiseType" Hidden="true" />
+      <Field Name="mOctaves" Hidden="true" />
+      <Field Name="mPingPongStength" Hidden="true" />
+      <Field Name="mRotationType3D" Hidden="true" />
+      <Field Name="mSeed" Hidden="true" />
+      <Field Name="mTransformType3D" Hidden="true" />
+      <Field Name="mWarpTransformType3D" Hidden="true" />
+      <Field Name="mWeightedStrength" Hidden="true" />
+      <Field Name="OPTIMISE" Hidden="true" />
+      <Method Name="PingPong" Hidden="true" />
+      <Field Name="PrimeX" Hidden="true" />
+      <Field Name="PrimeY" Hidden="true" />
+      <Field Name="PrimeZ" Hidden="true" />
+      <Field Name="RandVecs2D" Hidden="true" />
+      <Field Name="RandVecs3D" Hidden="true" />
+      <Method Name="SetCellularDistanceFunction" Hidden="true" />
+      <Method Name="SetCellularJitter" Hidden="true" />
+      <Method Name="SetCellularReturnType" Hidden="true" />
+      <Method Name="SetDomainWarpAmp" Hidden="true" />
+      <Method Name="SetDomainWarpType" Hidden="true" />
+      <Method Name="SetFractalGain" Hidden="true" />
+      <Method Name="SetFractalLacunarity" Hidden="true" />
+      <Method Name="SetFractalOctaves" Hidden="true" />
+      <Method Name="SetFractalPingPongStrength" Hidden="true" />
+      <Method Name="SetFractalType" Hidden="true" />
+      <Method Name="SetFractalWeightedStrength" Hidden="true" />
+      <Method Name="SetFrequency" Hidden="true" />
+      <Method Name="SetRotationType3D" Hidden="true" />
+      <Method Name="SetSeed" Hidden="true" />
+      <Method Name="SingleCellular" Hidden="true" />
+      <Method Name="SingleDomainWarpBasicGrid" Hidden="true" />
+      <Method Name="SingleDomainWarpOpenSimplex2Gradient" Hidden="true" />
+      <Method Name="SingleDomainWarpSimplexGradient" Hidden="true" />
+      <Method Name="SingleOpenSimplex2" Hidden="true" />
+      <Method Name="SingleOpenSimplex2S" Hidden="true" />
+      <Method Name="SinglePerlin" Hidden="true" />
+      <Method Name="SingleSimplex" Hidden="true" />
+      <Method Name="SingleValue" Hidden="true" />
+      <Method Name="SingleValueCubic" Hidden="true" />
+      <Method Name="TransformDomainWarpCoordinate" Hidden="true" />
+      <Method Name="TransformNoiseCoordinate" Hidden="true" />
+      <Method Name="UpdateTransformType3D" Hidden="true" />
+      <Method Name="UpdateWarpTransformType3D" Hidden="true" />
+      <Method Name="ValCoord" Hidden="true" />
+    </Members>
+    <NestedTypes>
+      <Enum Name="FastNoiseLite.NoiseType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>map\FastNoiseLite.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="FastNoiseLite.RotationType3D" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>map\FastNoiseLite.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="FastNoiseLite.FractalType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>map\FastNoiseLite.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="FastNoiseLite.CellularDistanceFunction" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>map\FastNoiseLite.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="FastNoiseLite.CellularReturnType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>map\FastNoiseLite.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="FastNoiseLite.DomainWarpType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>map\FastNoiseLite.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="FastNoiseLite.TransformType3D" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>map\FastNoiseLite.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>2ACYQKBADoIjUChhCZQCyMAggiiIgAACnCYAIKYAImQ=</HashCode>
+      <FileName>map\FastNoiseLite.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Automation_Game.Map.MapGenerator">
+    <Position X="119.75" Y="35.5" Width="5" />
+    <TypeIdentifier>
+      <HashCode>AEGQAAAAAgAAQAAAAAEAQMBCIAAEAIAAIAQAUEAAAAA=</HashCode>
+      <FileName>map\MapGenerator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Automation_Game.NoiseMaker">
+    <Position X="108" Y="30.25" Width="8.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>map\NoiseMaker.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Automation_Game.PathFinding.AStar">
+    <Position X="100" Y="30" Width="5.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PathFinding\AStar.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Automation_Game.PathFinding.Tile">
+    <Position X="123.25" Y="20.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQQBAAAAAAAABEAAAAAAAAYAA=</HashCode>
+      <FileName>PathFinding\Tile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Automation_Game.IMoveable">
+    <Position X="134.25" Y="25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IMoveable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Automation_Game.IRotateable">
+    <Position X="134.75" Y="27.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAAAACAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IRotateable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
   <Interface Name="Automation_Game.IUpdateable">
-    <Position X="12" Y="24.5" Width="1.5" />
+    <Position X="136.5" Y="26.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IUpdateable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Automation_Game.IUseable">
+    <Position X="135.75" Y="23.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IUseable.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Segoe UI" Size="9" />
