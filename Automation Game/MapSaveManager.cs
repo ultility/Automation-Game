@@ -92,8 +92,11 @@ namespace Automation_Game
                 bytes.AddRange(temp);
                 for (int i = 0; i < inventory.Length && inventory[i] != null; i++)
                 {
-                    temp = SaveItem(inventory[i]).ToArray();
-                    AddArray(bytes, temp);
+                    if (inventory[i] != null)
+                    {
+                        temp = SaveItem(inventory[i]).ToArray();
+                        AddArray(bytes, temp);
+                    }
                 }
             }
             else if (s is StructureBlueprint sb)
@@ -113,6 +116,10 @@ namespace Automation_Game
         public static List<Byte> SaveItem(Item i)
         {
             List<Byte> bytes = new List<byte>();
+            if (i == null)
+            {
+                return bytes;
+            }
             Byte[] temp = BitConverter.GetBytes(i.id);
             AddArray(bytes, temp);
             if (i is Tool t)
@@ -136,17 +143,29 @@ namespace Automation_Game
             MapDraw restoredMap = new MapDraw(context, RestoreGenerator(bytes, (GameActivity)context), RestorePlayer(bytes));
             while (offset < bytes.Count())
             {
-                int id = BitConverter.ToInt32(bytes.ToArray(), offset);
+                int x = BitConverter.ToInt32(bytes.ToArray(), offset);
                 offset += 4;
+                int y = BitConverter.ToInt32(bytes.ToArray(), offset);
+                offset += 4;
+                int count = BitConverter.ToInt32(bytes.ToArray(), offset);
+                offset += 4;
+                for (int i = 0; i < count; i++)
+                {
+                    int id = BitConverter.ToInt32(bytes.ToArray(), offset);
+                    offset += 4;
 
-                if (Item.IsItem(id) != -1)
-                {
-                    //restored = RestoreItem(bytes, offset, id);
+                    if (Item.IsItem(id) != -1)
+                    {
+                        Item restored = RestoreItem(bytes, id);
+                        restoredMap.Generator.SetItemPointer(x, y, restored);
+                    }
+                    else if (Structure.IsStructure(id) != -1)
+                    {
+                        Structure restored = RestoreStructure(bytes, id);
+                        restoredMap.Generator.TerrainMap[x, y].BuildStructure(restored);
+                    }
                 }
-                else if (Structure.IsStructure(id) != -1)
-                {
-                    //restored = RestoreStructure(bytes, offset, id);
-                }
+                
             }
             restoredMap.Player.SetParent(restoredMap);
             return restoredMap;
@@ -158,6 +177,23 @@ namespace Automation_Game
             List<Byte> bytes = new List<byte>();
             bytes.AddRange(SaveGenerator(d.Generator));
             bytes.AddRange(SavePlayer(d.Player));
+            for (int i = 0; i < d.Generator.GetWidth(); i++)
+            {
+                for (int j = 0; j < d.Generator.GetHeight(); j++)
+                {
+                    Terrain t = d.Generator.TerrainMap[i,j];
+                    if (t.ItemCount() > 0)
+                    {
+                        bytes.AddRange(BitConverter.GetBytes(i));
+                        bytes.AddRange(BitConverter.GetBytes(j));
+                        bytes.AddRange(BitConverter.GetBytes(t.ItemCount()));
+                        for (int n = t.ItemCount()-1; n >= 0; n++)
+                        {
+                            bytes.AddRange(SaveItem(t.GetItem(n)));
+                        }
+                    }
+                }
+            }
             return bytes;
         } 
 
@@ -167,6 +203,7 @@ namespace Automation_Game
             if (item is Tool t)
             {
                 t.durability = BitConverter.ToInt32(bytes.ToArray(), offset);
+                return t;
             }
             return item;
         }

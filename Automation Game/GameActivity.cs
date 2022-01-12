@@ -75,7 +75,8 @@ namespace Automation_Game
         {
             SendBroadcast(MusicControl);
             Console.WriteLine("stopped music");
-            base.OnStop();
+            Map.Save();
+            base.OnPause();
         }
         protected override void OnCreate(Bundle savedInstanceState)
         {

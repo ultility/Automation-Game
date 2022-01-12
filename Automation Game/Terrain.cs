@@ -37,6 +37,20 @@ namespace Automation_Game
             return null;
         }
 
+        public Item GetItem(int n)
+        {
+            if (n >= 0 && n < items.Count)
+            {
+                return items[n];
+            }
+            return null;
+        }
+
+        public int ItemCount()
+        {
+            return items.Count;
+        }
+
         public Item Pickup()
         {
             Item i = items[^1];
