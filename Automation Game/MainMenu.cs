@@ -7,13 +7,13 @@ using System;
 using Automation_Game.Map;
 using System.Timers;
 using Android.Graphics.Drawables;
-using System.IO;
 
 namespace Automation_Game
 {
     [Activity(Label = "MainMenu", ScreenOrientation = Android.Content.PM.ScreenOrientation.Landscape, MainLauncher = true)]
     public class MainMenu : Activity
     {
+        OrientationListener Orientation;
         Intent MusicControl;
         Button load;
         Button start;
@@ -27,10 +27,15 @@ namespace Automation_Game
         double left;
         double right;
         bool TimerRun;
+
+        TextView a, p, r;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             // Create your application here
+            Orientation = new OrientationListener(this);
+            Orientation.Enable();
+            Orientation.OrientationChanged += Orientation_OrientationChanged;
             Intent service = new Intent(this, typeof(MusicService));
             StartService(service);
             SetContentView(Resource.Layout.startup_menu);
@@ -50,6 +55,9 @@ namespace Automation_Game
                 width = Window.WindowManager.DefaultDisplay.Width;
                 height = Window.WindowManager.DefaultDisplay.Height;
             }
+            a = FindViewById<TextView>(Resource.Id.azimuth);
+            p = FindViewById<TextView>(Resource.Id.pitch);
+            r = FindViewById<TextView>(Resource.Id.roll);
             background = Bitmap.CreateBitmap(width, height, Bitmap.Config.Argb8888);
             backdrop = (LinearLayout)FindViewById(Resource.Id.backdrop);
             Canvas draw = new Canvas(background);
@@ -66,6 +74,11 @@ namespace Automation_Game
             backdrop.Background = new BitmapDrawable(Resources, background);
             MusicControl = new Intent("music");
             MusicControl.PutExtra("music", 0);
+        }
+
+        private void Orientation_OrientationChanged(object sender, EventArgs e)
+        {
+            RequestedOrientation = ((OrientationEventArgs)e).Orientation;
         }
 
         protected override void OnPause()

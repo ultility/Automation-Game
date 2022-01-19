@@ -2,7 +2,9 @@
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+using Android.Hardware;
 using Android.OS;
+using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using System;
@@ -43,6 +45,7 @@ namespace Automation_Game
         public List<IUpdateable> Updateables;
 
         bool updating;
+        bool click;
 
         public static bool debug = true;
         public enum IDs
@@ -389,20 +392,20 @@ namespace Automation_Game
                 press = new OnTouchEvent(this);
                 inventory.Window.SetLayout((int)(Window.DecorView.Width * 0.8), (int)(Window.DecorView.Height * 0.8));
                 slots[0] = (Button)inventory.FindViewById(Resource.Id.slot1);
-                
+
                 slots[1] = (Button)inventory.FindViewById(Resource.Id.slot2);
-                
+
                 slots[2] = (Button)inventory.FindViewById(Resource.Id.slot3);
-                
+
                 slots[3] = (Button)inventory.FindViewById(Resource.Id.slot4);
-                
+
                 slots[4] = (Button)inventory.FindViewById(Resource.Id.slot5);
-                
+
                 slots[5] = (Button)inventory.FindViewById(Resource.Id.slot6);
-                
+
                 slots[6] = (Button)inventory.FindViewById(Resource.Id.slot7);
                 slots[7] = (Button)inventory.FindViewById(Resource.Id.slot8);
-                
+
                 slots[8] = (Button)inventory.FindViewById(Resource.Id.slotEquip);
                 slots[8].Click += DeEquip;
                 Button debug = (Button)inventory.FindViewById(Resource.Id.debug);
@@ -415,10 +418,6 @@ namespace Automation_Game
                     debug.Click += Debug_Click;
                 }
             }
-            press.SetBlueprint(UsedBlueprint);
-            press.SetStructure(hole);
-            UsedBlueprint = null;
-            hole = null;
             Item[] inv = Map.Player.GetInvetory();
             int iconSize = spriteSheet.Width / MapDraw.spriteSheetColoumnCount;
             Bitmap icon;
@@ -467,7 +466,21 @@ namespace Automation_Game
                         int bottom = c.Height / 11 * 10;
                         c.DrawRect(left, top * 9, (float)(right * percentage), bottom, p);
                     }
-                    slots[i].Click += ((Object o, EventArgs e) => { OpenContextMenu(slots[i]); });
+                    if (UsedBlueprint == null)
+                    {
+                        RegisterForContextMenu(slots[i]);
+                        slots[i].Click += slot_Click;
+                    }
+                    else
+                    {
+                        slots[i].Click += (object o, EventArgs e) =>
+                        {
+                            if (UsedBlueprint.AddItem(Map.Player.DropItem((int)((View)o).Tag)))
+                            {
+                                UsedBlueprint = null;
+                            }
+                        };
+                    }
                 }
                 else
                 {
@@ -481,7 +494,8 @@ namespace Automation_Game
             if (equipment != null)
             {
                 slots[^1].Tag = -1;
-                slots[^1].Click += ((Object o, EventArgs e) => { OpenContextMenu(slots[^1]); });
+                RegisterForContextMenu(slots[^1]);
+                slots[^1].Click += (Object o, EventArgs e) => { OpenContextMenu(slots[^1]); };
                 Tool tool = (Tool)equipment;
                 Canvas c = new Canvas(icon);
                 Rect src = new Rect((equipment.id % MapDraw.spriteSheetColoumnCount) * iconSize, (equipment.id / MapDraw.spriteSheetColoumnCount) * iconSize, (equipment.id % MapDraw.spriteSheetColoumnCount + 1) * iconSize, (equipment.id / MapDraw.spriteSheetColoumnCount + 1) * iconSize);
@@ -525,6 +539,11 @@ namespace Automation_Game
             slots[^1].Background = new BitmapDrawable(Resources, icon);
             icon.Dispose();
             inventory.Show();
+        }
+
+        private void slot_Click(object sender, EventArgs e)
+        {
+            OpenContextMenu(slots[(int)((View)sender).Tag]);
         }
 
         public void Debug_Click(object sender, EventArgs e)
@@ -661,7 +680,7 @@ namespace Automation_Game
         {
             base.OnCreateContextMenu(menu, v, menuInfo);
             TextView view = (TextView)v;
-            menu.Add(0,(int)v.Tag, 0, "Drop");
+            menu.Add(0, (int)v.Tag, 0, "Drop");
             int type = (int)v.Tag;
             if (type > 0)
             {
