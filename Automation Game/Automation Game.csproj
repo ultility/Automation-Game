@@ -86,7 +86,6 @@
     <Compile Include="MovementPacket.cs" />
     <Compile Include="MusicBroadcastReciver.cs" />
     <Compile Include="MusicService.cs" />
-    <Compile Include="OrientationListener.cs" />
     <Compile Include="PathFinding\AStar.cs" />
     <Compile Include="PathFinding\Tile.cs" />
     <Compile Include="Plant.cs" />

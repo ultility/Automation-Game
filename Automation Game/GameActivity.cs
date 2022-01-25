@@ -16,7 +16,7 @@ using Timer = System.Timers.Timer;
 namespace Automation_Game
 {
     [Activity(Label = "GameActivity", ScreenOrientation = Android.Content.PM.ScreenOrientation.Landscape)]
-    public class GameActivity : Activity, IMenuItemOnMenuItemClickListener
+    public class GameActivity : Activity, IMenuItemOnMenuItemClickListener, ISensorEventListener
     {
         FrameLayout frame;
         LinearLayout craftingUI;
@@ -46,6 +46,8 @@ namespace Automation_Game
 
         bool updating;
         bool click;
+
+        SensorManager sm;
 
         public static bool debug = true;
         public enum IDs
@@ -79,6 +81,7 @@ namespace Automation_Game
             SendBroadcast(MusicControl);
             Console.WriteLine("stopped music");
             Map.Save();
+            sm.UnregisterListener(this);
             base.OnPause();
         }
         protected override void OnCreate(Bundle savedInstanceState)
@@ -87,6 +90,7 @@ namespace Automation_Game
 
             // Create your application here
             SetContentView(Resource.Layout.game_map);
+            sm = (SensorManager)GetSystemService(Service.SensorService);
             frame = (FrameLayout)FindViewById(Resource.Id.frame);
             displayInventory = (Button)FindViewById(Resource.Id.openInventory);
             displayMap = (Button)FindViewById(Resource.Id.openMap);
@@ -144,6 +148,7 @@ namespace Automation_Game
             base.OnResume();
             SendBroadcast(MusicControl);
             Console.WriteLine("started game music");
+            sm.RegisterListener(this, sm.GetDefaultSensor(SensorType.Accelerometer), SensorDelay.Ui);
         }
 
         public void StartClock()
@@ -723,6 +728,22 @@ namespace Automation_Game
         public bool OnMenuItemClick(IMenuItem item)
         {
             return OnContextItemSelected(item);
+        }
+
+        public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
+        {
+        }
+
+        public void OnSensorChanged(SensorEvent e)
+        {
+            if (e.Values[0] > 0)
+            {
+                RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
+            }
+            else
+            {
+                RequestedOrientation = Android.Content.PM.ScreenOrientation.ReverseLandscape;
+            }
         }
     }
 }

@@ -7,13 +7,15 @@ using System;
 using Automation_Game.Map;
 using System.Timers;
 using Android.Graphics.Drawables;
+using Android.Hardware;
+using Android.Runtime;
 
 namespace Automation_Game
 {
     [Activity(Label = "MainMenu", ScreenOrientation = Android.Content.PM.ScreenOrientation.Landscape, MainLauncher = true)]
-    public class MainMenu : Activity
+    public class MainMenu : Activity, ISensorEventListener
     {
-        OrientationListener Orientation;
+        SensorManager sm;
         Intent MusicControl;
         Button load;
         Button start;
@@ -33,9 +35,7 @@ namespace Automation_Game
         {
             base.OnCreate(savedInstanceState);
             // Create your application here
-            Orientation = new OrientationListener(this);
-            Orientation.Enable();
-            Orientation.OrientationChanged += Orientation_OrientationChanged;
+            sm = (SensorManager)GetSystemService(Service.SensorService);
             Intent service = new Intent(this, typeof(MusicService));
             StartService(service);
             SetContentView(Resource.Layout.startup_menu);
@@ -76,15 +76,11 @@ namespace Automation_Game
             MusicControl.PutExtra("music", 0);
         }
 
-        private void Orientation_OrientationChanged(object sender, EventArgs e)
-        {
-            RequestedOrientation = ((OrientationEventArgs)e).Orientation;
-        }
-
         protected override void OnPause()
         {
             SendBroadcast(MusicControl);
             Console.WriteLine("stopped music");
+            sm.UnregisterListener(this);
             base.OnPause();
         }
 
@@ -94,6 +90,7 @@ namespace Automation_Game
             t.Enabled = true;
             TimerRun = true;
             SendBroadcast(MusicControl);
+            sm.RegisterListener(this, sm.GetDefaultSensor(SensorType.Accelerometer), SensorDelay.Ui);
         }
 
         private void T_Elapsed(object sender, ElapsedEventArgs e)
@@ -127,6 +124,22 @@ namespace Automation_Game
             Intent t = new Intent(this, typeof(GameActivity));
             t.PutExtra("create", false);
             StartActivity(t);
+        }
+
+        public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
+        {
+        }
+
+        public void OnSensorChanged(SensorEvent e)
+        {
+            if (e.Values[0] > 0)
+            {
+                RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
+            }
+            else
+            {
+                RequestedOrientation = Android.Content.PM.ScreenOrientation.ReverseLandscape;
+            }
         }
     }
 }
