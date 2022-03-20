@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Automation_Game.PathFinding;
+using Android.Animation;
 using Timer = System.Timers.Timer;
+using Android.Views.Animations;
+
 namespace Automation_Game
 {
     public class Player : Moveable, IUpdateable
@@ -16,6 +19,7 @@ namespace Automation_Game
         int i = 10, j = 10, frames = 10;
         List<Point> MovementPath;
         Random rng = new Random();
+        Animation CurrentAnimation;
         bool updating;
         public Player(int x, int y, MapDraw parent = null)
         {
@@ -27,6 +31,11 @@ namespace Automation_Game
             this.parent = parent;
             MovementPath = new List<Point>();
             updating = false;
+            if (parent != null)
+            {
+                CurrentAnimation = AnimationUtils.LoadAnimation(parent.Context, Resource.Animation.moveup);
+                CurrentAnimation.Duration = 1000;
+            }
         }
 
         public void SetParent(MapDraw p)

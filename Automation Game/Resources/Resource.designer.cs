@@ -340,13 +340,22 @@ namespace Automation_Game
 			public const int fragment_fast_out_extra_slow_in = 2130771996;
 			
 			// aapt resource value: 0x7F01001D
-			public const int mtrl_bottom_sheet_slide_in = 2130771997;
+			public const int movedown = 2130771997;
 			
 			// aapt resource value: 0x7F01001E
-			public const int mtrl_bottom_sheet_slide_out = 2130771998;
+			public const int moveleft = 2130771998;
 			
 			// aapt resource value: 0x7F01001F
-			public const int mtrl_card_lowers_interpolator = 2130771999;
+			public const int moveup = 2130771999;
+			
+			// aapt resource value: 0x7F010020
+			public const int mtrl_bottom_sheet_slide_in = 2130772000;
+			
+			// aapt resource value: 0x7F010021
+			public const int mtrl_bottom_sheet_slide_out = 2130772001;
+			
+			// aapt resource value: 0x7F010022
+			public const int mtrl_card_lowers_interpolator = 2130772002;
 			
 			static Animation()
 			{

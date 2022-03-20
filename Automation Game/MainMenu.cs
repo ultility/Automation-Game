@@ -55,9 +55,6 @@ namespace Automation_Game
                 width = Window.WindowManager.DefaultDisplay.Width;
                 height = Window.WindowManager.DefaultDisplay.Height;
             }
-            a = FindViewById<TextView>(Resource.Id.azimuth);
-            p = FindViewById<TextView>(Resource.Id.pitch);
-            r = FindViewById<TextView>(Resource.Id.roll);
             background = Bitmap.CreateBitmap(width, height, Bitmap.Config.Argb8888);
             backdrop = (LinearLayout)FindViewById(Resource.Id.backdrop);
             Canvas draw = new Canvas(background);

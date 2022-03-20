@@ -689,11 +689,11 @@ namespace Automation_Game
             int type = (int)v.Tag;
             if (type > 0)
             {
-                menu.Add(0, int.Parse(view.Text), 0, "Equip");
+                menu.Add(0, (int)view.Tag, 0, "Equip");
             }
             else if (type < 0)
             {
-                menu.Add(0, int.Parse(view.Text), 0, "De-Equip");
+                menu.Add(0, (int)view.Tag, 0, "DeEquip");
             }
             for (int i = 0; i < menu.Size(); i++)
             {
